@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ofyaa. — voice journal</title>
+<meta name="description" content="A bit miffed, a bit honest. Two minutes, AI listens back.">
+<meta property="og:title" content="ofyaa. — voice journal">
+<meta property="og:description" content="Say it, don't bottle it up.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#F5F0E1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=DM+Sans:opsz,wght@9..40,400..700&family=Playwrite+IT+Moderna:wght@100..400&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Crect x='40' y='22' width='20' height='32' rx='10' stroke='%23FFFFFF' stroke-width='4' fill='none'/%3E%3Cpath d='M28 46 V50 C28 60, 36 66, 50 66 C64 66, 72 60, 72 50 V46' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cline x1='50' y1='66' x2='50' y2='78' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+  :root {
+    --ink: #0A0A0A;
+    --ink-soft: #2B2B2B;
+    --cream: #F5F0E1;
+    --cream-warm: #EDE5CF;
+    --acid: #D4F542;
+    --acid-deep: #BAE033;
+    --bruise: #2A1F3A;
+    --pink: #F5A89B;
+    --mute: #6B6761;
+    --gray-mid: #A3A3A3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.55;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  /* Brand lockup */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .brand-mic {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: currentColor;
+    width: 0.78em;
+    height: 0.78em;
+    margin-right: 0.01em;
+  }
+  .brand-mic svg { width: 55%; height: 55%; }
+  .brand-period { color: var(--gray-mid); }
+
+  /* ═══════ NAV ═══════ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: rgba(245, 240, 225, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(10,10,10,0.06);
+  }
+
+  .nav-brand { font-size: 22px; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lang-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--cream-warm);
+    padding: 3px;
+    border-radius: 100px;
+  }
+
+  .lang-btn {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mute);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .lang-btn.active {
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  .nav-cta {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .nav-cta:hover {
+    background: var(--acid);
+    color: var(--ink);
+  }
+
+  /* ═══════ HERO ═══════ */
+  .hero {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    padding: 110px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: -120px;
+    width: 280px;
+    height: 280px;
+    background: var(--acid);
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    left: -80px;
+    width: 200px;
+    height: 200px;
+    background: var(--pink);
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.4;
+    z-index: 0;
+    animation: float 10s ease-in-out infinite 2s reverse;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-20px, -30px); }
+  }
+
+  .hero-container {
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .hero-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 900;
+    font-size: clamp(48px, 13vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .hero-title .hl {
+    background: var(--acid);
+    padding: 0 0.08em;
+    display: inline-block;
+  }
+
+  .hero-sub {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: clamp(18px, 4.5vw, 22px);
+    line-height: 1.4;
+    color: var(--bruise);
+    max-width: 440px;
+    margin-bottom: 40px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-sub em {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-style: normal;
+    font-weight: 300;
+    color: var(--mute);
+    font-size: 0.85em;
+    display: block;
+    margin-top: 6px;
+  }
+
+  .waitlist-form {
+    display: flex;
+    gap: 8px;
+    max-width: 440px;
+    padding: 6px;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 100px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .waitlist-form.loading { opacity: 0.6; pointer-events: none; }
+  .waitlist-form.hidden { display: none; }
+
+  .waitlist-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 500;
+    min-width: 0;
+  }
+
+  .waitlist-input::placeholder { color: var(--mute); }
+
+  .waitlist-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .waitlist-btn:hover:not(:disabled) {
+    background: var(--acid);
+    color: var(--ink);
+  }
+
+  .waitlist-btn:disabled { cursor: wait; }
+
+  .waitlist-success, .waitlist-error {
+    display: none;
+    padding: 14px 22px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    max-width: 440px;
+    animation: slideUp 0.5s ease both;
+  }
+
+  .waitlist-success { background: var(--acid); color: var(--ink); }
+  .waitlist-error { background: var(--pink); color: var(--ink); }
+  .waitlist-success.show, .waitlist-error.show { display: block; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-meta {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 300;
+  }
+
+  .count-highlight {
+    color: var(--ink);
+    background: var(--acid);
+    padding: 0 4px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 0.9em;
+  }
+
+  /* ═══════ SECTION BASE ═══════ */
+  section.content {
+    position: relative;
+    z-index: 2;
+    padding: 100px 24px;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; }
+
+  .section-eyebrow {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 2px;
+    background: var(--acid);
+  }
+
+  .section-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 900;
+    font-size: clamp(36px, 8vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    margin-bottom: 20px;
+  }
+
+  .section-title .hl { background: var(--acid); padding: 0 6px; }
+
+  .section-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 520px;
+  }
+
+  /* ═══════ PROBLEM ═══════ */
+  .problem { background: var(--ink); color: var(--cream); }
+  .problem .section-eyebrow { color: var(--acid); }
+  .problem .section-title { color: var(--cream); }
+
+  .problem-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: clamp(24px, 6vw, 32px);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+  }
+
+  .problem-text .strike {
+    text-decoration: line-through;
+    color: var(--mute);
+    opacity: 0.6;
+  }
+
+  .problem-text .acid-hl {
+    background: var(--acid);
+    color: var(--ink);
+    padding: 0 4px;
+    font-weight: 700;
+  }
+
+  .problem-text .pink-hl { color: var(--pink); }
+
+  /* ═══════ HOW IT WORKS ═══════ */
+  .how { background: var(--cream); }
+
+  .steps {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 20px;
+    padding: 32px 0;
+    border-top: 1px solid rgba(10,10,10,0.12);
+    align-items: start;
+  }
+
+  .step:last-child { border-bottom: 1px solid rgba(10,10,10,0.12); }
+
+  .step-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 900;
+    font-size: 56px;
+    color: var(--ink);
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+  }
+
+  .step:nth-child(1) .step-num::after { content: ''; display: block; width: 32px; height: 6px; background: var(--acid); margin-top: 8px; }
+  .step:nth-child(2) .step-num::after { content: ''; display: block; width: 32px; height: 6px; background: var(--pink); margin-top: 8px; }
+  .step:nth-child(3) .step-num::after { content: ''; display: block; width: 32px; height: 6px; background: var(--bruise); margin-top: 8px; }
+
+  .step-content h3 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .step-content p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+
+  /* ═══════ FEATURES ═══════ */
+  .features { background: var(--bruise); color: var(--cream); }
+  .features .section-eyebrow { color: var(--pink); }
+  .features .section-title { color: var(--cream); }
+
+  .feature-grid {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .feature-card {
+    background: rgba(245,240,225,0.06);
+    border: 1px solid rgba(245,240,225,0.1);
+    border-radius: 20px;
+    padding: 28px 24px;
+  }
+
+  .feature-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--acid);
+    color: var(--ink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .feature-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--cream);
+    margin-bottom: 10px;
+    letter-spacing: -0.015em;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(245,240,225,0.75);
+  }
+
+  /* ═══════ PRIVACY ═══════ */
+  .privacy { background: var(--pink); color: var(--ink); }
+  .privacy .section-eyebrow { color: var(--bruise); }
+  .privacy .section-eyebrow::before { background: var(--bruise); }
+  .privacy .section-title { color: var(--ink); }
+  .privacy .section-body { color: var(--bruise); }
+
+  .privacy-box {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 24px;
+    padding: 32px 24px;
+    margin-top: 28px;
+  }
+
+  .privacy-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 22px;
+    letter-spacing: -0.015em;
+  }
+
+  .privacy-list { list-style: none; padding: 0; }
+
+  .privacy-list li {
+    padding: 14px 0;
+    border-top: 1px solid rgba(10,10,10,0.12);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 12px;
+  }
+
+  .privacy-list li:first-child { border-top: none; padding-top: 0; }
+
+  .check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    background: var(--acid);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+    margin-top: 2px;
+  }
+
+  /* ═══════ FAQ ═══════ */
+  .faq-section { background: var(--cream); }
+
+  .faq-list {
+    margin-top: 40px;
+    border-top: 1px solid rgba(10,10,10,0.12);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(10,10,10,0.12);
+    padding: 24px 0;
+  }
+
+  .faq-q {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+    display: flex;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .faq-q-tag {
+    background: var(--acid);
+    color: var(--ink);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 3px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .faq-a {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 520px;
+    padding-left: 48px;
+  }
+
+  /* ═══════ FINAL CTA ═══════ */
+  .final {
+    background: var(--acid);
+    color: var(--ink);
+    padding: 120px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final::before, .final::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+  }
+
+  .final::before {
+    top: 10%;
+    left: -50px;
+    width: 180px;
+    height: 180px;
+    background: var(--pink);
+    opacity: 0.5;
+  }
+
+  .final::after {
+    bottom: 10%;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: var(--bruise);
+    opacity: 0.25;
+  }
+
+  .final > * { position: relative; z-index: 1; }
+
+  .final-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 900;
+    font-size: clamp(44px, 12vw, 72px);
+    line-height: 0.9;
+    color: var(--ink);
+    margin-bottom: 36px;
+    letter-spacing: -0.04em;
+  }
+
+  .final-title .hl {
+    background: var(--ink);
+    color: var(--acid);
+    padding: 0 12px;
+  }
+
+  .final .waitlist-form { margin: 0 auto 16px; border-color: var(--ink); }
+  .final .waitlist-success, .final .waitlist-error { margin: 0 auto 16px; }
+
+  .final-meta {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--ink);
+    opacity: 0.7;
+    font-weight: 300;
+  }
+
+  /* ═══════ FOOTER ═══════ */
+  footer {
+    padding: 40px 24px;
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(245,240,225,0.15);
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-brand { font-size: 24px; }
+  .footer-links { display: flex; gap: 18px; }
+
+  .footer-links a {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    color: rgba(245,240,225,0.7);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--acid); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,240,225,0.5);
+    font-weight: 600;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (min-width: 640px) {
+    section.content { padding: 140px 48px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="brand nav-brand">
+    <span class="brand-mic">
+      <svg viewBox="0 0 20 24" fill="none">
+        <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+        <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>fyaa<span class="brand-period">.</span>
+  </a>
+  <div class="nav-right">
+    <div class="lang-toggle" id="lang-toggle">
+      <button class="lang-btn" data-lang="tr">TR</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+    <a href="#cta" class="nav-cta" data-i18n="nav_cta"></a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-container">
+    <div class="hero-badge" data-i18n="hero_badge"></div>
+    <h1 class="hero-title" id="hero-title"></h1>
+    <p class="hero-sub" id="hero-sub"></p>
+
+    <form class="waitlist-form" id="form-hero" onsubmit="return submitWaitlist(event)">
+      <input type="email" class="waitlist-input" name="email" data-i18n-placeholder="form_placeholder" required>
+      <button type="submit" class="waitlist-btn" data-i18n="form_btn"></button>
+    </form>
+
+    <div class="waitlist-success" id="success-hero"></div>
+    <div class="waitlist-error" id="error-hero"></div>
+
+    <div class="hero-meta" id="count-hero"></div>
+  </div>
+</section>
+
+<section class="content problem">
+  <div class="container">
+    <p class="section-eyebrow" data-i18n="problem_eyebrow"></p>
+    <p class="problem-text" id="problem-text"></p>
+  </div>
+</section>
+
+<section class="content how">
+  <div class="container">
+    <p class="section-eyebrow" data-i18n="how_eyebrow"></p>
+    <h2 class="section-title" id="how-title"></h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3 data-i18n="step1_title"></h3>
+          <p data-i18n="step1_body"></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3 data-i18n="step2_title"></h3>
+          <p data-i18n="step2_body"></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3 data-i18n="step3_title"></h3>
+          <p data-i18n="step3_body"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content features">
+  <div class="container">
+    <p class="section-eyebrow" data-i18n="features_eyebrow"></p>
+    <h2 class="section-title" id="features-title"></h2>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">♡</div>
+        <h3 class="feature-title" data-i18n="feature1_title"></h3>
+        <p class="feature-desc" data-i18n="feature1_body"></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">◐</div>
+        <h3 class="feature-title" data-i18n="feature2_title"></h3>
+        <p class="feature-desc" data-i18n="feature2_body"></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">★</div>
+        <h3 class="feature-title" data-i18n="feature3_title"></h3>
+        <p class="feature-desc" data-i18n="feature3_body"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content privacy">
+  <div class="container">
+    <p class="section-eyebrow" data-i18n="privacy_eyebrow"></p>
+    <h2 class="section-title" id="privacy-title"></h2>
+    <p class="section-body" data-i18n="privacy_body"></p>
+
+    <div class="privacy-box">
+      <h3 class="privacy-title" data-i18n="privacy_promise_title"></h3>
+      <ul class="privacy-list" id="privacy-list"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="content faq-section">
+  <div class="container">
+    <p class="section-eyebrow" data-i18n="faq_eyebrow"></p>
+    <h2 class="section-title" id="faq-title"></h2>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+</section>
+
+<section class="final" id="cta">
+  <h2 class="final-title" id="final-title"></h2>
+
+  <form class="waitlist-form" id="form-cta" onsubmit="return submitWaitlist(event)">
+    <input type="email" class="waitlist-input" name="email" data-i18n-placeholder="form_placeholder" required>
+    <button type="submit" class="waitlist-btn" data-i18n="form_btn"></button>
+  </form>
+
+  <div class="waitlist-success" id="success-cta"></div>
+  <div class="waitlist-error" id="error-cta"></div>
+
+  <p class="final-meta" data-i18n="final_meta"></p>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand footer-brand" style="color:var(--cream)">
+        <span class="brand-mic" style="background:var(--cream)">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#0A0A0A" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" data-i18n="footer_privacy"></a>
+        <a href="#" data-i18n="footer_terms"></a>
+        <a href="mailto:selam@ofyaa.com" data-i18n="footer_contact"></a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 ofyaa.</span>
+      <span data-i18n="footer_made"></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const I18N = {
+  tr: {
+    nav_cta: 'erken erişim',
+    hero_badge: 'çok yakında · türkçe + english',
+    hero_title_html: 'Söyle,<br>içinde <span class="hl">kalmasın</span>.',
+    hero_sub_html: 'sesli günlük — biraz küs, biraz dürüst.<em>iki dakika söylen, yapay zekâ dinlesin.</em>',
+    form_placeholder: 'e-posta adresin',
+    form_btn: 'katıl',
+    count_lifetime: 'ilk 500 kişi → ömür boyu <span class="count-highlight">%50</span> indirim',
+    count_live_fmt: '<span class="count-highlight">{n}</span> kişi listede · ilk 500\'de kal, ömür boyu %50',
+    count_live_over_fmt: '<span class="count-highlight">{n}+</span> kişi listede',
+
+    problem_eyebrow: 'mesele',
+    problem_html: 'Yatakta <span class="acid-hl">23:47</span>. Uyuyamıyorsun.<br>çünkü bir şey <span class="pink-hl">içinde kaldı.</span><br><br><span class="strike">"bir şeyin mi var"</span><br><span class="strike">"yok yok, iyiyim"</span><br><span class="strike">"tamam peki."</span><br><br>ofyaa. Kimseye değil, <span class="acid-hl">telefona</span> söylüyorsun.',
+
+    how_eyebrow: 'nasıl işliyor',
+    how_title_html: 'Üç adım,<br>iki dakika.',
+    step1_title: 'of de',
+    step1_body: 'Butona bas. Yalnız kalacağın bir oda değil — telefonun zaten cebinde, elinde, yanı başında.',
+    step2_title: 'biraz söylen',
+    step2_body: 'Ne istersen söyle, nasıl istersen. Cümle bitirmek zorunda değilsin. Yapay zekâ dinliyor.',
+    step3_title: 'kendini dinle',
+    step3_body: 'Duygun, tekrar eden temalar, bir özet, ve seni bir adım içeri taşıyan tek bir soru. Tavsiye yok — ayna var.',
+
+    features_eyebrow: 'ne alırsın',
+    features_title_html: 'Kendi kafana<br>bir pencere.',
+    feature1_title: 'duygu tonu',
+    feature1_body: 'Yargılamayan, etiketlemeyen bir dille ne hissettiğini betimler. "Üzgün" değil — "kararlı ama yorgun."',
+    feature2_title: 'örüntüler',
+    feature2_body: 'Pazartesi stresin 3 haftadır yüksek. Spor yaptığın günlerde enerji +40. Veri konuşur, sen dinlersin.',
+    feature3_title: 'ayın anı',
+    feature3_body: 'Ayın en değerli sözcüğü, paylaşılabilir bir kart olarak. Paylaşmak zorunda değilsin ama güzel görünür.',
+
+    privacy_eyebrow: 'mahremiyet',
+    privacy_title_html: 'Sadece<br><span class="hl">senin.</span>',
+    privacy_body: 'Günlük, dünyadaki en özel şey. Bunu reklam ürünü değil, güven ürünü olarak inşa ediyoruz.',
+    privacy_promise_title: 'Söz verdiğimiz dört şey',
+    privacy_points: [
+      'Kayıtların uçtan uca şifreli. Biz bile açamayız.',
+      'Reklam yok. Üçüncü taraf paylaşımı yok. Asla.',
+      'Tüm verini tek tıkla dışa aktar, istersen sil.',
+      'Türkiye sunucu. KVKK uyumlu.'
+    ],
+
+    faq_eyebrow: 'merak ettiklerin',
+    faq_title_html: 'Yapmadan önce<br>yanıt.',
+    faq_items: [
+      { tag: 'ne zaman', q: 'Ne zaman kullanıma açılacak?', a: 'Yaz sonu. Listedekiler iki hafta önce davet alır, ücretsiz beta\'yı bir ay kullanır.' },
+      { tag: 'fiyat', q: 'Ücretli mi olacak?', a: 'Ayda 10 kayıt ücretsiz, her zaman. Sınırsız + derin analizler için aylık 49 TL / yıllık 399 TL. İlk 500\'e ömür boyu %50.' },
+      { tag: 'gizlilik', q: 'Sesim bir yere gidiyor mu?', a: 'Hayır. Tarayıcı kendi transkripsiyonunu yapıyor, orijinal ses sunucuda durmuyor. Sadece anonim metin AI\'ya gidiyor.' },
+      { tag: 'terapi', q: 'Terapi yerine mi geçer?', a: 'Hayır. Terapist değil, kendini gözlemleme aracı. Ciddi zorluklarda profesyonelin yerini tutmaz — tamamlar.' }
+    ],
+
+    final_title_html: 'of de,<br>içinde <span class="hl">kalmasın</span>.',
+    final_meta: 'ücretsiz. spam yok. istediğin zaman ayrılırsın.',
+    footer_privacy: 'Gizlilik',
+    footer_terms: 'Koşullar',
+    footer_contact: 'İletişim',
+    footer_made: 'İstanbul · made with soft care',
+
+    msg_duplicate: 'zaten listedesin. sabret.',
+    msg_invalid: 'geçerli bir mail yaz yaa.',
+    msg_success: 'tamamdır. yakında haber.',
+    msg_error: 'of. bir şey ters gitti, tekrar dene.'
+  },
+
+  en: {
+    nav_cta: 'early access',
+    hero_badge: 'coming soon · english + turkish',
+    hero_title_html: 'Say it,<br>don\'t <span class="hl">bottle it</span>.',
+    hero_sub_html: 'voice journal — a bit miffed, a bit honest.<em>two minutes, AI listens back.</em>',
+    form_placeholder: 'your email',
+    form_btn: 'join',
+    count_lifetime: 'first 500 → <span class="count-highlight">50%</span> off for life',
+    count_live_fmt: '<span class="count-highlight">{n}</span> on the list · stay in first 500 for 50% off for life',
+    count_live_over_fmt: '<span class="count-highlight">{n}+</span> on the list',
+
+    problem_eyebrow: 'the problem',
+    problem_html: 'It\'s <span class="acid-hl">23:47</span>. You can\'t sleep.<br>because something <span class="pink-hl">stayed inside.</span><br><br><span class="strike">"is something wrong"</span><br><span class="strike">"no, I\'m fine"</span><br><span class="strike">"okay then."</span><br><br>ofyaa. Not to anyone — to your <span class="acid-hl">phone</span>.',
+
+    how_eyebrow: 'how it works',
+    how_title_html: 'Three steps,<br>two minutes.',
+    step1_title: 'say "ugh"',
+    step1_body: 'Press the button. Not a room you have to find — your phone is already in your pocket, in your hand, next to you.',
+    step2_title: 'let it out',
+    step2_body: 'Say whatever, however. You don\'t have to finish sentences. The AI is listening.',
+    step3_title: 'hear yourself',
+    step3_body: 'Your mood, recurring themes, a summary, and one question that takes you one step inward. No advice — just a mirror.',
+
+    features_eyebrow: 'what you get',
+    features_title_html: 'A window into<br>your own head.',
+    feature1_title: 'emotional tone',
+    feature1_body: 'Describes how you feel without judgment or labels. Not "sad" — "determined but tired."',
+    feature2_title: 'patterns',
+    feature2_body: 'Monday stress has been high for 3 weeks. Energy +40 on workout days. The data talks, you listen.',
+    feature3_title: 'moment of the month',
+    feature3_body: 'The most precious word of the month, as a shareable card. You don\'t have to share, but it looks good if you do.',
+
+    privacy_eyebrow: 'privacy',
+    privacy_title_html: 'Only<br><span class="hl">yours.</span>',
+    privacy_body: 'A journal is the most private thing in the world. We\'re building this as a trust product, not an ad product.',
+    privacy_promise_title: 'Four promises',
+    privacy_points: [
+      'Your recordings are end-to-end encrypted. We can\'t open them either.',
+      'No ads. No third-party sharing. Ever.',
+      'Export or delete all your data with one click.',
+      'Turkish servers. GDPR + KVKK compliant.'
+    ],
+
+    faq_eyebrow: 'questions',
+    faq_title_html: 'Answered before<br>you ask.',
+    faq_items: [
+      { tag: 'when', q: 'When does it launch?', a: 'Late summer. Waitlist gets invites two weeks early, free beta for a month.' },
+      { tag: 'price', q: 'Will it be paid?', a: '10 recordings/month free, always. Unlimited + deep analytics for €5/mo or €39/yr. First 500 get 50% off for life.' },
+      { tag: 'privacy', q: 'Where does my voice go?', a: 'Nowhere. Your browser transcribes locally — the original audio never touches our servers. Only anonymous text goes to the AI.' },
+      { tag: 'therapy', q: 'Does it replace therapy?', a: 'No. It\'s not a therapist, it\'s a self-observation tool. For serious struggles, it doesn\'t replace a professional — it complements.' }
+    ],
+
+    final_title_html: 'say it,<br>don\'t <span class="hl">hold it</span>.',
+    final_meta: 'free. no spam. unsubscribe anytime.',
+    footer_privacy: 'Privacy',
+    footer_terms: 'Terms',
+    footer_contact: 'Contact',
+    footer_made: 'Istanbul · made with soft care',
+
+    msg_duplicate: 'you\'re already on the list. sit tight.',
+    msg_invalid: 'enter a valid email.',
+    msg_success: 'got you. news soon.',
+    msg_error: 'ugh. something broke. try again.'
+  }
+};
+
+let currentLang = localStorage.getItem('ofyaa_lang');
+if (!currentLang) {
+  currentLang = (navigator.language && navigator.language.startsWith('tr')) ? 'tr' : 'en';
+}
+
+function t(key) {
+  return (I18N[currentLang] && I18N[currentLang][key] !== undefined) 
+    ? I18N[currentLang][key] 
+    : I18N.tr[key];
+}
+
+function setLang(lang) {
+  if (lang !== 'tr' && lang !== 'en') return;
+  currentLang = lang;
+  localStorage.setItem('ofyaa_lang', lang);
+  document.documentElement.lang = lang;
+  applyI18n();
+  updateCount();
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (typeof val === 'string') el.textContent = val;
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+
+  document.getElementById('hero-title').innerHTML = t('hero_title_html');
+  document.getElementById('hero-sub').innerHTML = t('hero_sub_html');
+  document.getElementById('problem-text').innerHTML = t('problem_html');
+  document.getElementById('how-title').innerHTML = t('how_title_html');
+  document.getElementById('features-title').innerHTML = t('features_title_html');
+  document.getElementById('privacy-title').innerHTML = t('privacy_title_html');
+  document.getElementById('faq-title').innerHTML = t('faq_title_html');
+  document.getElementById('final-title').innerHTML = t('final_title_html');
+
+  const privacyList = document.getElementById('privacy-list');
+  privacyList.innerHTML = '';
+  t('privacy_points').forEach(point => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="check">✓</span><span>${point}</span>`;
+    privacyList.appendChild(li);
+  });
+
+  const faqList = document.getElementById('faq-list');
+  faqList.innerHTML = '';
+  t('faq_items').forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'faq-item';
+    div.innerHTML = `
+      <div class="faq-q">
+        <span class="faq-q-tag">${item.tag}</span>
+        <span>${item.q}</span>
+      </div>
+      <p class="faq-a">${item.a}</p>
+    `;
+    faqList.appendChild(div);
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
+  });
+
+  const countEl = document.getElementById('count-hero');
+  if (countEl && !countEl.dataset.live) {
+    countEl.innerHTML = t('count_lifetime');
+  }
+}
+
+// ═══════════════════════════════════════════
+// Supabase
+// ═══════════════════════════════════════════
+const SUPABASE_URL = 'https://yvvzouqsxdvpblccmfvp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2dnpvdXFzeGR2cGJsY2NtZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTM2NDgsImV4cCI6MjA5MjMyOTY0OH0._NZcbN8ZjNy1Sr5_B0ZdvnZSK-zgnX5NFDPUZVsa-9w';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function submitWaitlist(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formId = form.id.replace('form-', '');
+  const input = form.querySelector('input[type="email"]');
+  const btn = form.querySelector('button');
+  const successEl = document.getElementById('success-' + formId);
+  const errorEl = document.getElementById('error-' + formId);
+
+  const email = input.value.trim().toLowerCase();
+  if (!email) return false;
+
+  successEl.classList.remove('show');
+  errorEl.classList.remove('show');
+  form.classList.add('loading');
+  btn.disabled = true;
+  const origText = btn.textContent;
+  btn.textContent = '...';
+
+  try {
+    const { error } = await sb.from('waitlist').insert({
+      email: email,
+      source: formId,
+      user_agent: navigator.userAgent.substring(0, 200)
+    });
+
+    if (error) {
+      if (error.code === '23505') {
+        successEl.textContent = t('msg_duplicate');
+        successEl.classList.add('show');
+        form.classList.add('hidden');
+      } else if (error.code === '23514') {
+        errorEl.textContent = t('msg_invalid');
+        errorEl.classList.add('show');
+      } else {
+        throw error;
+      }
+    } else {
+      successEl.textContent = t('msg_success');
+      successEl.classList.add('show');
+      form.classList.add('hidden');
+      updateCount();
+    }
+  } catch (err) {
+    console.error('Waitlist error:', err);
+    errorEl.textContent = t('msg_error');
+    errorEl.classList.add('show');
+  } finally {
+    form.classList.remove('loading');
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+
+  return false;
+}
+
+async function updateCount() {
+  try {
+    const { data, error } = await sb.from('waitlist_count').select('total').single();
+    if (error || !data) return;
+
+    const countEl = document.getElementById('count-hero');
+    if (countEl && data.total > 0) {
+      countEl.dataset.live = '1';
+      const tpl = data.total < 500 ? t('count_live_fmt') : t('count_live_over_fmt');
+      countEl.innerHTML = tpl.replace('{n}', data.total);
+    }
+  } catch(e) {}
+}
+
+// Init
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
+});
+
+applyI18n();
+document.addEventListener('DOMContentLoaded', updateCount);
+</script>
+
+</body>
+</html>
