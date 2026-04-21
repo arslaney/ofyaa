@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
-// api/analyze.js · v2
+// api/analyze.js · v3 — DEEPGRAM + CLAUDE
 // Vercel Edge Function — DUAL PATH + DUAL LANGUAGE (TR/EN)
 // 
 // Mode 1: JSON { transcript, duration, language }    → Claude
-// Mode 2: multipart form { audio, duration, language } → Whisper + Claude
+// Mode 2: multipart form { audio, duration, language } → Deepgram + Claude
 // ═══════════════════════════════════════════════════════════
 
 export const config = {
@@ -106,28 +106,42 @@ function jsonResponse(data, status = 200) {
   });
 }
 
-// ─── WHISPER ───
+// ─── DEEPGRAM ───
 
-async function transcribeWithWhisper(audioFile, language) {
-  const form = new FormData();
-  form.append('file', audioFile, 'recording.webm');
-  form.append('model', 'whisper-1');
-  form.append('language', language === 'en' ? 'en' : 'tr');
-  form.append('response_format', 'json');
-
-  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+async function transcribeWithDeepgram(audioFile, language) {
+  const audioBuffer = await audioFile.arrayBuffer();
+  const mimeType = audioFile.type || 'audio/webm';
+  
+  // Deepgram language codes: tr, en-US
+  const langCode = language === 'en' ? 'en-US' : 'tr';
+  
+  // Deepgram REST API endpoint with query params
+  const url = `https://api.deepgram.com/v1/listen?model=nova-2&language=${langCode}&smart_format=true&punctuate=true`;
+  
+  const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: form,
+    headers: {
+      'Authorization': `Token ${process.env.DEEPGRAM_API_KEY}`,
+      'Content-Type': mimeType,
+    },
+    body: audioBuffer,
   });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Whisper ${res.status}: ${err.slice(0, 120)}`);
+    throw new Error(`Deepgram ${res.status}: ${err.slice(0, 150)}`);
   }
   
-  const { text } = await res.json();
-  return text;
+  const data = await res.json();
+  
+  // Extract transcript from Deepgram response structure
+  const transcript = data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
+  
+  if (!transcript.trim()) {
+    throw new Error('Deepgram returned empty transcript');
+  }
+  
+  return transcript;
 }
 
 // ─── CLAUDE ───
@@ -214,10 +228,10 @@ export default async function handler(req) {
       }
       
       try {
-        transcript = await transcribeWithWhisper(audio, lang);
-        source = 'whisper';
+        transcript = await transcribeWithDeepgram(audio, lang);
+        source = 'deepgram';
       } catch (err) {
-        console.error('Whisper error:', err.message);
+        console.error('Deepgram error:', err.message);
         return jsonResponse({ error: errMsg(lang, 'transcription') }, 502);
       }
     }
