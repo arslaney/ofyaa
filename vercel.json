@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/analyze.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/duru-app-connected.html" }
+  ]
+}
