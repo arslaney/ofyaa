@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>ofyaa.</title>
+<meta name="theme-color" content="#F5F0E1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ofyaa">
+
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"ofyaa","short_name":"ofyaa","start_url":"./","display":"standalone","background_color":"%230A0A0A","theme_color":"%230A0A0A","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Crect width=%27512%27 height=%27512%27 rx=%27112%27 fill=%27%230A0A0A%27/%3E%3Crect x=%27224%27 y=%27140%27 width=%2764%27 height=%27110%27 rx=%2732%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 fill=%27none%27/%3E%3Cpath d=%27M176 220 V250 C176 320, 220 354, 256 354 C292 354, 336 320, 336 250 V220%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 stroke-linecap=%27round%27 fill=%27none%27/%3E%3Cline x1=%27256%27 y1=%27354%27 x2=%27256%27 y2=%27400%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 stroke-linecap=%27round%27/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Crect x='40' y='22' width='20' height='32' rx='10' stroke='%23FFFFFF' stroke-width='4' fill='none'/%3E%3Cpath d='M28 46 V50 C28 60, 36 66, 50 66 C64 66, 72 60, 72 50 V46' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cline x1='50' y1='66' x2='50' y2='78' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Gloock&family=DM+Sans:opsz,wght@9..40,300..700&family=Playwrite+IT+Moderna:wght@100..400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #0A0A0A;
+    --ink-soft: #1A1A1A;
+    --cream: #F5F0E1;
+    --cream-warm: #EDE5CF;
+    --acid: #D4F542;
+    --acid-deep: #BAE033;
+    --bruise: #2A1F3A;
+    --pink: #F5A89B;
+    --mute: #6B6761;
+    --gray-mid: #A3A3A3;
+    --safe-top: env(safe-area-inset-top, 0);
+    --safe-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+  
+  #app {
+    position: relative;
+    z-index: 2;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 500px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  .view {
+    position: absolute;
+    inset: 0;
+    padding: calc(20px + var(--safe-top)) 22px calc(20px + var(--safe-bottom));
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(16px);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .view.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  
+  .view.dark { background: var(--ink); color: var(--cream); }
+  
+  /* ═══════ BRAND LOCKUP ═══════ */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .brand-mic {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: currentColor;
+    width: 0.78em;
+    height: 0.78em;
+    margin-right: 0.02em;
+  }
+  .brand-mic svg { width: 55%; height: 55%; }
+  .brand-period { color: var(--gray-mid); }
+  .dark .brand { color: var(--cream); }
+  
+  /* ═══════ AUTH VIEWS ═══════ */
+  .auth-view {
+    justify-content: center;
+    align-items: center;
+    padding: 40px 28px;
+    text-align: center;
+  }
+  
+  .auth-brand {
+    font-size: 28px;
+    margin-bottom: 48px;
+  }
+  
+  .auth-title {
+    font-family: 'Gloock', serif;
+    font-size: 40px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  
+  .auth-sub {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-weight: 300;
+    font-size: 16px;
+    color: var(--mute);
+    line-height: 1.5;
+    margin-bottom: 36px;
+    max-width: 320px;
+  }
+  
+  .auth-form {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .auth-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: var(--cream-warm);
+    border: 2px solid transparent;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    transition: all 0.2s;
+    outline: none;
+    text-align: center;
+  }
+  
+  .auth-input:focus {
+    border-color: var(--ink);
+    background: var(--cream);
+  }
+  
+  .auth-input::placeholder { color: var(--mute); }
+  
+  .auth-btn {
+    width: 100%;
+    padding: 16px 20px;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .auth-btn:hover:not(:disabled) {
+    background: var(--acid);
+    color: var(--ink);
+  }
+  
+  .auth-btn:disabled { opacity: 0.6; cursor: wait; }
+  
+  .auth-btn:active { transform: scale(0.98); }
+  
+  .auth-footnote {
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--mute);
+    letter-spacing: 0.02em;
+    max-width: 260px;
+    line-height: 1.5;
+  }
+  
+  .auth-error {
+    color: var(--pink);
+    font-size: 13px;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  
+  /* Auth sent state */
+  .auth-sent-emoji {
+    font-size: 56px;
+    margin-bottom: 24px;
+    animation: wave 1.2s ease infinite alternate;
+  }
+  
+  @keyframes wave {
+    from { transform: rotate(-5deg); }
+    to { transform: rotate(5deg); }
+  }
+  
+  .auth-link-btn {
+    background: none;
+    border: none;
+    color: var(--mute);
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 16px;
+  }
+  
+  .auth-link-btn:hover { color: var(--ink); }
+  
+  /* Language toggle on auth screen */
+  .lang-toggle {
+    position: absolute;
+    top: calc(20px + var(--safe-top));
+    right: 20px;
+    display: flex;
+    gap: 4px;
+    background: var(--cream-warm);
+    padding: 4px;
+    border-radius: 100px;
+  }
+  
+  .lang-toggle button {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mute);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  
+  .lang-toggle button.active {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  
+  /* Loading spinner */
+  .auth-loading {
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--cream-warm);
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* ═══════ HEADER (with auth context) ═══════ */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-warm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--ink);
+    border: none;
+  }
+  
+  .icon-btn:active { transform: scale(0.92); background: var(--acid); }
+  
+  .dark .icon-btn {
+    background: rgba(245,240,225,0.1);
+    color: var(--cream);
+  }
+  
+  /* ═══════ HOME ═══════ */
+  .home-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 24px;
+  }
+  
+  .home-date {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-weight: 600;
+  }
+  
+  .home-date-num {
+    font-family: 'Gloock', serif;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  
+  .home-prompt {
+    font-family: 'Gloock', serif;
+    font-size: 26px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.015em;
+  }
+  
+  .home-prompt .hl {
+    background: var(--acid);
+    padding: 0 4px;
+  }
+  
+  .home-subprompt {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  
+  .home-rec-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+  }
+  
+  .streak {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+  
+  .streak-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cream-warm);
+  }
+  .streak-dot.filled { background: var(--bruise); }
+  .streak-dot.today {
+    background: var(--acid);
+    box-shadow: 0 0 0 4px rgba(212, 245, 66, 0.3);
+  }
+  
+  .rec-button {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: var(--ink);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+  
+  .rec-button:active { transform: scale(0.94); }
+  
+  .rec-button::before, .rec-button::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    opacity: 0;
+    animation: pulse 3s ease-out infinite;
+  }
+  
+  .rec-button::before { inset: -10px; }
+  .rec-button::after { inset: -22px; animation-delay: 1s; }
+  
+  .rec-inner {
+    width: 20px;
+    height: 20px;
+    background: var(--acid);
+    border-radius: 4px;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.3; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  
+  .rec-label {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 300;
+  }
+  
+  .home-footer {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 14px;
+    border-top: 1px solid rgba(10,10,10,0.1);
+    margin-top: 12px;
+  }
+  
+  .tab {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mute);
+    padding: 6px 10px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .tab.active { color: var(--ink); }
+  
+  /* ═══════ RECORDING ═══════ */
+  .rec-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-top: 40px;
+  }
+  
+  .rec-status {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--acid);
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  
+  .rec-timer {
+    font-family: 'Gloock', serif;
+    font-size: 60px;
+    color: var(--cream);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .waveform {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 16px;
+    max-height: 320px;
+  }
+  
+  .wave-bar {
+    width: 3px;
+    background: var(--cream);
+    border-radius: 3px;
+    height: 4px;
+    transition: height 0.08s ease-out;
+    opacity: 0.4;
+  }
+  
+  .wave-bar.active { opacity: 1; background: var(--acid); }
+  
+  .rec-controls {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 14px 0;
+    gap: 20px;
+  }
+  
+  .rec-cancel, .rec-save {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0.6;
+    padding: 16px 12px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+  }
+  
+  .rec-cancel:active, .rec-save:active { opacity: 1; }
+  
+  .rec-stop {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--acid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s ease;
+  }
+  
+  .rec-stop:active { transform: scale(0.92); }
+  
+  .rec-stop-inner {
+    width: 22px;
+    height: 22px;
+    background: var(--ink);
+    border-radius: 4px;
+  }
+  
+  /* ═══════ PROCESSING ═══════ */
+  .processing-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+  
+  .processing-ripple {
+    width: 100px;
+    height: 100px;
+    position: relative;
+  }
+  
+  .processing-ripple::before,
+  .processing-ripple::after,
+  .processing-ripple > div {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    animation: process 2.4s ease-out infinite;
+    opacity: 0;
+  }
+  
+  .processing-ripple::before { animation-delay: 0s; }
+  .processing-ripple > div { animation-delay: 0.8s; border-color: var(--acid-deep); }
+  .processing-ripple::after { animation-delay: 1.6s; border-color: var(--pink); }
+  
+  @keyframes process {
+    0% { transform: scale(0.3); opacity: 0.9; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  
+  .processing-text {
+    font-family: 'Gloock', serif;
+    font-size: 22px;
+    color: var(--ink);
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.3;
+    min-height: 60px;
+    letter-spacing: -0.015em;
+    transition: opacity 0.3s;
+  }
+  
+  /* ═══════ INSIGHT ═══════ */
+  .insight-back {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--mute);
+    margin-bottom: 14px;
+    cursor: pointer;
+    display: inline-block;
+    padding: 4px 0;
+    font-weight: 600;
+    background: none;
+    border: none;
+  }
+  
+  .insight-meta-row {
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid rgba(10,10,10,0.1);
+  }
+  
+  .insight-date {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  
+  .insight-time {
+    font-family: 'Gloock', serif;
+    font-size: 28px;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  
+  .insight-duration {
+    font-size: 11px;
+    color: var(--mute);
+    margin-top: 8px;
+  }
+  
+  .insight-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+  
+  .insight-section { margin-bottom: 24px; }
+  
+  .insight-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  
+  .insight-mood {
+    font-family: 'Gloock', serif;
+    font-size: 20px;
+    color: var(--bruise);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
+  .insight-themes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .theme-chip {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: var(--acid);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  
+  .theme-chip:nth-child(2n) { background: var(--pink); }
+  .theme-chip:nth-child(3n) { background: var(--cream-warm); }
+  
+  .insight-summary {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    padding: 16px 18px;
+    background: var(--cream-warm);
+    border-radius: 12px;
+    border-left: 3px solid var(--acid-deep);
+  }
+  
+  .insight-question {
+    font-family: 'Gloock', serif;
+    font-size: 16px;
+    color: var(--cream);
+    line-height: 1.4;
+    padding: 16px 18px;
+    background: var(--bruise);
+    border-radius: 12px;
+    position: relative;
+    letter-spacing: -0.01em;
+  }
+  
+  .insight-question::before {
+    content: '?';
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    font-family: 'Gloock', serif;
+    font-size: 28px;
+    color: var(--acid);
+    line-height: 1;
+  }
+  
+  .insight-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(10,10,10,0.1);
+  }
+  
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary { background: var(--ink); color: var(--cream); }
+  .btn-primary:active { background: var(--acid); color: var(--ink); }
+  
+  .btn-secondary {
+    background: none;
+    color: var(--mute);
+    border: 1.5px solid rgba(10,10,10,0.15);
+  }
+  
+  .btn:active { transform: scale(0.98); }
+  
+  /* ═══════ HISTORY ═══════ */
+  .history-header { margin-bottom: 26px; }
+  
+  .history-title {
+    font-family: 'Gloock', serif;
+    font-size: 36px;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  
+  .history-sub {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--mute);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  
+  .history-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 24px;
+  }
+  
+  .empty-sticker {
+    width: 80px;
+    height: 80px;
+    background: var(--acid);
+    border-radius: 20px;
+    transform: rotate(-4deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Gloock', serif;
+    font-size: 24px;
+    color: var(--ink);
+    box-shadow: 5px 5px 0 rgba(10,10,10,0.15);
+  }
+  
+  .empty-text {
+    font-family: 'Gloock', serif;
+    font-size: 18px;
+    color: var(--ink);
+    line-height: 1.4;
+    max-width: 260px;
+    letter-spacing: -0.01em;
+  }
+  
+  .empty-hand {
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 300;
+  }
+  
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    border-top: 1px solid rgba(10,10,10,0.1);
+  }
+  
+  .entry {
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(10,10,10,0.08);
+    display: grid;
+    grid-template-columns: 42px 1fr 12px;
+    gap: 14px;
+    align-items: start;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .entry:active { background: rgba(10,10,10,0.03); }
+  
+  .entry-date-num {
+    font-family: 'Gloock', serif;
+    font-size: 24px;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  
+  .entry-date-day {
+    font-size: 9px;
+    color: var(--mute);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 3px;
+    font-weight: 700;
+  }
+  
+  .entry-mood-text {
+    font-family: 'Gloock', serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    letter-spacing: -0.005em;
+  }
+  
+  .entry-meta {
+    font-size: 10px;
+    color: var(--mute);
+  }
+  
+  .entry-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 5px;
+  }
+  
+  .dot-acid { background: var(--acid); }
+  .dot-pink { background: var(--pink); }
+  .dot-bruise { background: var(--bruise); }
+  
+  /* ═══════ SETTINGS (NEW) ═══════ */
+  .settings-title {
+    font-family: 'Gloock', serif;
+    font-size: 36px;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  
+  .settings-email {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    color: var(--mute);
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+  
+  .settings-section {
+    border-top: 1px solid rgba(10,10,10,0.1);
+    padding: 20px 0;
+  }
+  
+  .settings-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  .settings-row-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  
+  .lang-pick {
+    display: flex;
+    gap: 4px;
+    background: var(--cream-warm);
+    padding: 4px;
+    border-radius: 100px;
+  }
+  
+  .lang-pick button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mute);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  
+  .lang-pick button.active {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  
+  .danger-btn {
+    background: none;
+    border: none;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mute);
+    padding: 12px 0;
+    cursor: pointer;
+    text-align: left;
+    display: block;
+  }
+  
+  .danger-btn:hover { color: var(--pink); }
+  
+  /* ═══════ TOAST ═══════ */
+  .toast {
+    position: fixed;
+    bottom: calc(24px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 14px 22px;
+    border-radius: 100px;
+    font-family: 'Gloock', serif;
+    font-size: 13px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 100;
+    pointer-events: none;
+  }
+  
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.acid { background: var(--acid); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ═══════ AUTH LOADING ═══════ -->
+  <div class="view active auth-view auth-loading" id="view-auth-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ═══════ AUTH EMAIL ENTRY ═══════ -->
+  <div class="view auth-view" id="view-auth">
+    <div class="lang-toggle" id="lang-toggle-auth">
+      <button class="lang-btn" data-lang="tr">TR</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+    
+    <div class="brand auth-brand">
+      <span class="brand-mic">
+        <svg viewBox="0 0 20 24" fill="none">
+          <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+          <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>fyaa<span class="brand-period">.</span>
+    </div>
+    
+    <h1 class="auth-title" data-i18n="auth_welcome">Hoş geldin.</h1>
+    <p class="auth-sub" data-i18n="auth_sub">mail adresini yaz, giriş linki gönderelim.</p>
+    
+    <form class="auth-form" onsubmit="return handleAuthSubmit(event)">
+      <input 
+        type="email" 
+        class="auth-input" 
+        id="auth-email"
+        data-i18n-placeholder="auth_placeholder"
+        placeholder="mail adresin"
+        required
+        autocomplete="email">
+      <button type="submit" class="auth-btn" id="auth-submit-btn" data-i18n="auth_send">link gönder</button>
+      <div class="auth-error" id="auth-error" style="display:none"></div>
+    </form>
+    
+    <p class="auth-footnote" data-i18n="auth_footnote">Devam ederek şartları kabul etmiş sayılırsın. Parola yok, sadece mail.</p>
+  </div>
+
+  <!-- ═══════ AUTH LINK SENT ═══════ -->
+  <div class="view auth-view" id="view-auth-sent">
+    <div class="auth-sent-emoji">✉️</div>
+    <h1 class="auth-title" data-i18n="auth_sent_title">Maili kontrol et.</h1>
+    <p class="auth-sub" data-i18n="auth_sent_body">Bir giriş linki gönderdik. Tıkla, hazırsın.</p>
+    <p class="auth-footnote" id="auth-sent-email" style="margin-bottom: 0;"></p>
+    <button class="auth-link-btn" onclick="backToAuth()" data-i18n="auth_wrong_email">mail mi yanlış? değiştir</button>
+  </div>
+
+  <!-- ═══════ HOME ═══════ -->
+  <div class="view" id="view-home">
+    <div class="header">
+      <div class="brand">
+        <span class="brand-mic">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <button class="icon-btn" onclick="switchView('settings')" aria-label="settings">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="6"/>
+          <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="home-meta">
+      <span class="home-date" id="home-date"></span>
+      <span class="home-date-num" id="home-date-num"></span>
+    </div>
+    
+    <p class="home-prompt" id="home-prompt"></p>
+    <p class="home-subprompt" data-i18n="home_subprompt">ne dersen de, olduğu gibi.</p>
+    
+    <div class="home-rec-area">
+      <div class="streak" id="streak"></div>
+      <button class="rec-button" onclick="startRecording()" aria-label="record">
+        <div class="rec-inner"></div>
+      </button>
+      <div class="rec-label" id="rec-label" data-i18n="rec_label">söyle, içinde kalmasın</div>
+    </div>
+    
+    <div class="home-footer">
+      <button class="tab active" data-i18n="tab_today">bugün</button>
+      <button class="tab" onclick="switchView('history')" data-i18n="tab_archive">arşiv</button>
+      <button class="tab" onclick="switchView('settings')" data-i18n="tab_me">ben</button>
+    </div>
+  </div>
+
+  <!-- ═══════ RECORDING ═══════ -->
+  <div class="view dark" id="view-recording">
+    <div class="rec-header">
+      <div class="rec-status" data-i18n="rec_status">dinliyorum</div>
+      <div class="rec-timer" id="timer">0:00</div>
+    </div>
+    
+    <div class="waveform" id="waveform"></div>
+    
+    <div class="rec-controls">
+      <button class="rec-cancel" onclick="cancelRecording()" data-i18n="rec_cancel">iptal</button>
+      <button class="rec-stop" onclick="stopRecording()" aria-label="stop">
+        <div class="rec-stop-inner"></div>
+      </button>
+      <button class="rec-save" onclick="stopRecording()" data-i18n="rec_finish">bitir</button>
+    </div>
+  </div>
+
+  <!-- ═══════ PROCESSING ═══════ -->
+  <div class="view" id="view-processing">
+    <div class="processing-wrap">
+      <div class="processing-ripple"><div></div></div>
+      <p class="processing-text" id="processing-text"></p>
+    </div>
+  </div>
+
+  <!-- ═══════ INSIGHT ═══════ -->
+  <div class="view" id="view-insight">
+    <button class="insight-back" onclick="switchView('home')" data-i18n="insight_back">‹ bugün</button>
+    
+    <div class="insight-meta-row">
+      <p class="insight-date" id="insight-date"></p>
+      <div class="insight-time" id="insight-time"></div>
+      <p class="insight-duration" id="insight-duration"></p>
+    </div>
+    
+    <div class="insight-content">
+      <div class="insight-section">
+        <p class="insight-label" data-i18n="insight_mood_label">BUGÜN NASILSIN</p>
+        <p class="insight-mood" id="insight-mood"></p>
+      </div>
+      
+      <div class="insight-section">
+        <p class="insight-label" data-i18n="insight_themes_label">NELER DÖNDÜ</p>
+        <div class="insight-themes" id="insight-themes"></div>
+      </div>
+      
+      <div class="insight-section">
+        <p class="insight-label" data-i18n="insight_summary_label">KISACA</p>
+        <p class="insight-summary" id="insight-summary"></p>
+      </div>
+      
+      <div class="insight-section">
+        <p class="insight-label" data-i18n="insight_question_label">TAŞIYACAĞIN SORU</p>
+        <p class="insight-question" id="insight-question"></p>
+      </div>
+    </div>
+    
+    <div class="insight-actions">
+      <button class="btn btn-secondary" onclick="discardEntry()" data-i18n="insight_discard">sil</button>
+      <button class="btn btn-primary" onclick="saveEntry()" data-i18n="insight_save">kaydet</button>
+    </div>
+  </div>
+
+  <!-- ═══════ HISTORY ═══════ -->
+  <div class="view" id="view-history">
+    <div class="header">
+      <button class="icon-btn" onclick="switchView('home')" aria-label="back">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 3 L5 8 L10 13"/>
+        </svg>
+      </button>
+      <div class="brand">
+        <span class="brand-mic">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <div style="width:34px"></div>
+    </div>
+    
+    <div class="history-header">
+      <h1 class="history-title" data-i18n="history_title">Arşiv</h1>
+      <p class="history-sub" id="history-count"></p>
+    </div>
+    
+    <div id="history-content"></div>
+  </div>
+
+  <!-- ═══════ SETTINGS (NEW) ═══════ -->
+  <div class="view" id="view-settings">
+    <div class="header">
+      <button class="icon-btn" onclick="switchView('home')" aria-label="back">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 3 L5 8 L10 13"/>
+        </svg>
+      </button>
+      <div class="brand">
+        <span class="brand-mic">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <div style="width:34px"></div>
+    </div>
+    
+    <h1 class="settings-title" data-i18n="settings_title">Ben</h1>
+    <p class="settings-email" id="settings-email"></p>
+    
+    <div class="settings-section">
+      <p class="settings-label" data-i18n="settings_lang">Dil</p>
+      <div class="settings-row">
+        <span class="settings-row-label" data-i18n="settings_lang_desc">Arayüz dili</span>
+        <div class="lang-pick" id="lang-pick-settings">
+          <button class="lang-btn" data-lang="tr">TR</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <p class="settings-label" data-i18n="settings_account">Hesap</p>
+      <button class="danger-btn" onclick="signOut()" data-i18n="settings_signout">Çıkış yap</button>
+      <button class="danger-btn" onclick="deleteAccount()" data-i18n="settings_delete">Hesabı sil</button>
+    </div>
+    
+    <div style="margin-top:auto; padding-top:30px; font-size:11px; color:var(--mute); text-align:center; letter-spacing:0.05em;">
+      ofyaa · v0.3 · <span data-i18n="footer_made">İstanbul'dan sevgilerle</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIG (replace with your Supabase project values)
+// ═══════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://yvvzouqsxdvpblccmfvp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2dnpvdXFzeGR2cGJsY2NtZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTM2NDgsImV4cCI6MjA5MjMyOTY0OH0._NZcbN8ZjNy1Sr5_B0ZdvnZSK-zgnX5NFDPUZVsa-9w';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
+
+// ═══════════════════════════════════════════════════════════
+// i18n DICTIONARY
+// ═══════════════════════════════════════════════════════════
+const I18N = {
+  tr: {
+    // Auth
+    auth_welcome: 'Hoş geldin.',
+    auth_sub: 'mail adresini yaz, giriş linki gönderelim.',
+    auth_placeholder: 'mail adresin',
+    auth_send: 'link gönder',
+    auth_sending: 'gönderiliyor...',
+    auth_footnote: 'Parola yok, sadece mail. Her girişte yeni link.',
+    auth_sent_title: 'Maili kontrol et.',
+    auth_sent_body: 'Bir giriş linki gönderdik. Tıkla, hazırsın.',
+    auth_wrong_email: 'mail mi yanlış? değiştir',
+    auth_err_invalid: 'geçerli bir mail yaz yaa.',
+    auth_err_send: 'of. link gönderilemedi, tekrar dene.',
+    auth_err_rate: 'çok sık deniyorsun. bir dakika bekle.',
+    
+    // Home
+    home_subprompt: 'ne dersen de, olduğu gibi.',
+    rec_label: 'söyle, içinde kalmasın',
+    tab_today: 'bugün',
+    tab_archive: 'arşiv',
+    tab_me: 'ben',
+    
+    // Prompts (rotation)
+    prompts: [
+      'Bugün en çok <span class="hl">kime</span> of dedin?',
+      'Uyumadan önce aklına <span class="hl">ne takıldı</span>?',
+      'Söyleyemediğin <span class="hl">bir şey</span> var mı?',
+      'Bugün hangi anda <span class="hl">kendini</span> görmezden geldin?',
+      'Şu an bir <span class="hl">mesaj</span> atsan kim olurdu?',
+      'Sabah uyanınca ilk aklına <span class="hl">ne geldi</span>?',
+      '"<span class="hl">İyiyim</span>" dediğin kaç anda gerçekten iyiydin bugün?',
+      'Kendinle <span class="hl">en son</span> ne zaman konuştun?',
+      'Bugün en <span class="hl">dürüst</span> olduğun an hangisi?'
+    ],
+    
+    // Recording
+    rec_status: 'dinliyorum',
+    rec_cancel: 'iptal',
+    rec_finish: 'bitir',
+    rec_too_short: 'biraz daha söyle · en az 3 sn',
+    rec_mic_error: 'mikrofon izni lazım yaa',
+    rec_cancelled: 'iptal edildi',
+    
+    // Processing
+    processing_texts: [
+      'dinliyorum...',
+      'seni seninle buluşturuyorum...',
+      'özüne bakıyorum...'
+    ],
+    
+    // Insight
+    insight_back: '‹ bugün',
+    insight_time_morning: 'sabah kaydı',
+    insight_time_afternoon: 'öğleden sonra kaydı',
+    insight_time_evening: 'akşam kaydı',
+    insight_time_night: 'gece kaydı',
+    insight_duration_fmt: '{time} · yaklaşık {words} kelime',
+    insight_mood_label: 'BUGÜN NASILSIN',
+    insight_themes_label: 'NELER DÖNDÜ',
+    insight_summary_label: 'KISACA',
+    insight_question_label: 'TAŞIYACAĞIN SORU',
+    insight_discard: 'sil',
+    insight_save: 'kaydet',
+    toast_saved: 'kaydedildi',
+    toast_deleted: 'silindi',
+    toast_error: 'of. bir şey ters gitti',
+    toast_mock: 'mock mode · API yok',
+    
+    // History
+    history_title: 'Arşiv',
+    history_empty_text: 'İlk kaydın burada duracak. Bugüne dön, butona bas.',
+    history_empty_hand: 'bir şey söylerdin, söyle işte.',
+    history_count_zero: 'henüz kayıt yok',
+    history_count_fmt: '{n} kayıt · arşivde',
+    
+    // Settings
+    settings_title: 'Ben',
+    settings_lang: 'Dil',
+    settings_lang_desc: 'Arayüz dili',
+    settings_account: 'Hesap',
+    settings_signout: 'Çıkış yap',
+    settings_delete: 'Hesabı sil',
+    settings_delete_confirm: 'Emin misin? Tüm kayıtların silinir, geri alınamaz.',
+    footer_made: 'İstanbul\'dan sevgilerle',
+    
+    // Dates
+    days: ['PAZAR', 'PAZARTESİ', 'SALI', 'ÇARŞAMBA', 'PERŞEMBE', 'CUMA', 'CUMARTESİ'],
+    days_short: ['PAZ', 'PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT'],
+    months: ['OCAK', 'ŞUBAT', 'MART', 'NİSAN', 'MAYIS', 'HAZİRAN', 'TEMMUZ', 'AĞUSTOS', 'EYLÜL', 'EKİM', 'KASIM', 'ARALIK']
+  },
+  
+  en: {
+    // Auth
+    auth_welcome: 'Welcome.',
+    auth_sub: "drop your email. we'll send a sign-in link.",
+    auth_placeholder: 'your email',
+    auth_send: 'send link',
+    auth_sending: 'sending...',
+    auth_footnote: 'No passwords, just email. New link every time.',
+    auth_sent_title: 'Check your inbox.',
+    auth_sent_body: "we sent a sign-in link. click it, you're in.",
+    auth_wrong_email: 'wrong email? change it',
+    auth_err_invalid: 'enter a valid email.',
+    auth_err_send: 'ugh. link failed. try again.',
+    auth_err_rate: 'trying too often. wait a minute.',
+    
+    // Home
+    home_subprompt: 'say it however, just say it.',
+    rec_label: "say it, don't bottle it up",
+    tab_today: 'today',
+    tab_archive: 'archive',
+    tab_me: 'me',
+    
+    prompts: [
+      'Who did you say <span class="hl">"ugh"</span> to most today?',
+      'What was <span class="hl">stuck in your mind</span> before sleep?',
+      'Is there <span class="hl">something</span> you couldn\'t say?',
+      'When did you <span class="hl">ignore yourself</span> today?',
+      'If you sent <span class="hl">one message</span> right now, to whom?',
+      'What was your <span class="hl">first thought</span> this morning?',
+      'How many "<span class="hl">I\'m fine</span>"s were actually fine today?',
+      'When did you <span class="hl">last talk</span> to yourself?',
+      'What was your most <span class="hl">honest</span> moment today?'
+    ],
+    
+    // Recording
+    rec_status: 'listening',
+    rec_cancel: 'cancel',
+    rec_finish: 'finish',
+    rec_too_short: 'say a bit more · at least 3 sec',
+    rec_mic_error: 'mic permission needed',
+    rec_cancelled: 'cancelled',
+    
+    // Processing
+    processing_texts: [
+      'listening...',
+      'bringing you to yourself...',
+      'looking at the core...'
+    ],
+    
+    // Insight
+    insight_back: '‹ today',
+    insight_time_morning: 'morning recording',
+    insight_time_afternoon: 'afternoon recording',
+    insight_time_evening: 'evening recording',
+    insight_time_night: 'night recording',
+    insight_duration_fmt: '{time} · about {words} words',
+    insight_mood_label: 'HOW YOU ARE',
+    insight_themes_label: 'WHAT CAME UP',
+    insight_summary_label: 'IN SHORT',
+    insight_question_label: 'QUESTION TO CARRY',
+    insight_discard: 'discard',
+    insight_save: 'save',
+    toast_saved: 'saved',
+    toast_deleted: 'deleted',
+    toast_error: 'ugh. something broke',
+    toast_mock: 'mock mode · no API',
+    
+    // History
+    history_title: 'Archive',
+    history_empty_text: 'Your first recording goes here. Head back, press the button.',
+    history_empty_hand: "you'd say something, say it.",
+    history_count_zero: 'no recordings yet',
+    history_count_fmt: '{n} recordings · in archive',
+    
+    // Settings
+    settings_title: 'Me',
+    settings_lang: 'Language',
+    settings_lang_desc: 'Interface language',
+    settings_account: 'Account',
+    settings_signout: 'Sign out',
+    settings_delete: 'Delete account',
+    settings_delete_confirm: 'Are you sure? All recordings will be deleted. Can\'t be undone.',
+    footer_made: 'made with care in Istanbul',
+    
+    // Dates
+    days: ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'],
+    days_short: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    months: ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+  }
+};
+
+let currentLang = localStorage.getItem('ofyaa_lang') || 
+  (navigator.language && navigator.language.startsWith('tr') ? 'tr' : 'tr');
+
+function t(key) {
+  return (I18N[currentLang] && I18N[currentLang][key]) || I18N.tr[key] || key;
+}
+
+async function setLang(lang) {
+  if (lang !== 'tr' && lang !== 'en') return;
+  currentLang = lang;
+  localStorage.setItem('ofyaa_lang', lang);
+  document.documentElement.lang = lang;
+  applyI18n();
+  
+  // Update user profile if logged in
+  if (state.user) {
+    try {
+      await sb.from('user_profiles').update({ language: lang }).eq('user_id', state.user.id);
+    } catch(e) { console.warn('profile lang update failed', e); }
+  }
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.textContent = val;
+  });
+  
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+  
+  // Update active state on lang buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
+  });
+  
+  // Refresh dynamic content if visible
+  if (state.currentView === 'home') refreshHome();
+  if (state.currentView === 'history') refreshHistory();
+  if (state.currentView === 'settings') refreshSettings();
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const state = {
+  user: null,
+  currentView: 'auth-loading',
+  recording: false,
+  mediaRecorder: null,
+  audioChunks: [],
+  recognition: null,
+  transcript: '',
+  audioStream: null,
+  audioContext: null,
+  analyser: null,
+  animationFrame: null,
+  startTime: null,
+  timerInterval: null,
+  currentInsight: null
+};
+
+// Mock pools for fallback (when API fails)
+const MOCK_POOLS = {
+  tr: {
+    moods: [
+      "biraz yorgun, biraz kızgın — ikisi de geçerli",
+      "eh, fena değil aslında. altta bir meraklanma var",
+      "kararlı ama acele etmiyorsun, hoş",
+      "içten içe dağınık bir gün — ama sen iyi taşımışsın"
+    ],
+    themes: [
+      ["iş", "toplantı", "yorgunluk"],
+      ["aile", "anne", "uzun konuşma"],
+      ["ilişki", "mesaj", "küskün"]
+    ],
+    summaries: [
+      "Bugün biraz sıkışık hissettin. Söylediğinde kafan rahatlamış.",
+      "İçinde kaldığını söyledin; artık dışarıda."
+    ],
+    questions: [
+      "Bu yorgunluk fiziksel mi, yoksa bir şey mi taşıyor?",
+      "Kime 'of ya' demek istedin, ama diyemedin?"
+    ]
+  },
+  en: {
+    moods: [
+      "a bit tired, a bit angry — both valid",
+      "eh, not bad actually. curiosity simmering underneath",
+      "determined but not rushing, nice",
+      "internally scattered — but you carried it well"
+    ],
+    themes: [
+      ["work", "meeting", "tired"],
+      ["family", "mom", "long talk"],
+      ["relationship", "text", "distant"]
+    ],
+    summaries: [
+      "You felt squeezed today. Said it out loud, felt lighter.",
+      "You said it was stuck inside. It's outside now."
+    ],
+    questions: [
+      "Is this tiredness physical, or carrying something?",
+      "Who did you want to sigh at but couldn't?"
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════
+async function initAuth() {
+  // Load saved language first
+  applyI18n();
+  
+  // Set up language buttons on auth screen
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
+  });
+  
+  // Check existing session
+  const { data: { session } } = await sb.auth.getSession();
+  
+  if (session) {
+    await onAuthenticated(session.user);
+  } else {
+    switchView('auth');
+  }
+  
+  // Listen for auth changes (magic link callback)
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      await onAuthenticated(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      state.user = null;
+      switchView('auth');
+    }
+  });
+}
+
+async function onAuthenticated(user) {
+  state.user = user;
+  
+  // Load user's language preference
+  try {
+    const { data } = await sb.from('user_profiles').select('language').eq('user_id', user.id).single();
+    if (data && data.language && data.language !== currentLang) {
+      currentLang = data.language;
+      localStorage.setItem('ofyaa_lang', data.language);
+      applyI18n();
+    }
+  } catch(e) {}
+  
+  switchView('home');
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const emailInput = document.getElementById('auth-email');
+  const btn = document.getElementById('auth-submit-btn');
+  const errorEl = document.getElementById('auth-error');
+  
+  const email = emailInput.value.trim().toLowerCase();
+  if (!email || !email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
+    errorEl.textContent = t('auth_err_invalid');
+    errorEl.style.display = 'block';
+    return false;
+  }
+  
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = t('auth_sending');
+  
+  try {
+    const { error } = await sb.auth.signInWithOtp({
+      email: email,
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname,
+        data: { language: currentLang }
+      }
+    });
+    
+    if (error) throw error;
+    
+    document.getElementById('auth-sent-email').textContent = email;
+    switchView('auth-sent');
+  } catch (err) {
+    console.error('Auth error:', err);
+    const isRate = (err.message || '').toLowerCase().includes('rate');
+    errorEl.textContent = isRate ? t('auth_err_rate') : t('auth_err_send');
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('auth_send');
+  }
+  
+  return false;
+}
+
+function backToAuth() {
+  switchView('auth');
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  // onAuthStateChange listener handles view switch
+}
+
+async function deleteAccount() {
+  if (!confirm(t('settings_delete_confirm'))) return;
+  
+  try {
+    // Delete all recordings first (RLS will enforce, but explicit)
+    await sb.from('recordings').delete().eq('user_id', state.user.id);
+    await sb.from('user_profiles').delete().eq('user_id', state.user.id);
+    
+    // Supabase doesn't let client delete auth.users without admin;
+    // sign out and inform user
+    await sb.auth.signOut();
+    showToast(t('toast_deleted'));
+  } catch (err) {
+    console.error('Delete error:', err);
+    showToast(t('toast_error'));
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════════════
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (el) el.classList.add('active');
+  state.currentView = name;
+  
+  if (name === 'home') refreshHome();
+  if (name === 'history') refreshHistory();
+  if (name === 'settings') refreshSettings();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function formatDate(date) {
+  const d = t('days');
+  const m = t('months');
+  return `${d[date.getDay()]} · ${m[date.getMonth()]}`;
+}
+
+function formatDuration(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function showToast(msg, acid = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.toggle('acid', acid);
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════
+async function refreshHome() {
+  const now = new Date();
+  document.getElementById('home-date').textContent = formatDate(now);
+  document.getElementById('home-date-num').textContent = now.getDate();
+  
+  const prompts = t('prompts');
+  const promptIdx = now.getDate() % prompts.length;
+  document.getElementById('home-prompt').innerHTML = prompts[promptIdx];
+  
+  await refreshStreak();
+}
+
+async function refreshStreak() {
+  const streakEl = document.getElementById('streak');
+  streakEl.innerHTML = '';
+  
+  const since = new Date();
+  since.setDate(since.getDate() - 7);
+  
+  let recordings = [];
+  try {
+    const { data } = await sb.from('recordings')
+      .select('created_at')
+      .gte('created_at', since.toISOString())
+      .order('created_at', { ascending: false });
+    recordings = data || [];
+  } catch(e) { console.warn('streak fetch failed', e); }
+  
+  const today = new Date().toDateString();
+  
+  for (let i = 6; i >= 0; i--) {
+    const day = new Date();
+    day.setDate(day.getDate() - i);
+    const dayStr = day.toDateString();
+    const hasEntry = recordings.some(r => new Date(r.created_at).toDateString() === dayStr);
+    
+    const dot = document.createElement('div');
+    dot.className = 'streak-dot';
+    if (dayStr === today) dot.classList.add('today');
+    else if (hasEntry) dot.classList.add('filled');
+    streakEl.appendChild(dot);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// WAVEFORM
+// ═══════════════════════════════════════════════════════════
+function initWaveform() {
+  const wf = document.getElementById('waveform');
+  wf.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'wave-bar';
+    wf.appendChild(bar);
+  }
+}
+initWaveform();
+
+function updateTimer() {
+  if (!state.startTime) return;
+  const elapsed = (Date.now() - state.startTime) / 1000;
+  document.getElementById('timer').textContent = formatDuration(elapsed);
+}
+
+function animateWaveform() {
+  if (!state.analyser) return;
+  const bars = document.querySelectorAll('.wave-bar');
+  const buffer = new Uint8Array(state.analyser.frequencyBinCount);
+  state.analyser.getByteFrequencyData(buffer);
+  const step = Math.floor(buffer.length / bars.length);
+  
+  bars.forEach((bar, i) => {
+    const value = buffer[i * step] || 0;
+    const height = Math.max(4, (value / 255) * 130);
+    bar.style.height = height + 'px';
+    if (value > 40) bar.classList.add('active');
+    else bar.classList.remove('active');
+  });
+  
+  state.animationFrame = requestAnimationFrame(animateWaveform);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RECORDING
+// ═══════════════════════════════════════════════════════════
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    state.audioStream = stream;
+    state.audioChunks = [];
+    state.transcript = '';
+    
+    state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const source = state.audioContext.createMediaStreamSource(stream);
+    state.analyser = state.audioContext.createAnalyser();
+    state.analyser.fftSize = 256;
+    source.connect(state.analyser);
+    
+    state.mediaRecorder = new MediaRecorder(stream);
+    state.mediaRecorder.ondataavailable = e => {
+      if (e.data && e.data.size > 0) state.audioChunks.push(e.data);
+    };
+    state.mediaRecorder.start();
+    
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      try {
+        state.recognition = new SR();
+        state.recognition.continuous = true;
+        state.recognition.interimResults = true;
+        state.recognition.lang = currentLang === 'en' ? 'en-US' : 'tr-TR';
+        
+        state.recognition.onresult = (event) => {
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              state.transcript += event.results[i][0].transcript + ' ';
+            }
+          }
+        };
+        
+        state.recognition.onend = () => {
+          if (state.recording && state.recognition) {
+            try { state.recognition.start(); } catch (e) {}
+          }
+        };
+        
+        state.recognition.start();
+      } catch (e) {
+        state.recognition = null;
+      }
+    }
+    
+    state.startTime = Date.now();
+    state.timerInterval = setInterval(updateTimer, 100);
+    state.recording = true;
+    
+    switchView('recording');
+    animateWaveform();
+  } catch (err) {
+    console.error(err);
+    showToast(t('rec_mic_error'));
+  }
+}
+
+function stopRecording() {
+  if (!state.recording) return;
+  const duration = (Date.now() - state.startTime) / 1000;
+  if (duration < 3) { showToast(t('rec_too_short')); return; }
+  
+  state.recording = false;
+  
+  if (state.recognition) {
+    const r = state.recognition;
+    state.recognition = null;
+    try { r.stop(); } catch (e) {}
+  }
+  
+  if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+    state.mediaRecorder.onstop = () => decideAndProcess(duration);
+    state.mediaRecorder.stop();
+  } else {
+    decideAndProcess(duration);
+  }
+}
+
+function decideAndProcess(duration) {
+  const transcript = (state.transcript || '').trim();
+  const words = transcript.split(/\s+/).filter(Boolean).length;
+  const minExpectedWords = Math.max(3, Math.floor(duration * 0.5));
+  
+  cleanupRecording();
+  
+  if (words >= minExpectedWords && transcript.length >= 10) {
+    processTranscript(transcript, duration);
+  } else {
+    const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
+    state.audioChunks = [];
+    processAudio(blob, duration);
+  }
+}
+
+function cancelRecording() {
+  if (!state.recording) return;
+  state.recording = false;
+  if (state.recognition) { try { state.recognition.stop(); } catch (e) {} state.recognition = null; }
+  if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+    try { state.mediaRecorder.stop(); } catch (e) {}
+  }
+  cleanupRecording();
+  state.audioChunks = [];
+  switchView('home');
+  showToast(t('rec_cancelled'));
+}
+
+function cleanupRecording() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  if (state.animationFrame) cancelAnimationFrame(state.animationFrame);
+  if (state.audioStream) state.audioStream.getTracks().forEach(tr => tr.stop());
+  if (state.audioContext) { try { state.audioContext.close(); } catch(e){} }
+  state.analyser = null;
+  state.audioStream = null;
+  state.audioContext = null;
+  state.mediaRecorder = null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════════════════════
+const USE_MOCK_FALLBACK = true;
+
+async function processTranscript(transcript, duration) {
+  await runAnalysis({
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transcript, duration, language: currentLang })
+  }, { transcript, duration });
+}
+
+async function processAudio(audioBlob, duration) {
+  const formData = new FormData();
+  formData.append('audio', audioBlob, 'recording.webm');
+  formData.append('duration', String(duration));
+  formData.append('language', currentLang);
+  await runAnalysis({ method: 'POST', body: formData }, { duration });
+}
+
+async function runAnalysis(fetchOptions, meta) {
+  switchView('processing');
+  
+  const processingTexts = t('processing_texts');
+  const textEl = document.getElementById('processing-text');
+  textEl.textContent = processingTexts[0];
+  
+  let i = 0;
+  const textInterval = setInterval(() => {
+    i = (i + 1) % processingTexts.length;
+    textEl.style.opacity = '0';
+    setTimeout(() => {
+      textEl.textContent = processingTexts[i];
+      textEl.style.opacity = '1';
+    }, 300);
+  }, 1500);
+  
+  let insight = null;
+  let apiError = null;
+  
+  try {
+    const response = await fetch('/api/analyze', fetchOptions);
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `API ${response.status}`);
+    }
+    const data = await response.json();
+    insight = {
+      mood: data.mood,
+      themes: data.themes,
+      summary: data.summary,
+      question: data.question,
+      transcript: data.transcript || meta.transcript || '',
+      source: data.source
+    };
+  } catch (err) {
+    apiError = err.message;
+    if (USE_MOCK_FALLBACK) {
+      await new Promise(r => setTimeout(r, 1400));
+      const pool = MOCK_POOLS[currentLang] || MOCK_POOLS.tr;
+      insight = {
+        mood: pickRandom(pool.moods),
+        themes: pickRandom(pool.themes),
+        summary: pickRandom(pool.summaries),
+        question: pickRandom(pool.questions),
+        transcript: meta.transcript || '[mock]',
+        source: 'mock'
+      };
+    }
+  }
+  
+  clearInterval(textInterval);
+  
+  if (!insight) {
+    showToast(t('toast_error'));
+    switchView('home');
+    return;
+  }
+  
+  state.currentInsight = {
+    id: null, // will be set by Supabase on save
+    date: new Date().toISOString(),
+    duration: Math.floor(meta.duration),
+    ...insight,
+    language: currentLang,
+    isMock: !!apiError
+  };
+  
+  renderInsight(state.currentInsight);
+  switchView('insight');
+  
+  if (apiError && USE_MOCK_FALLBACK) {
+    setTimeout(() => showToast(t('toast_mock')), 600);
+  }
+}
+
+function renderInsight(insight) {
+  const d = new Date(insight.date || insight.created_at);
+  document.getElementById('insight-date').textContent = formatDate(d);
+  
+  const hour = d.getHours();
+  let key = 'insight_time_night';
+  if (hour >= 5 && hour < 12) key = 'insight_time_morning';
+  else if (hour >= 12 && hour < 17) key = 'insight_time_afternoon';
+  else if (hour >= 17 && hour < 22) key = 'insight_time_evening';
+  document.getElementById('insight-time').textContent = t(key);
+  
+  const duration = insight.duration || insight.duration_seconds || 0;
+  const words = Math.floor(duration * 140 / 60);
+  document.getElementById('insight-duration').textContent = 
+    t('insight_duration_fmt').replace('{time}', formatDuration(duration)).replace('{words}', words);
+  
+  document.getElementById('insight-mood').textContent = insight.mood;
+  
+  const themesEl = document.getElementById('insight-themes');
+  themesEl.innerHTML = '';
+  (insight.themes || []).forEach(th => {
+    const chip = document.createElement('span');
+    chip.className = 'theme-chip';
+    chip.textContent = th;
+    themesEl.appendChild(chip);
+  });
+  
+  document.getElementById('insight-summary').textContent = insight.summary;
+  document.getElementById('insight-question').textContent = insight.question;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAVE / DISCARD → Supabase
+// ═══════════════════════════════════════════════════════════
+async function saveEntry() {
+  if (!state.currentInsight || !state.user) return;
+  
+  try {
+    const { error } = await sb.from('recordings').insert({
+      user_id: state.user.id,
+      duration_seconds: state.currentInsight.duration,
+      language: state.currentInsight.language || currentLang,
+      source: state.currentInsight.source || 'mock',
+      transcript: state.currentInsight.transcript || '',
+      mood: state.currentInsight.mood,
+      themes: state.currentInsight.themes,
+      summary: state.currentInsight.summary,
+      question: state.currentInsight.question
+    });
+    
+    if (error) throw error;
+    
+    state.currentInsight = null;
+    switchView('home');
+    showToast(t('toast_saved'), true);
+  } catch (err) {
+    console.error('Save error:', err);
+    showToast(t('toast_error'));
+  }
+}
+
+function discardEntry() {
+  state.currentInsight = null;
+  switchView('home');
+  showToast(t('toast_deleted'));
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════
+async function refreshHistory() {
+  const content = document.getElementById('history-content');
+  const countEl = document.getElementById('history-count');
+  
+  content.innerHTML = '<div style="padding:40px 0; text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  countEl.textContent = '...';
+  
+  let entries = [];
+  try {
+    const { data, error } = await sb.from('recordings')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw error;
+    entries = data || [];
+  } catch(e) {
+    console.warn('history fetch failed', e);
+  }
+  
+  countEl.textContent = entries.length === 0 
+    ? t('history_count_zero')
+    : t('history_count_fmt').replace('{n}', entries.length);
+  
+  if (entries.length === 0) {
+    content.innerHTML = `
+      <div class="history-empty">
+        <div class="empty-sticker">of.</div>
+        <p class="empty-text">${t('history_empty_text')}</p>
+        <p class="empty-hand">${t('history_empty_hand')}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  content.innerHTML = '<div class="history-list" id="history-list"></div>';
+  const list = document.getElementById('history-list');
+  
+  const daysShort = t('days_short');
+  
+  entries.forEach(e => {
+    const d = new Date(e.created_at);
+    const themes = e.themes || [];
+    const dotClass = 
+      themes.some(th => ['iş','baskı','yorgunluk','endişe','work','pressure','tired','anxiety'].includes(th)) ? 'dot-pink' :
+      themes.some(th => ['aile','spor','arkadaşlar','sevgi','minnet','family','sport','friends','love','gratitude'].includes(th)) ? 'dot-acid' :
+      'dot-bruise';
+    
+    const item = document.createElement('div');
+    item.className = 'entry';
+    item.innerHTML = `
+      <div>
+        <div class="entry-date-num">${d.getDate()}</div>
+        <div class="entry-date-day">${daysShort[d.getDay()]}</div>
+      </div>
+      <div>
+        <p class="entry-mood-text">${e.mood || ''}</p>
+        <p class="entry-meta">${formatDuration(e.duration_seconds)} · ${themes.slice(0,2).join(', ')}</p>
+      </div>
+      <div class="entry-dot ${dotClass}"></div>
+    `;
+    item.onclick = () => {
+      state.currentInsight = {
+        id: e.id,
+        date: e.created_at,
+        duration: e.duration_seconds,
+        mood: e.mood,
+        themes: e.themes,
+        summary: e.summary,
+        question: e.question,
+        source: e.source
+      };
+      renderInsight(state.currentInsight);
+      document.querySelector('.insight-actions').style.display = 'none';
+      switchView('insight');
+      setTimeout(() => {
+        document.querySelector('.insight-actions').style.display = 'flex';
+      }, 500);
+    };
+    list.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════
+function refreshSettings() {
+  if (state.user) {
+    document.getElementById('settings-email').textContent = state.user.email || '';
+  }
+  applyI18n();
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('gesturestart', e => e.preventDefault());
+initAuth();
+</script>
+
+</body>
+</html>
