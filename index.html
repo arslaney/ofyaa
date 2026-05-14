@@ -2259,14 +2259,14 @@ async function processVoice(duration) {
     showToast(t('rec_no_speech'), 'pink');
     return;
   }
-  state.pendingRawText = transcript;
-  state.pendingSource = 'voice';
-  switchView('processing');
-  startProcessingAnimation();
-  const parsed = await parseTaskFromText(transcript);
-  stopProcessingAnimation();
-  state.pendingTask = parsed;
-  showPreview();
+  // Transcript'i input'a düşür, kullanıcı görüp EKLE'ye bassın
+  switchView('list');
+  const input = document.getElementById('quick-input');
+  if (input) {
+    input.value = transcript;
+    toggleAddBtn();
+    input.focus();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
