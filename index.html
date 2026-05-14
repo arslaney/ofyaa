@@ -1270,6 +1270,30 @@
     color: var(--bruise);
   }
 
+  /* Tarih düzenleme butonu (kartın sağında) */
+  .task-edit-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    background: var(--cream-warm);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mute);
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-left: 8px;
+    align-self: center;
+  }
+  .task-edit-btn svg { width: 14px; height: 14px; }
+  .task-edit-btn:active {
+    transform: scale(0.92);
+    background: var(--acid);
+    color: var(--ink);
+  }
+
   /* ═══════ LIST SECTION HEADERS ═══════ */
   .list-section-header {
     display: flex;
@@ -3954,13 +3978,31 @@ function renderTaskCard(tk) {
     body.appendChild(meta);
   }
 
-  // Body'e tıklayınca tarih düzenleme paneli aç (silinmemiş görevlerde)
-  if (tk.status !== 'done') {
-    body.style.cursor = 'pointer';
-    body.onclick = (e) => { e.stopPropagation(); openDateEditor(tk); };
-  }
-
   card.appendChild(body);
+
+  // Tarih düzenleme butonu (silinmemiş görevlerde) — kartın sağında, açık görünür
+  // Swipe handler ile karışmaması için card'ın dışında, kendi tap handler'ı ile
+  if (tk.status !== 'done') {
+    const editBtn = document.createElement('button');
+    editBtn.className = 'task-edit-btn';
+    editBtn.setAttribute('aria-label', 'edit date');
+    editBtn.innerHTML = tk.due_at
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    // Hem click hem touchend dinle, iOS'ta birinin işlediği yeter
+    let handled = false;
+    const fire = (e) => {
+      if (handled) return;
+      handled = true;
+      e.preventDefault();
+      e.stopPropagation();
+      openDateEditor(tk);
+      setTimeout(() => { handled = false; }, 300);
+    };
+    editBtn.addEventListener('click', fire);
+    editBtn.addEventListener('touchend', fire);
+    card.appendChild(editBtn);
+  }
 
   // Silme butonu (sadece arşivde göster)
   if (tk.status === 'done') {
@@ -4127,20 +4169,37 @@ async function saveDateEdit() {
   const timeVal = document.getElementById('de-time').value || '09:00';
   let due_at = null;
   if (dateVal) {
+    // Local datetime → ISO. Tarayıcı timezone'unu kullan ki kullanıcı
+    // hangi saati girdiyse o saatte hatırlatma alsın.
     const iso = `${dateVal}T${timeVal}:00`;
     const d = new Date(iso);
-    if (!isNaN(d.getTime())) due_at = d.toISOString();
+    if (!isNaN(d.getTime())) {
+      due_at = d.toISOString();
+    } else {
+      showToast(t('toast_error'), 'pink');
+      return;
+    }
   }
+  // Save butonunu disable et (yarım kalmasın)
+  const saveBtn = document.querySelector('.de-btn.primary');
+  if (saveBtn) saveBtn.disabled = true;
+
   try {
-    await sb.from('tasks').update({
+    const { error } = await sb.from('tasks').update({
       due_at,
       reminded_day_before: false,
       reminded_day_of: false
     }).eq('id', editingTask.id);
+    if (error) throw error;
     showToast(due_at ? t('toast_date_set') : t('toast_date_cleared'), 'acid');
-  } catch (e) { console.error(e); showToast(t('toast_error'), 'pink'); }
-  closeDateEditor();
-  refreshCurrentView();
+    closeDateEditor();
+    refreshCurrentView();
+  } catch (e) {
+    console.error('saveDateEdit failed', e);
+    showToast(t('toast_error') + ' — ' + (e.message || ''), 'pink');
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
+  }
 }
 
 async function clearDateEdit() {
