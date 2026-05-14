@@ -1440,6 +1440,28 @@
   .de-btn.secondary:active { background: var(--pink); }
   .de-btn.tertiary { background: transparent; color: var(--mute); padding: 14px 6px; flex: 0; }
 
+  /* Settings row button — şifre belirle gibi tıklanabilir satırlar */
+  .settings-row-btn {
+    width: 100%;
+    background: var(--cream-warm);
+    border: none;
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.18s;
+    text-align: left;
+  }
+  .settings-row-btn:active { background: var(--acid); }
+  .settings-row-btn svg { color: var(--mute); flex-shrink: 0; }
+
   /* ═══════════════════════════════════════════════════════════
      LANDING PAGE — editorial, demo-first
      ═══════════════════════════════════════════════════════════ */
@@ -2448,15 +2470,19 @@
       </span>fyaa<span class="brand-period">.</span>
     </div>
     <h1 class="auth-title" data-i18n="auth_welcome">Söyle, yapılsın.</h1>
-    <p class="auth-sub" data-i18n="auth_sub">mail adresini yaz, giriş linki yollayalım.</p>
-    <form class="auth-form" onsubmit="return handleAuthSubmit(event)">
+    <p class="auth-sub" data-i18n="auth_sub_v2">mailini yaz. Şifren varsa yaz, hızlı gir. Yoksa mailine link yollarız.</p>
+    <form class="auth-form" onsubmit="return handlePasswordLogin(event)">
       <input type="email" class="auth-input" id="auth-email"
         data-i18n-placeholder="auth_placeholder" placeholder="mail adresin"
         required autocomplete="email">
-      <button type="submit" class="auth-btn" id="auth-submit-btn" data-i18n="auth_send">link gönder</button>
+      <input type="password" class="auth-input" id="auth-password"
+        data-i18n-placeholder="auth_password_placeholder" placeholder="şifre (varsa)"
+        autocomplete="current-password">
+      <button type="submit" class="auth-btn" id="auth-submit-btn" data-i18n="auth_signin">GİR</button>
+      <button type="button" class="auth-link-btn" onclick="sendMagicLink()" data-i18n="auth_send_link" style="margin-top:14px;">şifrem yok, mailime link yolla</button>
       <div class="auth-error" id="auth-error" style="display:none"></div>
     </form>
-    <p class="auth-footnote" data-i18n="auth_footnote">Parola yok, sadece mail. Her girişte yeni link.</p>
+    <p class="auth-footnote" data-i18n="auth_footnote_v2">Yeni misin? Mailini yaz, şifre alanını boş bırak — link gönderelim, gir, sonra "Ben" sekmesinden şifre belirle.</p>
   </div>
 
   <!-- ═══════ AUTH SENT ═══════ -->
@@ -2648,6 +2674,10 @@
 
     <div class="settings-section">
       <p class="settings-label" data-i18n="settings_account">Hesap</p>
+      <button class="settings-row-btn" onclick="openSetPasswordModal()">
+        <span data-i18n="settings_set_password">Şifre belirle / değiştir</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
       <button class="danger-btn" onclick="signOut()" data-i18n="settings_signout">Çıkış yap</button>
     </div>
 
@@ -2681,6 +2711,29 @@
   </div>
   <button class="install-banner-btn" id="install-banner-btn" data-i18n="install_btn">EKLE</button>
   <button class="install-banner-close" onclick="dismissInstall()" aria-label="kapat">×</button>
+</div>
+
+<!-- ═══════ SET PASSWORD MODAL ═══════ -->
+<div class="date-editor-bg" id="pw-modal" onclick="if(event.target===this)closeSetPasswordModal()">
+  <div class="date-editor">
+    <div class="de-handle"></div>
+    <div class="de-title" data-i18n="pw_title">Şifre belirle</div>
+    <div class="de-sub" data-i18n="pw_sub">Sonraki girişlerde mail yerine şifrenle direkt gireceksin.</div>
+    <div class="de-fields" style="flex-direction:column; gap:12px;">
+      <div class="de-field">
+        <label class="de-field-label" data-i18n="pw_new_label">YENİ ŞİFRE</label>
+        <input type="password" id="pw-new" autocomplete="new-password" placeholder="en az 6 karakter">
+      </div>
+      <div class="de-field">
+        <label class="de-field-label" data-i18n="pw_confirm_label">TEKRAR</label>
+        <input type="password" id="pw-confirm" autocomplete="new-password" placeholder="şifreyi bir daha yaz">
+      </div>
+    </div>
+    <div class="de-actions">
+      <button class="de-btn secondary" onclick="closeSetPasswordModal()" data-i18n="de_cancel">İPTAL</button>
+      <button class="de-btn primary" onclick="saveNewPassword()" data-i18n="pw_save">KAYDET</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════ DATE EDITOR ═══════ -->
@@ -2753,16 +2806,33 @@ const I18N = {
   tr: {
     auth_welcome: 'Söyle, yapılsın.',
     auth_sub: 'mail adresini yaz, giriş linki yollayalım.',
+    auth_sub_v2: 'mailini yaz. Şifren varsa yaz, hızlı gir. Yoksa mailine link yollarız.',
     auth_placeholder: 'mail adresin',
+    auth_password_placeholder: 'şifre (varsa)',
     auth_send: 'link gönder',
+    auth_send_link: 'şifrem yok, mailime link yolla',
+    auth_signin: 'GİR',
+    auth_signing_in: 'giriyor...',
     auth_sending: 'gönderiliyor...',
     auth_footnote: 'Parola yok, sadece mail. Her girişte yeni link.',
+    auth_footnote_v2: 'Yeni misin? Mailini yaz, şifre alanını boş bırak — link gönderelim, gir, sonra "Ben" sekmesinden şifre belirle.',
     auth_sent_title: 'Mailini kontrol et.',
     auth_sent_body: 'Bir giriş linki yolladık. Tıkla, hazırsın.',
     auth_wrong_email: 'mail yanlış mı? değiştir',
     auth_err_invalid: 'geçerli bir mail yaz yaa.',
     auth_err_send: 'of. link gönderilemedi.',
     auth_err_rate: 'çok sık deniyorsun. bir dakika bekle.',
+    auth_err_wrong_password: 'şifre yanlış. Bilmiyorsan "şifrem yok"a bas.',
+    auth_err_email_not_confirmed: 'mailini doğrula önce — link yolladığımız maile bir bak.',
+    settings_set_password: 'Şifre belirle / değiştir',
+    pw_title: 'Şifre belirle',
+    pw_sub: 'Sonraki girişlerde mail yerine şifrenle direkt gireceksin.',
+    pw_new_label: 'YENİ ŞİFRE',
+    pw_confirm_label: 'TEKRAR',
+    pw_save: 'KAYDET',
+    pw_saved: 'şifren kaydedildi',
+    pw_err_short: 'şifre en az 6 karakter olmalı',
+    pw_err_mismatch: 'iki şifre aynı değil',
     quick_placeholder: 'bir şey yaz...',
     quick_add: 'EKLE',
     install_title: 'Telefona ekle',
@@ -2910,16 +2980,33 @@ const I18N = {
   en: {
     auth_welcome: 'Say it, get it done.',
     auth_sub: "drop your email. we'll send a sign-in link.",
+    auth_sub_v2: "drop your email. type your password if you have one, fast track. otherwise we'll send a link.",
     auth_placeholder: 'your email',
+    auth_password_placeholder: 'password (if you have one)',
     auth_send: 'send link',
+    auth_send_link: "no password yet, send me a link",
+    auth_signin: 'SIGN IN',
+    auth_signing_in: 'signing in...',
     auth_sending: 'sending...',
     auth_footnote: 'No passwords, just email. New link every time.',
+    auth_footnote_v2: 'New here? Type your email, leave password empty — we\'ll send a link, sign in, then set a password from "Me".',
     auth_sent_title: 'Check your inbox.',
     auth_sent_body: "we sent a sign-in link. click it, you're in.",
     auth_wrong_email: 'wrong email? change it',
     auth_err_invalid: 'enter a valid email.',
     auth_err_send: 'ugh. link failed.',
     auth_err_rate: 'trying too often. wait a minute.',
+    auth_err_wrong_password: "wrong password. if you don't know it, tap \"send me a link\".",
+    auth_err_email_not_confirmed: 'confirm your email first — check the link we sent.',
+    settings_set_password: 'Set / change password',
+    pw_title: 'Set password',
+    pw_sub: "From now on you'll sign in with your password instead of waiting for a link.",
+    pw_new_label: 'NEW PASSWORD',
+    pw_confirm_label: 'CONFIRM',
+    pw_save: 'SAVE',
+    pw_saved: 'password saved',
+    pw_err_short: 'password must be at least 6 characters',
+    pw_err_mismatch: 'passwords don\'t match',
     quick_placeholder: 'type something...',
     quick_add: 'ADD',
     install_title: 'Install on phone',
@@ -3521,12 +3608,66 @@ async function onAuthenticated(user) {
   maybeShowIosInstall();
 }
 
-async function handleAuthSubmit(e) {
-  e.preventDefault();
+// Eski API uyumu (eski submit handler hala referans alabilir)
+async function handleAuthSubmit(e) { return handlePasswordLogin(e); }
+
+// Şifre ile giriş (form submit'inde çalışır).
+// Şifre boşsa otomatik magic link yollar.
+async function handlePasswordLogin(e) {
+  if (e) e.preventDefault();
+  const emailInput = document.getElementById('auth-email');
+  const pwInput = document.getElementById('auth-password');
+  const btn = document.getElementById('auth-submit-btn');
+  const errorEl = document.getElementById('auth-error');
+
+  const email = emailInput.value.trim().toLowerCase();
+  const password = pwInput.value;
+
+  if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
+    errorEl.textContent = t('auth_err_invalid');
+    errorEl.style.display = 'block';
+    return false;
+  }
+  errorEl.style.display = 'none';
+
+  // Şifre boş → otomatik magic link
+  if (!password) {
+    return sendMagicLink();
+  }
+
+  // Şifreyle giriş
+  btn.disabled = true;
+  btn.textContent = t('auth_signing_in');
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      const msg = (error.message || '').toLowerCase();
+      if (msg.includes('invalid login') || msg.includes('credentials')) {
+        errorEl.textContent = t('auth_err_wrong_password');
+      } else if (msg.includes('email not confirmed')) {
+        errorEl.textContent = t('auth_err_email_not_confirmed');
+      } else {
+        errorEl.textContent = error.message;
+      }
+      errorEl.style.display = 'block';
+    }
+  } catch (err) {
+    errorEl.textContent = err.message || t('auth_err_send');
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('auth_signin');
+  }
+  return false;
+}
+
+// Magic link gönder (şifre olmadan veya "şifrem yok" linkine basınca)
+async function sendMagicLink() {
   const emailInput = document.getElementById('auth-email');
   const btn = document.getElementById('auth-submit-btn');
   const errorEl = document.getElementById('auth-error');
   const email = emailInput.value.trim().toLowerCase();
+
   if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
     errorEl.textContent = t('auth_err_invalid');
     errorEl.style.display = 'block';
@@ -3549,12 +3690,54 @@ async function handleAuthSubmit(e) {
     errorEl.style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.textContent = t('auth_send');
+    btn.textContent = t('auth_signin');
   }
   return false;
 }
 
 function backToAuth() { switchView('auth'); }
+
+// ═══════════════════════════════════════════════════════════
+// SET PASSWORD (settings ekranı içinden)
+// ═══════════════════════════════════════════════════════════
+function openSetPasswordModal() {
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-modal')?.classList.add('show');
+}
+
+function closeSetPasswordModal() {
+  document.getElementById('pw-modal')?.classList.remove('show');
+}
+
+async function saveNewPassword() {
+  const newPw = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+
+  if (newPw.length < 6) {
+    showToast(t('pw_err_short'), 'pink');
+    return;
+  }
+  if (newPw !== confirm) {
+    showToast(t('pw_err_mismatch'), 'pink');
+    return;
+  }
+
+  const saveBtn = document.querySelector('#pw-modal .de-btn.primary');
+  if (saveBtn) saveBtn.disabled = true;
+
+  try {
+    const { error } = await sb.auth.updateUser({ password: newPw });
+    if (error) throw error;
+    showToast(t('pw_saved'), 'acid');
+    closeSetPasswordModal();
+  } catch (e) {
+    console.error('updateUser failed', e);
+    showToast(t('toast_error') + ' — ' + (e.message || ''), 'pink');
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
+  }
+}
 async function signOut() {
   if (!confirm(t('confirm_signout'))) return;
   try {
