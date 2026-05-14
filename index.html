@@ -1050,6 +1050,38 @@
   .toast.acid { background: var(--acid); color: var(--ink); }
   .toast.pink { background: var(--pink); color: var(--ink); }
 
+  /* ═══════ LIST TITLE & SUBTITLE ═══════ */
+  .list-title {
+    font-family: 'Gloock', serif;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .list-sub {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    color: var(--mute);
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+    margin-bottom: 18px;
+  }
+
+  /* ═══════ SNOOZED TASK ═══════ */
+  .task-card.snoozed { opacity: 0.45; }
+  .task-card.snoozed .task-title { text-decoration: none; }
+  .snooze-divider {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mute);
+    text-align: center;
+    margin: 20px 0 10px;
+    opacity: 0.6;
+  }
+
   /* ═══════ INSTALL BANNER ═══════ */
   .install-banner {
     position: fixed;
@@ -1251,7 +1283,7 @@
   </div>
 
   <!-- ═══════ TODAY ═══════ -->
-  <div class="view" id="view-today">
+  <div class="view" id="view-list">
     <div class="header">
       <div class="brand">
         <span class="brand-mic">
@@ -1270,16 +1302,8 @@
       </button>
     </div>
 
-    <div class="day-card">
-      <div class="day-card-left">
-        <span class="day-date" id="today-date"></span>
-        <span class="day-name" id="today-name"></span>
-      </div>
-      <div class="day-stats">
-        <div class="day-stat-num" id="today-remaining">0</div>
-        <div class="day-stat-label" data-i18n="today_remaining">kaldı</div>
-      </div>
-    </div>
+    <h1 class="list-title" data-i18n="list_title">Yapacaklar</h1>
+    <p class="list-sub" id="list-count"></p>
 
     <div class="quick-add">
       <input class="quick-add-input" id="quick-input"
@@ -1298,34 +1322,27 @@
       </button>
     </div>
 
-    <div class="task-list" id="task-list-today"></div>
+    <div class="task-list" id="task-list-main"></div>
 
     <nav class="bottom-nav">
-      <button class="nav-tab active" data-tab="today" onclick="switchView('today')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <span data-i18n="tab_today">bugün</span>
+      <button class="nav-tab active" data-tab="list" onclick="switchView('list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span data-i18n="tab_list">yapacaklar</span>
       </button>
-      <button class="nav-tab" data-tab="tomorrow" onclick="switchView('tomorrow')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span data-i18n="tab_tomorrow">yarın</span>
-      </button>
-      <button class="nav-tab" data-tab="all" onclick="switchView('all')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <span data-i18n="tab_all">tümü</span>
+      <button class="nav-tab" data-tab="archive" onclick="switchView('archive')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        <span data-i18n="tab_archive">arşiv</span>
       </button>
       <button class="nav-tab" data-tab="settings" onclick="switchView('settings')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span data-i18n="tab_me">ben</span>
       </button>
     </nav>
   </div>
 
-  <!-- ═══════ TOMORROW ═══════ -->
-  <div class="view" id="view-tomorrow">
+  <!-- ═══════ ARCHIVE ═══════ -->
+  <div class="view" id="view-archive">
     <div class="header">
-      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
       <div class="brand">
         <span class="brand-mic">
           <svg viewBox="0 0 20 24" fill="none">
@@ -1337,49 +1354,12 @@
       </div>
       <div style="width:34px"></div>
     </div>
-    <div class="day-card">
-      <div class="day-card-left">
-        <span class="day-date" id="tomorrow-date"></span>
-        <span class="day-name" id="tomorrow-name"></span>
-      </div>
-      <div class="day-stats">
-        <div class="day-stat-num" id="tomorrow-count">0</div>
-        <div class="day-stat-label" data-i18n="upcoming">bekliyor</div>
-      </div>
-    </div>
-    <div class="task-list" id="task-list-tomorrow"></div>
+    <h1 class="list-title" data-i18n="archive_title">Arşiv</h1>
+    <p class="list-sub" id="archive-count"></p>
+    <div class="task-list" id="task-list-archive"></div>
     <nav class="bottom-nav">
-      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
-      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
-      <button class="nav-tab" onclick="switchView('all')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
-      <button class="nav-tab" onclick="switchView('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
-    </nav>
-  </div>
-
-  <!-- ═══════ ALL ═══════ -->
-  <div class="view" id="view-all">
-    <div class="header">
-      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <div class="brand">
-        <span class="brand-mic">
-          <svg viewBox="0 0 20 24" fill="none">
-            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
-            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </span>fyaa<span class="brand-period">.</span>
-      </div>
-      <div style="width:34px"></div>
-    </div>
-    <h1 class="settings-title" data-i18n="all_title">Tümü</h1>
-    <p class="settings-email" id="all-count"></p>
-    <div class="task-list" id="task-list-all"></div>
-    <nav class="bottom-nav">
-      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
-      <button class="nav-tab" onclick="switchView('tomorrow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
-      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
+      <button class="nav-tab" onclick="switchView('list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="tab_list">yapacaklar</span></button>
+      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span data-i18n="tab_archive">arşiv</span></button>
       <button class="nav-tab" onclick="switchView('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
     </nav>
   </div>
@@ -1432,7 +1412,6 @@
       <div class="preview-card">
         <div class="preview-card-label" data-i18n="preview_task">GÖREV</div>
         <textarea class="preview-input" id="preview-title" rows="2"></textarea>
-        <div class="preview-row" id="preview-pills"></div>
       </div>
 
       <div class="preview-actions">
@@ -1445,7 +1424,7 @@
   <!-- ═══════ SETTINGS ═══════ -->
   <div class="view" id="view-settings">
     <div class="header">
-      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
+      <button class="icon-btn" onclick="switchView('list')" aria-label="back">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <div class="brand">
@@ -1491,9 +1470,8 @@
     </div>
 
     <nav class="bottom-nav">
-      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
-      <button class="nav-tab" onclick="switchView('tomorrow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
-      <button class="nav-tab" onclick="switchView('all')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
+      <button class="nav-tab" onclick="switchView('list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="tab_list">yapacaklar</span></button>
+      <button class="nav-tab" onclick="switchView('archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span data-i18n="tab_archive">arşiv</span></button>
       <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
     </nav>
   </div>
@@ -1582,10 +1560,22 @@ const I18N = {
     ios_close: 'ANLADIM',
     today_remaining: 'kaldı',
     upcoming: 'bekliyor',
+    tab_list: 'yapacaklar',
+    tab_archive: 'arşiv',
     tab_today: 'bugün',
     tab_tomorrow: 'yarın',
     tab_all: 'tümü',
     tab_me: 'ben',
+    list_title: 'Yapacaklar',
+    list_count_fmt: '{n} aktif',
+    archive_title: 'Arşiv',
+    archive_count_fmt: '{n} yapılmış',
+    snoozed_label: 'SONRA',
+    swipe_done: 'YAPTIM',
+    swipe_snooze: 'SONRA',
+    swipe_unsnooze: 'GERİ AL',
+    toast_snoozed: 'sonraya bıraktın',
+    toast_unsnoozed: 'tekrar listede',
     rec_status: 'dinliyorum',
     rec_hint: 'ne yapacaksan söyle',
     rec_cancel: 'iptal',
@@ -1635,10 +1625,9 @@ const I18N = {
     confirm_delete: 'silmek istediğine emin misin?',
     confirm_signout: 'çıkış yapmak istediğine emin misin?',
     footer_made: 'İstanbul\'dan sevgilerle',
-    empty_prompt: 'Bugün <span class="hl">hiç bir şey</span> söylemedin.',
-    empty_hand: 'mikrofona bas, ya da yaz.',
-    empty_tomorrow: 'Yarın henüz boş. Hayırlısı.',
-    empty_all: 'Hiçbir görev yok. Sıfırdan başla.',
+    empty_prompt: '<span class="hl">Hiç bir şey</span> yok burada.',
+    empty_hand: 'bir şey yaz, ya da mikrofona bas.',
+    empty_archive: 'Henüz yapılmış bir şey yok.',
     days: ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],
     days_short: ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'],
     months: ['OCAK','ŞUBAT','MART','NİSAN','MAYIS','HAZİRAN','TEMMUZ','AĞUSTOS','EYLÜL','EKİM','KASIM','ARALIK']
@@ -1669,10 +1658,22 @@ const I18N = {
     ios_close: 'GOT IT',
     today_remaining: 'left',
     upcoming: 'pending',
+    tab_list: 'todo',
+    tab_archive: 'archive',
     tab_today: 'today',
     tab_tomorrow: 'tomorrow',
     tab_all: 'all',
     tab_me: 'me',
+    list_title: 'To do',
+    list_count_fmt: '{n} active',
+    archive_title: 'Archive',
+    archive_count_fmt: '{n} done',
+    snoozed_label: 'LATER',
+    swipe_done: 'DONE',
+    swipe_snooze: 'LATER',
+    swipe_unsnooze: 'UNDO',
+    toast_snoozed: 'pushed to later',
+    toast_unsnoozed: 'back on the list',
     rec_status: 'listening',
     rec_hint: 'tell me what you have to do',
     rec_cancel: 'cancel',
@@ -1722,10 +1723,9 @@ const I18N = {
     confirm_delete: 'sure you want to delete?',
     confirm_signout: 'sure you want to sign out?',
     footer_made: 'made with care in Istanbul',
-    empty_prompt: 'You haven\'t <span class="hl">said anything</span> yet today.',
-    empty_hand: 'press the mic, or type.',
-    empty_tomorrow: 'Tomorrow is empty. Good for you.',
-    empty_all: 'No tasks. Start fresh.',
+    empty_prompt: '<span class="hl">Nothing here</span> yet.',
+    empty_hand: 'type something, or tap the mic.',
+    empty_archive: 'Nothing done yet.',
     days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     days_short: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     months: ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
@@ -1904,7 +1904,7 @@ async function onAuthenticated(user) {
     }
   } catch(e) {}
   await runCarryForward();
-  switchView('today');
+  switchView('list');
   setupInstallButton();
   maybeShowIosInstall();
 }
@@ -1960,9 +1960,8 @@ function switchView(name) {
 }
 
 function refreshCurrentView() {
-  if (state.currentView === 'today') refreshToday();
-  if (state.currentView === 'tomorrow') refreshTomorrow();
-  if (state.currentView === 'all') refreshAll();
+  if (state.currentView === 'list') refreshList();
+  if (state.currentView === 'archive') refreshArchive();
   if (state.currentView === 'settings') refreshSettings();
 }
 
@@ -2019,27 +2018,10 @@ function recurrenceLabel(rule) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// CARRY FORWARD (client-side, on app open)
+// CARRY FORWARD — artık gerek yok, görevler tek listede ve gün ayrımı yok.
+// Boş bırakıldı, başka yerde çağrıldığı için tutuyoruz.
 // ═══════════════════════════════════════════════════════════
-async function runCarryForward() {
-  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-  try {
-    const { data } = await sb.from('tasks')
-      .select('id, due_at, carried_count')
-      .eq('status', 'todo')
-      .lt('due_at', todayStart.toISOString());
-    for (const tsk of data || []) {
-      const old = new Date(tsk.due_at);
-      const updated = new Date(todayStart);
-      updated.setHours(old.getHours(), old.getMinutes(), 0, 0);
-      await sb.from('tasks').update({
-        due_at: updated.toISOString(),
-        carried_count: (tsk.carried_count ?? 0) + 1,
-        reminder_sent: false
-      }).eq('id', tsk.id);
-    }
-  } catch (e) { console.warn('carry-forward failed', e); }
-}
+async function runCarryForward() { /* no-op */ }
 
 // ═══════════════════════════════════════════════════════════
 // PARSE TASK (Claude or fallback)
@@ -2116,16 +2098,18 @@ async function submitQuickAdd() {
   const btn = document.getElementById('add-btn');
   input.disabled = true;
   if (btn) btn.classList.remove('visible');
-  state.pendingRawText = text;
-  state.pendingSource = 'text';
-  switchView('processing');
-  startProcessingAnimation();
-  const parsed = await parseTaskFromText(text);
-  stopProcessingAnimation();
-  state.pendingTask = parsed;
+  try {
+    await sb.from('tasks').insert({
+      user_id: state.user.id,
+      title: text,
+      status: 'todo',
+      source: 'text'
+    });
+    showToast(t('toast_added'), 'acid');
+  } catch(e) { console.error(e); showToast(t('toast_error'), 'pink'); }
   input.value = '';
   input.disabled = false;
-  showPreview();
+  await refreshCurrentView();
 }
 
 let processingInterval = null;
@@ -2252,7 +2236,7 @@ function cancelRecording() {
   }
   cleanupRecording();
   state.audioChunks = [];
-  switchView('today');
+  switchView('list');
   showToast(t('rec_cancelled'));
 }
 
@@ -2271,7 +2255,7 @@ async function processVoice(duration) {
   cleanupRecording();
   const transcript = (state.transcript || '').trim();
   if (!transcript || transcript.length < 3) {
-    switchView('today');
+    switchView('list');
     showToast(t('rec_no_speech'), 'pink');
     return;
   }
@@ -2286,120 +2270,42 @@ async function processVoice(duration) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// PREVIEW + EDIT
+// PREVIEW (sesli ekleme sonrası — sadece başlık düzenleme)
 // ═══════════════════════════════════════════════════════════
 function showPreview() {
   document.getElementById('preview-eyebrow').textContent =
     state.pendingSource === 'voice' ? t('preview_eyebrow') : t('preview_typed');
   document.getElementById('preview-quote').textContent = state.pendingRawText;
-  document.getElementById('preview-title').value = state.pendingTask.title || state.pendingRawText;
-  renderPreviewPills();
+  document.getElementById('preview-title').value = state.pendingTask?.title || state.pendingRawText;
   switchView('preview');
-}
-
-function renderPreviewPills() {
-  const wrap = document.getElementById('preview-pills');
-  wrap.innerHTML = '';
-  const tk = state.pendingTask;
-
-  // when pill
-  const whenLabel = tk.due_at
-    ? (isToday(tk.due_at) ? t('pill_today') : isTomorrow(tk.due_at) ? t('pill_tomorrow') : new Date(tk.due_at).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US', {day:'numeric', month:'short'}))
-    : t('pill_today');
-  const timeStr = formatTime(tk.due_at);
-  wrap.appendChild(makePill(`${whenLabel}${timeStr ? ' · ' + timeStr : ''}`, true, '🕐', () => cyclePillWhen()));
-  // remind pill
-  wrap.appendChild(makePill(tk.remind_before_minutes ? reminderLabel(tk.remind_before_minutes) : t('pill_remind_off'),
-    !!tk.remind_before_minutes, '🔔', () => cyclePillRemind()));
-  // recurrence pill
-  wrap.appendChild(makePill(tk.recurrence_rule === 'none' ? t('pill_repeat_none') : recurrenceLabel(tk.recurrence_rule),
-    tk.recurrence_rule !== 'none', '↻', () => cyclePillRepeat()));
-  // calendar pill
-  wrap.appendChild(makeCalPill(tk.send_to_calendar ? t('pill_calendar') : '+ ' + t('pill_calendar'),
-    tk.send_to_calendar, '📅', () => { tk.send_to_calendar = !tk.send_to_calendar; renderPreviewPills(); }));
-}
-
-function makePill(label, active, emoji, onClick) {
-  const b = document.createElement('button');
-  b.className = 'preview-pill' + (active ? ' active' : '');
-  b.innerHTML = `<span style="font-size:13px;">${emoji}</span> ${label}`;
-  b.onclick = onClick;
-  return b;
-}
-function makeCalPill(label, active, emoji, onClick) {
-  const b = document.createElement('button');
-  b.className = 'preview-pill cal' + (active ? ' active' : '');
-  b.innerHTML = `<span style="font-size:13px;">${emoji}</span> ${label}`;
-  b.onclick = onClick;
-  return b;
-}
-
-function cyclePillWhen() {
-  const tk = state.pendingTask;
-  if (!tk.due_at || isToday(tk.due_at)) {
-    // → tomorrow
-    const d = new Date(); d.setDate(d.getDate() + 1);
-    const old = tk.due_at ? new Date(tk.due_at) : null;
-    if (old) d.setHours(old.getHours(), old.getMinutes(), 0, 0);
-    else d.setHours(9,0,0,0);
-    tk.due_at = d.toISOString();
-  } else {
-    // → today
-    const d = new Date();
-    const old = new Date(tk.due_at);
-    d.setHours(old.getHours(), old.getMinutes(), 0, 0);
-    tk.due_at = d.toISOString();
-  }
-  renderPreviewPills();
-}
-
-function cyclePillRemind() {
-  const tk = state.pendingTask;
-  const cycle = [null, 15, 30, 60, 1440];
-  const i = cycle.indexOf(tk.remind_before_minutes);
-  tk.remind_before_minutes = cycle[(i + 1) % cycle.length];
-  renderPreviewPills();
-}
-
-function cyclePillRepeat() {
-  const tk = state.pendingTask;
-  const cycle = ['none', 'daily', 'weekly', 'monthly'];
-  const i = cycle.indexOf(tk.recurrence_rule);
-  tk.recurrence_rule = cycle[(i + 1) % cycle.length];
-  renderPreviewPills();
 }
 
 function discardPreview() {
   state.pendingTask = null;
   state.pendingRawText = '';
-  switchView('today');
+  switchView('list');
 }
 
 async function saveTask() {
-  if (!state.pendingTask || !state.user) return;
-  const tk = state.pendingTask;
+  if (!state.user) return;
   const titleInput = document.getElementById('preview-title').value.trim();
   if (!titleInput) return;
   try {
-    const { error } = await sb.from('tasks').insert({
+    await sb.from('tasks').insert({
       user_id: state.user.id,
       title: titleInput,
-      due_at: tk.due_at,
-      remind_before_minutes: tk.remind_before_minutes,
-      recurrence_rule: tk.recurrence_rule || 'none',
-      recurrence_day: tk.recurrence_day,
-      send_to_calendar: tk.send_to_calendar || false,
-      source: state.pendingSource
+      status: 'todo',
+      source: state.pendingSource || 'voice'
     });
-    if (error) throw error;
-    state.pendingTask = null;
-    state.pendingRawText = '';
-    switchView('today');
     showToast(t('toast_added'), 'acid');
-  } catch (e) {
-    console.error('save error', e);
+  } catch(e) {
+    console.error(e);
     showToast(t('toast_error'), 'pink');
+    return;
   }
+  state.pendingTask = null;
+  state.pendingRawText = '';
+  switchView('list');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2410,18 +2316,20 @@ function renderTaskCard(tk) {
   wrap.className = 'task-wrap';
   wrap.dataset.taskId = tk.id;
 
+  const isSnoozed = !!tk.snoozed_at;
+
   const bgL = document.createElement('div');
   bgL.className = 'task-swipe-bg left';
-  bgL.innerHTML = `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="task-swipe-bg-text">YAPTIM</span>`;
+  bgL.innerHTML = `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="task-swipe-bg-text">${t('swipe_done')}</span>`;
   wrap.appendChild(bgL);
 
   const bgR = document.createElement('div');
   bgR.className = 'task-swipe-bg right';
-  bgR.innerHTML = `<span class="task-swipe-bg-text">YARIN</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`;
+  bgR.innerHTML = `<span class="task-swipe-bg-text">${isSnoozed ? t('swipe_unsnooze') : t('swipe_snooze')}</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
   wrap.appendChild(bgR);
 
   const card = document.createElement('div');
-  card.className = 'task' + (tk.status === 'done' ? ' done' : '') + (isPastDate(tk.due_at) && tk.status === 'todo' ? ' overdue' : '');
+  card.className = 'task task-card' + (tk.status === 'done' ? ' done' : '');
 
   const check = document.createElement('button');
   check.className = 'task-check';
@@ -2436,53 +2344,20 @@ function renderTaskCard(tk) {
   title.className = 'task-title';
   title.textContent = tk.title;
   body.appendChild(title);
-
-  const meta = document.createElement('div');
-  meta.className = 'task-meta';
-  const tm = formatTime(tk.due_at);
-  if (tm) {
-    const chip = document.createElement('span');
-    chip.className = 'task-chip time';
-    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${tm}`;
-    meta.appendChild(chip);
-  }
-  if (tk.remind_before_minutes) {
-    const chip = document.createElement('span');
-    chip.className = 'task-chip bell';
-    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>${reminderLabel(tk.remind_before_minutes)}`;
-    meta.appendChild(chip);
-  }
-  if (tk.send_to_calendar) {
-    const chip = document.createElement('span');
-    chip.className = 'task-chip calendar';
-    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>takvim`;
-    meta.appendChild(chip);
-  }
-  if (tk.recurrence_rule && tk.recurrence_rule !== 'none') {
-    const chip = document.createElement('span');
-    chip.className = 'task-chip recurring';
-    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>${recurrenceLabel(tk.recurrence_rule)}`;
-    meta.appendChild(chip);
-  }
-  if (tk.carried_count > 0 && tk.status === 'todo') {
-    const chip = document.createElement('span');
-    chip.className = 'task-chip carried';
-    chip.textContent = `↻ ${tk.carried_count}× ertelendi`;
-    meta.appendChild(chip);
-  }
-  if (meta.children.length > 0) body.appendChild(meta);
   card.appendChild(body);
 
-  // delete button
-  const actions = document.createElement('div');
-  actions.className = 'task-actions';
-  const delBtn = document.createElement('button');
-  delBtn.className = 'task-action-btn';
-  delBtn.setAttribute('aria-label', 'delete');
-  delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
-  delBtn.onclick = (e) => { e.stopPropagation(); deleteTask(tk); };
-  actions.appendChild(delBtn);
-  card.appendChild(actions);
+  // Silme butonu (sadece arşivde göster)
+  if (tk.status === 'done') {
+    const actions = document.createElement('div');
+    actions.className = 'task-actions';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'task-action-btn';
+    delBtn.setAttribute('aria-label', 'delete');
+    delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
+    delBtn.onclick = (e) => { e.stopPropagation(); deleteTask(tk); };
+    actions.appendChild(delBtn);
+    card.appendChild(actions);
+  }
 
   // SWIPE handlers
   let startX = 0, startY = 0, dx = 0, decided = null;
@@ -2514,7 +2389,7 @@ function renderTaskCard(tk) {
       toggleTaskDone(tk, card);
     } else if (dx < -90) {
       card.style.transform = 'translateX(-120%) rotate(-8deg)';
-      pushTaskTomorrow(tk);
+      toggleSnooze(tk);
     } else {
       card.style.transform = '';
     }
@@ -2534,28 +2409,22 @@ async function toggleTaskDone(tk, cardEl) {
   try {
     await sb.from('tasks').update({
       status: newStatus,
-      completed_at: newStatus === 'done' ? new Date().toISOString() : null
+      completed_at: newStatus === 'done' ? new Date().toISOString() : null,
+      snoozed_at: null // tamamlandığında snooze kalksın
     }).eq('id', tk.id);
   } catch(e) { console.error(e); }
   setTimeout(refreshCurrentView, newStatus === 'done' ? 300 : 0);
 }
 
-async function pushTaskTomorrow(tk) {
-  if (!tk.due_at) {
-    const t2 = new Date(); t2.setDate(t2.getDate() + 1); t2.setHours(9,0,0,0);
-    tk.due_at = t2.toISOString();
-  }
-  const d = new Date(tk.due_at);
-  d.setDate(d.getDate() + 1);
+async function toggleSnooze(tk) {
+  const wasSnoozed = !!tk.snoozed_at;
   try {
     await sb.from('tasks').update({
-      due_at: d.toISOString(),
-      carried_count: (tk.carried_count ?? 0) + 1,
-      reminder_sent: false
+      snoozed_at: wasSnoozed ? null : new Date().toISOString()
     }).eq('id', tk.id);
-    showToast(t('toast_pushed'));
   } catch(e) { console.error(e); }
-  setTimeout(refreshCurrentView, 300);
+  showToast(wasSnoozed ? t('toast_unsnoozed') : t('toast_snoozed'), 'pink');
+  setTimeout(refreshCurrentView, 250);
 }
 
 async function deleteTask(tk) {
@@ -2590,109 +2459,85 @@ function spawnConfetti(cardEl) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// LIST RENDERING
+// LIST RENDERING — yapacaklar (aktif) + arşiv (yapılmış)
 // ═══════════════════════════════════════════════════════════
-async function refreshToday() {
-  const now = new Date();
-  document.getElementById('today-date').textContent =
-    `${t('months')[now.getMonth()]} · ${now.getDate()}`;
-  document.getElementById('today-name').textContent = t('days')[now.getDay()];
-
-  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
-  const tomorrowStart = new Date(todayStart); tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-
+async function refreshList() {
   let tasks = [];
   try {
-    // today's tasks (and undated)
     const { data } = await sb.from('tasks')
       .select('*')
-      .eq('recurrence_rule', 'none')
-      .or(`and(due_at.gte.${todayStart.toISOString()},due_at.lt.${tomorrowStart.toISOString()}),due_at.is.null`)
-      .order('due_at', { ascending: true, nullsFirst: false });
+      .neq('status', 'done')
+      .neq('status', 'cancelled')
+      .order('snoozed_at', { ascending: true, nullsFirst: true })
+      .order('created_at', { ascending: false });
     tasks = data || [];
-  } catch (e) { console.warn('today fetch failed', e); }
+  } catch (e) { console.warn('list fetch failed', e); }
 
-  const todoTasks = tasks.filter(t => t.status === 'todo');
-  const doneTasks = tasks.filter(t => t.status === 'done');
-  document.getElementById('today-remaining').textContent = todoTasks.length;
+  const active = tasks.filter(tk => !tk.snoozed_at);
+  const snoozed = tasks.filter(tk => tk.snoozed_at);
 
-  const list = document.getElementById('task-list-today');
+  const countEl = document.getElementById('list-count');
+  if (countEl) {
+    if (tasks.length === 0) countEl.textContent = '';
+    else countEl.textContent = t('list_count_fmt').replace('{n}', active.length);
+  }
+
+  const list = document.getElementById('task-list-main');
   list.innerHTML = '';
 
   if (tasks.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'empty-state';
-    empty.innerHTML = `
-      <div class="empty-sticker">of.</div>
-      <p class="empty-prompt">${t('empty_prompt')}</p>
-      <p class="empty-hand">${t('empty_hand')}</p>
-    `;
-    list.appendChild(empty);
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-sticker">of.</div>
+        <p class="empty-prompt">${t('empty_prompt')}</p>
+        <p class="empty-hand">${t('empty_hand')}</p>
+      </div>`;
     return;
   }
 
-  if (todoTasks.length > 0) {
-    const label = document.createElement('div');
-    label.className = 'task-section-label';
-    label.textContent = t('section_today');
-    list.appendChild(label);
-    todoTasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
-  }
-  if (doneTasks.length > 0) {
-    const label = document.createElement('div');
-    label.className = 'task-section-label';
-    label.textContent = t('section_done');
-    list.appendChild(label);
-    doneTasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
+  active.forEach(tk => list.appendChild(renderTaskCard(tk)));
+
+  if (snoozed.length > 0) {
+    const divider = document.createElement('div');
+    divider.className = 'snooze-divider';
+    divider.textContent = t('snoozed_label');
+    list.appendChild(divider);
+    snoozed.forEach(tk => {
+      const card = renderTaskCard(tk);
+      card.querySelector('.task-card')?.classList.add('snoozed');
+      list.appendChild(card);
+    });
   }
 }
 
-async function refreshTomorrow() {
-  const n = new Date(); n.setDate(n.getDate() + 1);
-  document.getElementById('tomorrow-date').textContent =
-    `${t('months')[n.getMonth()]} · ${n.getDate()}`;
-  document.getElementById('tomorrow-name').textContent = t('days')[n.getDay()];
-
-  const start = new Date(n); start.setHours(0,0,0,0);
-  const end = new Date(start); end.setDate(end.getDate() + 1);
+async function refreshArchive() {
   let tasks = [];
   try {
     const { data } = await sb.from('tasks')
       .select('*')
-      .eq('recurrence_rule', 'none')
-      .gte('due_at', start.toISOString())
-      .lt('due_at', end.toISOString())
-      .order('due_at', { ascending: true });
+      .eq('status', 'done')
+      .order('completed_at', { ascending: false })
+      .limit(200);
     tasks = data || [];
-  } catch(e) {}
-  document.getElementById('tomorrow-count').textContent = tasks.filter(t => t.status === 'todo').length;
-  const list = document.getElementById('task-list-tomorrow');
-  list.innerHTML = '';
-  if (tasks.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-sticker">☀</div><p class="empty-prompt">${t('empty_tomorrow')}</p></div>`;
-    return;
-  }
-  tasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
-}
+  } catch (e) {}
 
-async function refreshAll() {
-  let tasks = [];
-  try {
-    const { data } = await sb.from('tasks')
-      .select('*')
-      .eq('recurrence_rule', 'none')
-      .order('status', { ascending: true })
-      .order('due_at', { ascending: true, nullsFirst: false });
-    tasks = data || [];
-  } catch(e) {}
-  document.getElementById('all-count').textContent =
-    tasks.length === 0 ? '—' : t('all_count_fmt').replace('{n}', tasks.length);
-  const list = document.getElementById('task-list-all');
+  const countEl = document.getElementById('archive-count');
+  if (countEl) {
+    countEl.textContent = tasks.length === 0 ? '' : t('archive_count_fmt').replace('{n}', tasks.length);
+  }
+
+  const list = document.getElementById('task-list-archive');
   list.innerHTML = '';
+
   if (tasks.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-sticker">·</div><p class="empty-prompt">${t('empty_all')}</p></div>`;
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-sticker">·</div>
+        <p class="empty-prompt">${t('empty_archive')}</p>
+      </div>`;
     return;
   }
+
   tasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
 }
 
