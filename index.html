@@ -1740,6 +1740,7 @@ async function setLang(lang) {
   localStorage.setItem('ofyaa_lang', lang);
   document.documentElement.lang = lang;
   applyI18n();
+  refreshCurrentView(); // tarih/sayı gibi dinamik metinleri de tazele
   if (state.user) {
     try { await sb.from('user_profiles').update({ language: lang }).eq('user_id', state.user.id); } catch(e){}
   }
@@ -1755,7 +1756,6 @@ function applyI18n() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
   });
-  refreshCurrentView();
 }
 
 // ═══════════════════════════════════════════════════════════
