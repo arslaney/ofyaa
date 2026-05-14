@@ -365,6 +365,26 @@
   }
   .mic-btn:active { transform: scale(0.92); }
   .mic-btn svg { width: 18px; height: 22px; color: var(--cream); }
+
+  .add-btn {
+    flex-shrink: 0;
+    height: 50px;
+    padding: 0 18px;
+    border-radius: 100px;
+    background: var(--acid);
+    color: var(--ink);
+    border: none;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: none;
+  }
+  .add-btn.visible { display: flex; align-items: center; }
+  .add-btn:active { transform: scale(0.94); background: var(--acid-deep); }
   
   /* ═══════ TASK LIST ═══════ */
   .task-list {
@@ -1094,9 +1114,11 @@
     <div class="quick-add">
       <input class="quick-add-input" id="quick-input"
         data-i18n-placeholder="quick_placeholder"
-        placeholder="yapılacak bir şey söyle..."
+        placeholder="bir şey yaz..."
         autocomplete="off"
+        oninput="toggleAddBtn()"
         onkeydown="handleQuickKey(event)">
+      <button class="add-btn" id="add-btn" onclick="submitQuickAdd()" data-i18n="quick_add">EKLE</button>
       <button class="mic-btn" onclick="startRecording()" aria-label="record">
         <svg viewBox="0 0 20 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="6" y="3" width="8" height="13" rx="4" fill="none"/>
@@ -1339,7 +1361,8 @@ const I18N = {
     auth_err_invalid: 'geçerli bir mail yaz yaa.',
     auth_err_send: 'of. link gönderilemedi.',
     auth_err_rate: 'çok sık deniyorsun. bir dakika bekle.',
-    quick_placeholder: 'yapılacak bir şey söyle...',
+    quick_placeholder: 'bir şey yaz...',
+    quick_add: 'EKLE',
     today_remaining: 'kaldı',
     upcoming: 'bekliyor',
     tab_today: 'bugün',
@@ -1416,7 +1439,8 @@ const I18N = {
     auth_err_invalid: 'enter a valid email.',
     auth_err_send: 'ugh. link failed.',
     auth_err_rate: 'trying too often. wait a minute.',
-    quick_placeholder: 'say something to do...',
+    quick_placeholder: 'type something...',
+    quick_add: 'ADD',
     today_remaining: 'left',
     upcoming: 'pending',
     tab_today: 'today',
@@ -1753,10 +1777,24 @@ function fallbackParse(text) {
 // ═══════════════════════════════════════════════════════════
 async function handleQuickKey(e) {
   if (e.key !== 'Enter') return;
+  submitQuickAdd();
+}
+
+function toggleAddBtn() {
+  const input = document.getElementById('quick-input');
+  const btn = document.getElementById('add-btn');
+  if (!btn) return;
+  if (input.value.trim().length > 0) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}
+
+async function submitQuickAdd() {
   const input = document.getElementById('quick-input');
   const text = input.value.trim();
   if (!text) return;
+  const btn = document.getElementById('add-btn');
   input.disabled = true;
+  if (btn) btn.classList.remove('visible');
   state.pendingRawText = text;
   state.pendingSource = 'text';
   switchView('processing');
