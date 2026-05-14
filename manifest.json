@@ -2,7 +2,7 @@
   "name": "ofyaa",
   "short_name": "ofyaa",
   "description": "Söyle, yapılsın. Sesli ve yazılı görev takip.",
-  "start_url": "/",
+  "start_url": "/?app=1",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F5F0E1",
