@@ -3431,37 +3431,75 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // AUTH + INIT
 // ═══════════════════════════════════════════════════════════
 async function initAuth() {
-  applyI18n();
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
-  });
-  document.querySelectorAll('.l-lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
-  });
-  // Initial lang button sync
-  document.querySelectorAll('.l-lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
-  });
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    // Mevcut kullanıcı — landing'i atla
-    localStorage.setItem('ofyaa_entered', '1');
-    hideLanding();
-    await onAuthenticated(session.user);
-  } else if (shouldSkipLanding()) {
-    hideLanding();
-    switchView('auth');
-  } else {
-    showLanding();
-  }
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
+  // FAILSAFE: 8 saniye sonra hala spinner'daysak landing'e geç
+  const failsafeTimer = setTimeout(() => {
+    console.warn('[ofyaa] initAuth timeout — falling back to landing');
+    try {
+      hideLanding();
+      const spinner = document.getElementById('view-auth-loading');
+      if (spinner) spinner.classList.remove('active');
+      if (shouldSkipLanding()) switchView('auth');
+      else showLanding();
+    } catch(e) { console.error(e); }
+  }, 8000);
+
+  try {
+    applyI18n();
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
+    });
+    document.querySelectorAll('.l-lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
+    });
+    document.querySelectorAll('.l-lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
+    });
+
+    const { data: { session } } = await sb.auth.getSession();
+    clearTimeout(failsafeTimer); // session check tamam, failsafe artık gereksiz
+
+    if (session) {
       localStorage.setItem('ofyaa_entered', '1');
       hideLanding();
-      await onAuthenticated(session.user);
+      // onAuthenticated içinde başka takılma olmasın diye burayı da koruyalım
+      const authTimer = setTimeout(() => {
+        console.warn('[ofyaa] onAuthenticated takıldı, list view\'a zorla geç');
+        try {
+          const spinner = document.getElementById('view-auth-loading');
+          if (spinner) spinner.classList.remove('active');
+          switchView('list');
+        } catch(e) {}
+      }, 5000);
+      try {
+        await onAuthenticated(session.user);
+      } finally {
+        clearTimeout(authTimer);
+      }
+    } else if (shouldSkipLanding()) {
+      hideLanding();
+      switchView('auth');
+    } else {
+      showLanding();
     }
-    else if (event === 'SIGNED_OUT') { state.user = null; switchView('auth'); }
-  });
+
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        localStorage.setItem('ofyaa_entered', '1');
+        hideLanding();
+        await onAuthenticated(session.user);
+      }
+      else if (event === 'SIGNED_OUT') { state.user = null; switchView('auth'); }
+    });
+  } catch (e) {
+    clearTimeout(failsafeTimer);
+    console.error('[ofyaa] initAuth fatal', e);
+    // Her ne olursa olsun, spinner'da kalma
+    const spinner = document.getElementById('view-auth-loading');
+    if (spinner) spinner.classList.remove('active');
+    hideLanding();
+    if (shouldSkipLanding()) switchView('auth');
+    else showLanding();
+  }
 }
 
 async function onAuthenticated(user) {
