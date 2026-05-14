@@ -2185,7 +2185,33 @@ async function handleAuthSubmit(e) {
 function backToAuth() { switchView('auth'); }
 async function signOut() {
   if (!confirm(t('confirm_signout'))) return;
-  await sb.auth.signOut();
+  try {
+    // Supabase'den çıkış
+    await sb.auth.signOut();
+    // Push subscription'ı sil (varsa)
+    try {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          const endpoint = sub.endpoint;
+          await sub.unsubscribe();
+          try { await sb.from('push_subscriptions').delete().eq('endpoint', endpoint); } catch(e){}
+        }
+      }
+    } catch(e) {}
+    // Local state temizle
+    state.user = null;
+    // Tüm cache'leri sil (service worker dahil) — temiz başlangıç
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    } catch(e) {}
+  } catch(e) {
+    console.error('signOut error', e);
+  }
+  // Sayfayı sıfırdan yükle — auth ekranına dön
+  window.location.href = '/';
 }
 
 // ═══════════════════════════════════════════════════════════
