@@ -1,10 +1,7 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/analyze.js": {
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
-    { "source": "/", "destination": "/duru-app-connected.html" }
-  ]
+    "api/analyze.js": { "maxDuration": 30 },
+    "api/parse-task.js": { "maxDuration": 15 }
+  }
 }

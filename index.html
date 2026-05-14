@@ -8,9 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ofyaa">
 
-<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"ofyaa","short_name":"ofyaa","start_url":"./","display":"standalone","background_color":"%230A0A0A","theme_color":"%230A0A0A","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Crect width=%27512%27 height=%27512%27 rx=%27112%27 fill=%27%230A0A0A%27/%3E%3Crect x=%27224%27 y=%27140%27 width=%2764%27 height=%27110%27 rx=%2732%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 fill=%27none%27/%3E%3Cpath d=%27M176 220 V250 C176 320, 220 354, 256 354 C292 354, 336 320, 336 250 V220%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 stroke-linecap=%27round%27 fill=%27none%27/%3E%3Cline x1=%27256%27 y1=%27354%27 x2=%27256%27 y2=%27400%27 stroke=%27%23FFFFFF%27 stroke-width=%2716%27 stroke-linecap=%27round%27/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"ofyaa","short_name":"ofyaa","start_url":"./","display":"standalone","background_color":"%23F5F0E1","theme_color":"%23F5F0E1","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Crect width=%27512%27 height=%27512%27 rx=%27112%27 fill=%27%230A0A0A%27/%3E%3Crect x=%27224%27 y=%27140%27 width=%2764%27 height=%27110%27 rx=%2732%27 stroke=%27%23F5F0E1%27 stroke-width=%2716%27 fill=%27none%27/%3E%3Cpath d=%27M176 220 V250 C176 320, 220 354, 256 354 C292 354, 336 320, 336 250 V220%27 stroke=%27%23F5F0E1%27 stroke-width=%2716%27 stroke-linecap=%27round%27 fill=%27none%27/%3E%3Cline x1=%27256%27 y1=%27354%27 x2=%27256%27 y2=%27400%27 stroke=%27%23F5F0E1%27 stroke-width=%2716%27 stroke-linecap=%27round%27/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Crect x='40' y='22' width='20' height='32' rx='10' stroke='%23FFFFFF' stroke-width='4' fill='none'/%3E%3Cpath d='M28 46 V50 C28 60, 36 66, 50 66 C64 66, 72 60, 72 50 V46' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cline x1='50' y1='66' x2='50' y2='78' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Crect x='40' y='22' width='20' height='32' rx='10' stroke='%23F5F0E1' stroke-width='4' fill='none'/%3E%3Cpath d='M28 46 V50 C28 60, 36 66, 50 66 C64 66, 72 60, 72 50 V46' stroke='%23F5F0E1' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cline x1='50' y1='66' x2='50' y2='78' stroke='%23F5F0E1' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,10 +22,12 @@
     --ink-soft: #1A1A1A;
     --cream: #F5F0E1;
     --cream-warm: #EDE5CF;
+    --cream-deep: #E0D6BB;
     --acid: #D4F542;
     --acid-deep: #BAE033;
     --bruise: #2A1F3A;
     --pink: #F5A89B;
+    --pink-warm: #E89384;
     --mute: #6B6761;
     --gray-mid: #A3A3A3;
     --safe-top: env(safe-area-inset-top, 0);
@@ -49,6 +51,11 @@
     -webkit-font-smoothing: antialiased;
     user-select: none;
     -webkit-user-select: none;
+  }
+  
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
   }
   
   body::before {
@@ -120,19 +127,25 @@
   .brand-period { color: var(--gray-mid); }
   .dark .brand { color: var(--cream); }
   
-  /* ═══════ AUTH VIEWS ═══════ */
+  /* ═══════ SPINNER ═══════ */
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--cream-warm);
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* ═══════ AUTH ═══════ */
   .auth-view {
     justify-content: center;
     align-items: center;
     padding: 40px 28px;
     text-align: center;
   }
-  
-  .auth-brand {
-    font-size: 28px;
-    margin-bottom: 48px;
-  }
-  
+  .auth-brand { font-size: 28px; margin-bottom: 48px; }
   .auth-title {
     font-family: 'Gloock', serif;
     font-size: 40px;
@@ -141,7 +154,6 @@
     color: var(--ink);
     margin-bottom: 16px;
   }
-  
   .auth-sub {
     font-family: 'Playwrite IT Moderna', cursive;
     font-weight: 300;
@@ -151,15 +163,7 @@
     margin-bottom: 36px;
     max-width: 320px;
   }
-  
-  .auth-form {
-    width: 100%;
-    max-width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
+  .auth-form { width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 12px; }
   .auth-input {
     width: 100%;
     padding: 16px 20px;
@@ -174,14 +178,8 @@
     outline: none;
     text-align: center;
   }
-  
-  .auth-input:focus {
-    border-color: var(--ink);
-    background: var(--cream);
-  }
-  
+  .auth-input:focus { border-color: var(--ink); background: var(--cream); }
   .auth-input::placeholder { color: var(--mute); }
-  
   .auth-btn {
     width: 100%;
     padding: 16px 20px;
@@ -197,16 +195,9 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  
-  .auth-btn:hover:not(:disabled) {
-    background: var(--acid);
-    color: var(--ink);
-  }
-  
+  .auth-btn:hover:not(:disabled) { background: var(--acid); color: var(--ink); }
   .auth-btn:disabled { opacity: 0.6; cursor: wait; }
-  
   .auth-btn:active { transform: scale(0.98); }
-  
   .auth-footnote {
     margin-top: 28px;
     font-size: 11px;
@@ -215,26 +206,13 @@
     max-width: 260px;
     line-height: 1.5;
   }
-  
-  .auth-error {
-    color: var(--pink);
-    font-size: 13px;
-    margin-top: 8px;
-    font-weight: 500;
-  }
-  
-  /* Auth sent state */
+  .auth-error { color: var(--pink-warm); font-size: 13px; margin-top: 8px; font-weight: 500; }
   .auth-sent-emoji {
     font-size: 56px;
     margin-bottom: 24px;
     animation: wave 1.2s ease infinite alternate;
   }
-  
-  @keyframes wave {
-    from { transform: rotate(-5deg); }
-    to { transform: rotate(5deg); }
-  }
-  
+  @keyframes wave { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
   .auth-link-btn {
     background: none;
     border: none;
@@ -245,10 +223,7 @@
     font-family: 'DM Sans', sans-serif;
     margin-top: 16px;
   }
-  
   .auth-link-btn:hover { color: var(--ink); }
-  
-  /* Language toggle on auth screen */
   .lang-toggle {
     position: absolute;
     top: calc(20px + var(--safe-top));
@@ -259,10 +234,8 @@
     padding: 4px;
     border-radius: 100px;
   }
-  
   .lang-toggle button {
-    background: none;
-    border: none;
+    background: none; border: none;
     padding: 6px 12px;
     border-radius: 100px;
     font-family: 'Inter Tight', sans-serif;
@@ -274,210 +247,417 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
+  .lang-toggle button.active { background: var(--ink); color: var(--cream); }
+  .auth-loading { justify-content: center; align-items: center; }
   
-  .lang-toggle button.active {
-    background: var(--ink);
-    color: var(--cream);
-  }
-  
-  /* Loading spinner */
-  .auth-loading {
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid var(--cream-warm);
-    border-top-color: var(--ink);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  /* ═══════ HEADER (with auth context) ═══════ */
+  /* ═══════ HEADER ═══════ */
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
   }
-  
   .icon-btn {
-    width: 34px;
-    height: 34px;
+    width: 34px; height: 34px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     background: var(--cream-warm);
     cursor: pointer;
     transition: all 0.2s ease;
     color: var(--ink);
     border: none;
   }
-  
   .icon-btn:active { transform: scale(0.92); background: var(--acid); }
+  .dark .icon-btn { background: rgba(245,240,225,0.1); color: var(--cream); }
   
-  .dark .icon-btn {
-    background: rgba(245,240,225,0.1);
-    color: var(--cream);
+  /* ═══════ HOME / TODAY ═══════ */
+  .day-card {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 4px 0 18px;
+    border-bottom: 1px solid rgba(10,10,10,0.08);
+    margin-bottom: 18px;
   }
-  
-  /* ═══════ HOME ═══════ */
-  .home-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 24px;
-  }
-  
-  .home-date {
+  .day-card-left { display: flex; flex-direction: column; gap: 4px; }
+  .day-date {
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--mute);
     font-weight: 600;
   }
-  
-  .home-date-num {
+  .day-name {
     font-family: 'Gloock', serif;
-    font-size: 22px;
+    font-size: 38px;
+    line-height: 0.95;
     color: var(--ink);
+    letter-spacing: -0.025em;
+  }
+  .day-stats {
+    text-align: right;
+    font-family: 'Inter Tight', sans-serif;
+  }
+  .day-stat-num {
+    font-family: 'Gloock', serif;
+    font-size: 28px;
     line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  
-  .home-prompt {
-    font-family: 'Gloock', serif;
-    font-size: 26px;
-    line-height: 1.25;
     color: var(--ink);
-    margin-bottom: 12px;
-    letter-spacing: -0.015em;
   }
-  
-  .home-prompt .hl {
-    background: var(--acid);
-    padding: 0 4px;
-  }
-  
-  .home-subprompt {
-    font-family: 'Playwrite IT Moderna', cursive;
-    font-size: 14px;
+  .day-stat-label {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--mute);
-    font-weight: 300;
-    line-height: 1.5;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .day-stat-num.has-overdue { color: var(--pink-warm); }
+  
+  /* Quick add */
+  .quick-add {
+    display: flex; gap: 8px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .quick-add-input {
+    flex: 1;
+    padding: 14px 18px;
+    background: var(--cream-warm);
+    border: 2px solid transparent;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: all 0.25s;
+    min-width: 0;
+  }
+  .quick-add-input:focus {
+    background: var(--cream);
+    border-color: var(--ink);
+  }
+  .quick-add-input::placeholder { color: var(--mute); font-style: italic; }
+  .quick-add-input:disabled { opacity: 0.5; }
+  
+  .mic-btn {
+    flex-shrink: 0;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+  .mic-btn::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--acid);
+    opacity: 0;
+    z-index: -1;
+    animation: micPulse 2.5s ease-out infinite;
+  }
+  @keyframes micPulse {
+    0% { transform: scale(0.85); opacity: 0.5; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+  .mic-btn:active { transform: scale(0.92); }
+  .mic-btn svg { width: 18px; height: 22px; color: var(--cream); }
+  
+  /* ═══════ TASK LIST ═══════ */
+  .task-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -22px;
+    padding: 0 22px 100px;
   }
   
-  .home-rec-area {
+  .task-section-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-weight: 700;
+    margin: 14px 0 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .task-section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: rgba(10,10,10,0.08);
+  }
+  .task-section-label.overdue { color: var(--pink-warm); }
+  
+  /* TASK CARD */
+  .task-wrap {
+    position: relative;
+    margin-bottom: 6px;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+  
+  .task-swipe-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .task-swipe-bg.left { background: var(--acid); justify-content: flex-start; color: var(--ink); }
+  .task-swipe-bg.right { background: var(--bruise); justify-content: flex-end; color: var(--acid); }
+  .task-swipe-bg-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .task-swipe-bg .ico {
+    width: 22px; height: 22px;
+    margin-right: 8px;
+  }
+  .task-swipe-bg.right .ico { margin: 0 0 0 8px; }
+  
+  .task {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--cream);
+    border-radius: 16px;
+    border: 1px solid rgba(10,10,10,0.08);
+    cursor: grab;
+    touch-action: pan-y;
+    transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1),
+                background 0.2s,
+                opacity 0.3s;
+    will-change: transform;
+  }
+  .task.swiping { transition: none; }
+  .task:active { cursor: grabbing; }
+  
+  .task.done {
+    background: transparent;
+    border-color: transparent;
+    opacity: 0.45;
+  }
+  .task.done .task-title {
+    text-decoration: line-through;
+    text-decoration-color: var(--acid-deep);
+    text-decoration-thickness: 2px;
+  }
+  
+  .task.overdue { border-color: rgba(232,147,132,0.4); background: rgba(245,168,155,0.06); }
+  
+  .task-check {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    cursor: pointer;
+    margin-top: 2px;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    position: relative;
+  }
+  .task-check svg {
+    width: 12px; height: 12px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .task.done .task-check {
+    background: var(--acid);
+    border-color: var(--acid-deep);
+  }
+  .task.done .task-check svg { opacity: 1; transform: scale(1); }
+  
+  .task-body { flex: 1; min-width: 0; }
+  .task-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .task-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--cream-warm);
+    color: var(--mute);
+  }
+  .task-chip svg { width: 11px; height: 11px; }
+  .task-chip.time { background: var(--ink); color: var(--cream); }
+  .task-chip.bell { background: var(--cream-deep); color: var(--ink); }
+  .task-chip.calendar { background: var(--bruise); color: var(--acid); }
+  .task-chip.recurring { background: var(--cream-deep); color: var(--mute); }
+  .task-chip.carried { background: var(--pink); color: var(--ink); font-weight: 700; }
+  
+  .task-actions {
+    display: flex; gap: 4px;
+    margin-left: 4px;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .task:hover .task-actions { opacity: 1; }
+  .task-action-btn {
+    background: none; border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--mute);
+    border-radius: 6px;
+    display: flex;
+  }
+  .task-action-btn:hover { color: var(--ink); background: var(--cream-warm); }
+  
+  /* Confetti particles for completion */
+  .confetti {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--acid);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 999;
+  }
+  
+  /* Empty state */
+  .empty-state {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 26px;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 18px;
+    min-height: 320px;
   }
-  
-  .streak {
-    display: flex;
-    gap: 7px;
-    margin-bottom: 8px;
-  }
-  
-  .streak-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--cream-warm);
-  }
-  .streak-dot.filled { background: var(--bruise); }
-  .streak-dot.today {
+  .empty-sticker {
+    width: 88px; height: 88px;
     background: var(--acid);
-    box-shadow: 0 0 0 4px rgba(212, 245, 66, 0.3);
+    border-radius: 24px;
+    transform: rotate(-6deg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Gloock', serif;
+    font-size: 26px;
+    color: var(--ink);
+    box-shadow: 6px 6px 0 rgba(10,10,10,0.15);
+    letter-spacing: -0.02em;
   }
-  
-  .rec-button {
-    width: 92px;
-    height: 92px;
-    border-radius: 50%;
-    background: var(--ink);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
+  .empty-prompt {
+    font-family: 'Gloock', serif;
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    max-width: 280px;
   }
-  
-  .rec-button:active { transform: scale(0.94); }
-  
-  .rec-button::before, .rec-button::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    border: 1.5px solid var(--ink);
-    opacity: 0;
-    animation: pulse 3s ease-out infinite;
-  }
-  
-  .rec-button::before { inset: -10px; }
-  .rec-button::after { inset: -22px; animation-delay: 1s; }
-  
-  .rec-inner {
-    width: 20px;
-    height: 20px;
-    background: var(--acid);
-    border-radius: 4px;
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(0.95); opacity: 0.3; }
-    100% { transform: scale(1.4); opacity: 0; }
-  }
-  
-  .rec-label {
+  .empty-prompt .hl { background: var(--acid); padding: 0 4px; }
+  .empty-hand {
     font-family: 'Playwrite IT Moderna', cursive;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--mute);
     font-weight: 300;
   }
   
-  .home-footer {
+  /* Tomorrow preview */
+  .tomorrow-peek {
+    padding: 14px 16px;
+    background: var(--cream-warm);
+    border-radius: 14px;
+    margin: 8px 0 16px;
     display: flex;
-    justify-content: space-around;
-    padding-top: 14px;
-    border-top: 1px solid rgba(10,10,10,0.1);
-    margin-top: 12px;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
   }
-  
-  .tab {
+  .tomorrow-peek:active { background: var(--cream-deep); }
+  .tomorrow-peek-label {
     font-family: 'Inter Tight', sans-serif;
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--mute);
-    padding: 6px 10px;
     font-weight: 700;
-    background: none;
-    border: none;
-    cursor: pointer;
+  }
+  .tomorrow-peek-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .tomorrow-peek-arrow {
+    margin-left: auto;
+    color: var(--mute);
   }
   
-  .tab.active { color: var(--ink); }
+  /* ═══════ BOTTOM NAV ═══════ */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    padding: 8px 0 calc(8px + var(--safe-bottom));
+    background: var(--cream);
+    border-top: 1px solid rgba(10,10,10,0.08);
+    z-index: 50;
+  }
+  .nav-tab {
+    flex: 1;
+    background: none; border: none;
+    padding: 10px 0;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    transition: color 0.2s;
+  }
+  .nav-tab svg {
+    width: 18px; height: 18px;
+    stroke-width: 1.8;
+    transition: transform 0.2s;
+  }
+  .nav-tab.active { color: var(--ink); }
+  .nav-tab.active svg { transform: scale(1.1); }
   
-  /* ═══════ RECORDING ═══════ */
+  /* ═══════ RECORDING VIEW ═══════ */
   .rec-header {
     text-align: center;
     margin-bottom: 24px;
     padding-top: 40px;
   }
-  
   .rec-status {
     font-family: 'Inter Tight', sans-serif;
     font-size: 10px;
@@ -487,7 +667,6 @@
     margin-bottom: 16px;
     font-weight: 700;
   }
-  
   .rec-timer {
     font-family: 'Gloock', serif;
     font-size: 60px;
@@ -496,7 +675,12 @@
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
-  
+  .rec-hint {
+    margin-top: 12px;
+    font-family: 'Playwrite IT Moderna', cursive;
+    font-size: 14px;
+    color: var(--mute);
+  }
   .waveform {
     flex: 1;
     display: flex;
@@ -506,7 +690,6 @@
     padding: 0 16px;
     max-height: 320px;
   }
-  
   .wave-bar {
     width: 3px;
     background: var(--cream);
@@ -515,17 +698,12 @@
     transition: height 0.08s ease-out;
     opacity: 0.4;
   }
-  
   .wave-bar.active { opacity: 1; background: var(--acid); }
   
   .rec-controls {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 16px 14px 0;
-    gap: 20px;
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 16px 14px 0; gap: 20px;
   }
-  
   .rec-cancel, .rec-save {
     font-family: 'Inter Tight', sans-serif;
     font-size: 11px;
@@ -535,32 +713,23 @@
     opacity: 0.6;
     padding: 16px 12px;
     font-weight: 700;
-    background: none;
-    border: none;
+    background: none; border: none;
     cursor: pointer;
     flex: 1;
   }
-  
   .rec-cancel:active, .rec-save:active { opacity: 1; }
-  
   .rec-stop {
-    width: 64px;
-    height: 64px;
+    width: 64px; height: 64px;
     border-radius: 50%;
     background: var(--acid);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     border: none;
     transition: transform 0.2s ease;
   }
-  
   .rec-stop:active { transform: scale(0.92); }
-  
   .rec-stop-inner {
-    width: 22px;
-    height: 22px;
+    width: 22px; height: 22px;
     background: var(--ink);
     border-radius: 4px;
   }
@@ -568,19 +737,14 @@
   /* ═══════ PROCESSING ═══════ */
   .processing-wrap {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     gap: 40px;
   }
-  
   .processing-ripple {
-    width: 100px;
-    height: 100px;
+    width: 100px; height: 100px;
     position: relative;
   }
-  
   .processing-ripple::before,
   .processing-ripple::after,
   .processing-ripple > div {
@@ -592,16 +756,13 @@
     animation: process 2.4s ease-out infinite;
     opacity: 0;
   }
-  
   .processing-ripple::before { animation-delay: 0s; }
   .processing-ripple > div { animation-delay: 0.8s; border-color: var(--acid-deep); }
   .processing-ripple::after { animation-delay: 1.6s; border-color: var(--pink); }
-  
   @keyframes process {
     0% { transform: scale(0.3); opacity: 0.9; }
     100% { transform: scale(1.4); opacity: 0; }
   }
-  
   .processing-text {
     font-family: 'Gloock', serif;
     font-size: 22px;
@@ -614,138 +775,110 @@
     transition: opacity 0.3s;
   }
   
-  /* ═══════ INSIGHT ═══════ */
-  .insight-back {
+  /* ═══════ TASK PREVIEW (parsed result before save) ═══════ */
+  .preview-wrap {
+    flex: 1;
+    display: flex; flex-direction: column;
+    padding-top: 20px;
+  }
+  .preview-eyebrow {
     font-family: 'Inter Tight', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--mute);
-    margin-bottom: 14px;
-    cursor: pointer;
-    display: inline-block;
-    padding: 4px 0;
-    font-weight: 600;
-    background: none;
-    border: none;
-  }
-  
-  .insight-meta-row {
-    padding-bottom: 18px;
-    margin-bottom: 22px;
-    border-bottom: 1px solid rgba(10,10,10,0.1);
-  }
-  
-  .insight-date {
     font-size: 10px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--mute);
-    margin-bottom: 6px;
-    font-weight: 600;
+    font-weight: 700;
+    margin-bottom: 10px;
   }
-  
-  .insight-time {
+  .preview-quote {
     font-family: 'Gloock', serif;
     font-size: 28px;
+    line-height: 1.2;
     color: var(--ink);
-    letter-spacing: -0.015em;
-    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(10,10,10,0.08);
+  }
+  .preview-quote::before {
+    content: '"';
+    color: var(--acid-deep);
+    font-size: 1.5em;
+    line-height: 0;
+    vertical-align: -0.2em;
+    margin-right: 4px;
+  }
+  .preview-quote::after {
+    content: '"';
+    color: var(--acid-deep);
+    font-size: 1.5em;
+    line-height: 0;
+    vertical-align: -0.2em;
+    margin-left: 2px;
   }
   
-  .insight-duration {
-    font-size: 11px;
-    color: var(--mute);
-    margin-top: 8px;
+  .preview-card {
+    background: var(--cream);
+    border: 1px solid rgba(10,10,10,0.1);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
   }
-  
-  .insight-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 16px;
-  }
-  
-  .insight-section { margin-bottom: 24px; }
-  
-  .insight-label {
+  .preview-card-label {
     font-family: 'Inter Tight', sans-serif;
     font-size: 9px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--mute);
-    margin-bottom: 10px;
     font-weight: 700;
+    margin-bottom: 12px;
   }
-  
-  .insight-mood {
+  .preview-input {
+    width: 100%;
+    background: transparent;
+    border: none;
     font-family: 'Gloock', serif;
-    font-size: 20px;
-    color: var(--bruise);
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    outline: none;
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    resize: none;
+    padding: 0;
   }
   
-  .insight-themes {
-    display: flex;
+  .preview-row {
+    display: flex; gap: 10px;
     flex-wrap: wrap;
-    gap: 6px;
-  }
-  
-  .theme-chip {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 11px;
-    padding: 6px 12px;
-    border-radius: 100px;
-    background: var(--acid);
-    color: var(--ink);
-    font-weight: 600;
-  }
-  
-  .theme-chip:nth-child(2n) { background: var(--pink); }
-  .theme-chip:nth-child(3n) { background: var(--cream-warm); }
-  
-  .insight-summary {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ink);
-    padding: 16px 18px;
-    background: var(--cream-warm);
-    border-radius: 12px;
-    border-left: 3px solid var(--acid-deep);
-  }
-  
-  .insight-question {
-    font-family: 'Gloock', serif;
-    font-size: 16px;
-    color: var(--cream);
-    line-height: 1.4;
-    padding: 16px 18px;
-    background: var(--bruise);
-    border-radius: 12px;
-    position: relative;
-    letter-spacing: -0.01em;
-  }
-  
-  .insight-question::before {
-    content: '?';
-    position: absolute;
-    top: 8px;
-    right: 14px;
-    font-family: 'Gloock', serif;
-    font-size: 28px;
-    color: var(--acid);
-    line-height: 1;
-  }
-  
-  .insight-actions {
-    display: flex;
-    gap: 10px;
+    margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid rgba(10,10,10,0.1);
+    border-top: 1px solid rgba(10,10,10,0.06);
   }
+  .preview-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: var(--cream-warm);
+    border: 1.5px solid transparent;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .preview-pill.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .preview-pill.cal.active { background: var(--bruise); border-color: var(--bruise); color: var(--acid); }
+  .preview-pill svg { width: 13px; height: 13px; }
   
+  .preview-actions {
+    display: flex; gap: 10px;
+    padding-top: 16px;
+    margin-top: auto;
+  }
   .btn {
     flex: 1;
-    padding: 14px;
+    padding: 16px;
     border-radius: 100px;
     font-family: 'Inter Tight', sans-serif;
     font-size: 11px;
@@ -756,156 +889,24 @@
     border: none;
     transition: all 0.2s ease;
   }
-  
   .btn-primary { background: var(--ink); color: var(--cream); }
   .btn-primary:active { background: var(--acid); color: var(--ink); }
-  
   .btn-secondary {
     background: none;
     color: var(--mute);
     border: 1.5px solid rgba(10,10,10,0.15);
   }
-  
   .btn:active { transform: scale(0.98); }
   
-  /* ═══════ HISTORY ═══════ */
-  .history-header { margin-bottom: 26px; }
-  
-  .history-title {
-    font-family: 'Gloock', serif;
-    font-size: 36px;
-    color: var(--ink);
-    letter-spacing: -0.025em;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  
-  .history-sub {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--mute);
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  
-  .history-empty {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 20px;
-    gap: 24px;
-  }
-  
-  .empty-sticker {
-    width: 80px;
-    height: 80px;
-    background: var(--acid);
-    border-radius: 20px;
-    transform: rotate(-4deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Gloock', serif;
-    font-size: 24px;
-    color: var(--ink);
-    box-shadow: 5px 5px 0 rgba(10,10,10,0.15);
-  }
-  
-  .empty-text {
-    font-family: 'Gloock', serif;
-    font-size: 18px;
-    color: var(--ink);
-    line-height: 1.4;
-    max-width: 260px;
-    letter-spacing: -0.01em;
-  }
-  
-  .empty-hand {
-    font-family: 'Playwrite IT Moderna', cursive;
-    font-size: 14px;
-    color: var(--mute);
-    font-weight: 300;
-  }
-  
-  .history-list {
-    flex: 1;
-    overflow-y: auto;
-    border-top: 1px solid rgba(10,10,10,0.1);
-  }
-  
-  .entry {
-    padding: 18px 0;
-    border-bottom: 1px solid rgba(10,10,10,0.08);
-    display: grid;
-    grid-template-columns: 42px 1fr 12px;
-    gap: 14px;
-    align-items: start;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .entry:active { background: rgba(10,10,10,0.03); }
-  
-  .entry-date-num {
-    font-family: 'Gloock', serif;
-    font-size: 24px;
-    color: var(--ink);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  
-  .entry-date-day {
-    font-size: 9px;
-    color: var(--mute);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 3px;
-    font-weight: 700;
-  }
-  
-  .entry-mood-text {
-    font-family: 'Gloock', serif;
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--ink);
-    margin-bottom: 5px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    letter-spacing: -0.005em;
-  }
-  
-  .entry-meta {
-    font-size: 10px;
-    color: var(--mute);
-  }
-  
-  .entry-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-top: 5px;
-  }
-  
-  .dot-acid { background: var(--acid); }
-  .dot-pink { background: var(--pink); }
-  .dot-bruise { background: var(--bruise); }
-  
-  /* ═══════ SETTINGS (NEW) ═══════ */
+  /* ═══════ SETTINGS ═══════ */
   .settings-title {
     font-family: 'Gloock', serif;
-    font-size: 36px;
+    font-size: 38px;
     color: var(--ink);
     letter-spacing: -0.025em;
     line-height: 1;
     margin-bottom: 8px;
   }
-  
   .settings-email {
     font-family: 'Inter Tight', sans-serif;
     font-size: 13px;
@@ -913,12 +914,10 @@
     margin-bottom: 32px;
     font-weight: 500;
   }
-  
   .settings-section {
     border-top: 1px solid rgba(10,10,10,0.1);
     padding: 20px 0;
   }
-  
   .settings-label {
     font-family: 'Inter Tight', sans-serif;
     font-size: 10px;
@@ -928,32 +927,24 @@
     margin-bottom: 12px;
     font-weight: 700;
   }
-  
   .settings-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 10px 0;
   }
-  
   .settings-row-label {
     font-family: 'Inter Tight', sans-serif;
     font-size: 15px;
     font-weight: 500;
     color: var(--ink);
   }
-  
   .lang-pick {
-    display: flex;
-    gap: 4px;
+    display: flex; gap: 4px;
     background: var(--cream-warm);
     padding: 4px;
     border-radius: 100px;
   }
-  
   .lang-pick button {
-    background: none;
-    border: none;
+    background: none; border: none;
     padding: 8px 16px;
     border-radius: 100px;
     font-family: 'Inter Tight', sans-serif;
@@ -964,15 +955,32 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-  
-  .lang-pick button.active {
-    background: var(--ink);
-    color: var(--cream);
+  .lang-pick button.active { background: var(--ink); color: var(--cream); }
+  .toggle {
+    width: 44px; height: 26px;
+    background: var(--cream-deep);
+    border-radius: 100px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: none;
+    padding: 0;
   }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: var(--cream);
+    border-radius: 50%;
+    transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle.on { background: var(--ink); }
+  .toggle.on::after { transform: translateX(18px); background: var(--acid); }
   
   .danger-btn {
-    background: none;
-    border: none;
+    background: none; border: none;
     font-family: 'Inter Tight', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -982,28 +990,29 @@
     text-align: left;
     display: block;
   }
-  
-  .danger-btn:hover { color: var(--pink); }
+  .danger-btn:hover { color: var(--pink-warm); }
   
   /* ═══════ TOAST ═══════ */
   .toast {
     position: fixed;
-    bottom: calc(24px + var(--safe-bottom));
+    bottom: calc(80px + var(--safe-bottom));
     left: 50%;
-    transform: translateX(-50%) translateY(120px);
+    transform: translateX(-50%) translateY(140px);
     background: var(--ink);
     color: var(--cream);
     padding: 14px 22px;
     border-radius: 100px;
     font-family: 'Gloock', serif;
-    font-size: 13px;
+    font-size: 14px;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     z-index: 100;
     pointer-events: none;
+    letter-spacing: -0.01em;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   }
-  
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.acid { background: var(--acid); color: var(--ink); }
+  .toast.pink { background: var(--pink); color: var(--ink); }
 </style>
 </head>
 <body>
@@ -1015,13 +1024,12 @@
     <div class="spinner"></div>
   </div>
 
-  <!-- ═══════ AUTH EMAIL ENTRY ═══════ -->
+  <!-- ═══════ AUTH ENTRY ═══════ -->
   <div class="view auth-view" id="view-auth">
     <div class="lang-toggle" id="lang-toggle-auth">
       <button class="lang-btn" data-lang="tr">TR</button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
-    
     <div class="brand auth-brand">
       <span class="brand-mic">
         <svg viewBox="0 0 20 24" fill="none">
@@ -1031,37 +1039,29 @@
         </svg>
       </span>fyaa<span class="brand-period">.</span>
     </div>
-    
-    <h1 class="auth-title" data-i18n="auth_welcome">Hoş geldin.</h1>
-    <p class="auth-sub" data-i18n="auth_sub">mail adresini yaz, giriş linki gönderelim.</p>
-    
+    <h1 class="auth-title" data-i18n="auth_welcome">Söyle, yapılsın.</h1>
+    <p class="auth-sub" data-i18n="auth_sub">mail adresini yaz, giriş linki yollayalım.</p>
     <form class="auth-form" onsubmit="return handleAuthSubmit(event)">
-      <input 
-        type="email" 
-        class="auth-input" 
-        id="auth-email"
-        data-i18n-placeholder="auth_placeholder"
-        placeholder="mail adresin"
-        required
-        autocomplete="email">
+      <input type="email" class="auth-input" id="auth-email"
+        data-i18n-placeholder="auth_placeholder" placeholder="mail adresin"
+        required autocomplete="email">
       <button type="submit" class="auth-btn" id="auth-submit-btn" data-i18n="auth_send">link gönder</button>
       <div class="auth-error" id="auth-error" style="display:none"></div>
     </form>
-    
-    <p class="auth-footnote" data-i18n="auth_footnote">Devam ederek şartları kabul etmiş sayılırsın. Parola yok, sadece mail.</p>
+    <p class="auth-footnote" data-i18n="auth_footnote">Parola yok, sadece mail. Her girişte yeni link.</p>
   </div>
 
-  <!-- ═══════ AUTH LINK SENT ═══════ -->
+  <!-- ═══════ AUTH SENT ═══════ -->
   <div class="view auth-view" id="view-auth-sent">
     <div class="auth-sent-emoji">✉️</div>
-    <h1 class="auth-title" data-i18n="auth_sent_title">Maili kontrol et.</h1>
-    <p class="auth-sub" data-i18n="auth_sent_body">Bir giriş linki gönderdik. Tıkla, hazırsın.</p>
-    <p class="auth-footnote" id="auth-sent-email" style="margin-bottom: 0;"></p>
-    <button class="auth-link-btn" onclick="backToAuth()" data-i18n="auth_wrong_email">mail mi yanlış? değiştir</button>
+    <h1 class="auth-title" data-i18n="auth_sent_title">Mailini kontrol et.</h1>
+    <p class="auth-sub" data-i18n="auth_sent_body">Bir giriş linki yolladık. Tıkla, hazırsın.</p>
+    <p class="auth-footnote" id="auth-sent-email" style="margin-bottom:0;"></p>
+    <button class="auth-link-btn" onclick="backToAuth()" data-i18n="auth_wrong_email">mail yanlış mı? değiştir</button>
   </div>
 
-  <!-- ═══════ HOME ═══════ -->
-  <div class="view" id="view-home">
+  <!-- ═══════ TODAY ═══════ -->
+  <div class="view" id="view-today">
     <div class="header">
       <div class="brand">
         <span class="brand-mic">
@@ -1073,34 +1073,123 @@
         </span>fyaa<span class="brand-period">.</span>
       </div>
       <button class="icon-btn" onclick="switchView('settings')" aria-label="settings">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="8" cy="8" r="6"/>
-          <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
       </button>
     </div>
-    
-    <div class="home-meta">
-      <span class="home-date" id="home-date"></span>
-      <span class="home-date-num" id="home-date-num"></span>
+
+    <div class="day-card">
+      <div class="day-card-left">
+        <span class="day-date" id="today-date"></span>
+        <span class="day-name" id="today-name"></span>
+      </div>
+      <div class="day-stats">
+        <div class="day-stat-num" id="today-remaining">0</div>
+        <div class="day-stat-label" data-i18n="today_remaining">kaldı</div>
+      </div>
     </div>
-    
-    <p class="home-prompt" id="home-prompt"></p>
-    <p class="home-subprompt" data-i18n="home_subprompt">ne dersen de, olduğu gibi.</p>
-    
-    <div class="home-rec-area">
-      <div class="streak" id="streak"></div>
-      <button class="rec-button" onclick="startRecording()" aria-label="record">
-        <div class="rec-inner"></div>
+
+    <div class="quick-add">
+      <input class="quick-add-input" id="quick-input"
+        data-i18n-placeholder="quick_placeholder"
+        placeholder="yapılacak bir şey söyle..."
+        autocomplete="off"
+        onkeydown="handleQuickKey(event)">
+      <button class="mic-btn" onclick="startRecording()" aria-label="record">
+        <svg viewBox="0 0 20 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="3" width="8" height="13" rx="4" fill="none"/>
+          <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" fill="none"/>
+          <line x1="10" y1="18" x2="10" y2="22"/>
+        </svg>
       </button>
-      <div class="rec-label" id="rec-label" data-i18n="rec_label">söyle, içinde kalmasın</div>
     </div>
-    
-    <div class="home-footer">
-      <button class="tab active" data-i18n="tab_today">bugün</button>
-      <button class="tab" onclick="switchView('history')" data-i18n="tab_archive">arşiv</button>
-      <button class="tab" onclick="switchView('settings')" data-i18n="tab_me">ben</button>
+
+    <div class="task-list" id="task-list-today"></div>
+
+    <nav class="bottom-nav">
+      <button class="nav-tab active" data-tab="today" onclick="switchView('today')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span data-i18n="tab_today">bugün</span>
+      </button>
+      <button class="nav-tab" data-tab="tomorrow" onclick="switchView('tomorrow')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span data-i18n="tab_tomorrow">yarın</span>
+      </button>
+      <button class="nav-tab" data-tab="all" onclick="switchView('all')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span data-i18n="tab_all">tümü</span>
+      </button>
+      <button class="nav-tab" data-tab="settings" onclick="switchView('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span data-i18n="tab_me">ben</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ═══════ TOMORROW ═══════ -->
+  <div class="view" id="view-tomorrow">
+    <div class="header">
+      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="brand">
+        <span class="brand-mic">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <div style="width:34px"></div>
     </div>
+    <div class="day-card">
+      <div class="day-card-left">
+        <span class="day-date" id="tomorrow-date"></span>
+        <span class="day-name" id="tomorrow-name"></span>
+      </div>
+      <div class="day-stats">
+        <div class="day-stat-num" id="tomorrow-count">0</div>
+        <div class="day-stat-label" data-i18n="upcoming">bekliyor</div>
+      </div>
+    </div>
+    <div class="task-list" id="task-list-tomorrow"></div>
+    <nav class="bottom-nav">
+      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
+      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
+      <button class="nav-tab" onclick="switchView('all')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
+      <button class="nav-tab" onclick="switchView('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
+    </nav>
+  </div>
+
+  <!-- ═══════ ALL ═══════ -->
+  <div class="view" id="view-all">
+    <div class="header">
+      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="brand">
+        <span class="brand-mic">
+          <svg viewBox="0 0 20 24" fill="none">
+            <rect x="6" y="3" width="8" height="13" rx="4" stroke="#F5F0E1" stroke-width="2" fill="none"/>
+            <path d="M3 11 V12 C3 16, 6 18, 10 18 C14 18, 17 16, 17 12 V11" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <line x1="10" y1="18" x2="10" y2="22" stroke="#F5F0E1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>fyaa<span class="brand-period">.</span>
+      </div>
+      <div style="width:34px"></div>
+    </div>
+    <h1 class="settings-title" data-i18n="all_title">Tümü</h1>
+    <p class="settings-email" id="all-count"></p>
+    <div class="task-list" id="task-list-all"></div>
+    <nav class="bottom-nav">
+      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
+      <button class="nav-tab" onclick="switchView('tomorrow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
+      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
+      <button class="nav-tab" onclick="switchView('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
+    </nav>
   </div>
 
   <!-- ═══════ RECORDING ═══════ -->
@@ -1108,15 +1197,12 @@
     <div class="rec-header">
       <div class="rec-status" data-i18n="rec_status">dinliyorum</div>
       <div class="rec-timer" id="timer">0:00</div>
+      <div class="rec-hint" data-i18n="rec_hint">ne yapacaksan söyle</div>
     </div>
-    
     <div class="waveform" id="waveform"></div>
-    
     <div class="rec-controls">
       <button class="rec-cancel" onclick="cancelRecording()" data-i18n="rec_cancel">iptal</button>
-      <button class="rec-stop" onclick="stopRecording()" aria-label="stop">
-        <div class="rec-stop-inner"></div>
-      </button>
+      <button class="rec-stop" onclick="stopRecording()" aria-label="stop"><div class="rec-stop-inner"></div></button>
       <button class="rec-save" onclick="stopRecording()" data-i18n="rec_finish">bitir</button>
     </div>
   </div>
@@ -1129,51 +1215,11 @@
     </div>
   </div>
 
-  <!-- ═══════ INSIGHT ═══════ -->
-  <div class="view" id="view-insight">
-    <button class="insight-back" onclick="switchView('home')" data-i18n="insight_back">‹ bugün</button>
-    
-    <div class="insight-meta-row">
-      <p class="insight-date" id="insight-date"></p>
-      <div class="insight-time" id="insight-time"></div>
-      <p class="insight-duration" id="insight-duration"></p>
-    </div>
-    
-    <div class="insight-content">
-      <div class="insight-section">
-        <p class="insight-label" data-i18n="insight_mood_label">BUGÜN NASILSIN</p>
-        <p class="insight-mood" id="insight-mood"></p>
-      </div>
-      
-      <div class="insight-section">
-        <p class="insight-label" data-i18n="insight_themes_label">NELER DÖNDÜ</p>
-        <div class="insight-themes" id="insight-themes"></div>
-      </div>
-      
-      <div class="insight-section">
-        <p class="insight-label" data-i18n="insight_summary_label">KISACA</p>
-        <p class="insight-summary" id="insight-summary"></p>
-      </div>
-      
-      <div class="insight-section">
-        <p class="insight-label" data-i18n="insight_question_label">TAŞIYACAĞIN SORU</p>
-        <p class="insight-question" id="insight-question"></p>
-      </div>
-    </div>
-    
-    <div class="insight-actions">
-      <button class="btn btn-secondary" onclick="discardEntry()" data-i18n="insight_discard">sil</button>
-      <button class="btn btn-primary" onclick="saveEntry()" data-i18n="insight_save">kaydet</button>
-    </div>
-  </div>
-
-  <!-- ═══════ HISTORY ═══════ -->
-  <div class="view" id="view-history">
+  <!-- ═══════ TASK PREVIEW (after parse) ═══════ -->
+  <div class="view" id="view-preview">
     <div class="header">
-      <button class="icon-btn" onclick="switchView('home')" aria-label="back">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10 3 L5 8 L10 13"/>
-        </svg>
+      <button class="icon-btn" onclick="discardPreview()" aria-label="back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <div class="brand">
         <span class="brand-mic">
@@ -1186,22 +1232,29 @@
       </div>
       <div style="width:34px"></div>
     </div>
-    
-    <div class="history-header">
-      <h1 class="history-title" data-i18n="history_title">Arşiv</h1>
-      <p class="history-sub" id="history-count"></p>
+
+    <div class="preview-wrap">
+      <p class="preview-eyebrow" id="preview-eyebrow" data-i18n="preview_eyebrow">SÖYLEDİĞİN</p>
+      <div class="preview-quote" id="preview-quote"></div>
+
+      <div class="preview-card">
+        <div class="preview-card-label" data-i18n="preview_task">GÖREV</div>
+        <textarea class="preview-input" id="preview-title" rows="2"></textarea>
+        <div class="preview-row" id="preview-pills"></div>
+      </div>
+
+      <div class="preview-actions">
+        <button class="btn btn-secondary" onclick="discardPreview()" data-i18n="preview_discard">vazgeç</button>
+        <button class="btn btn-primary" onclick="saveTask()" data-i18n="preview_save">listeye ekle</button>
+      </div>
     </div>
-    
-    <div id="history-content"></div>
   </div>
 
-  <!-- ═══════ SETTINGS (NEW) ═══════ -->
+  <!-- ═══════ SETTINGS ═══════ -->
   <div class="view" id="view-settings">
     <div class="header">
-      <button class="icon-btn" onclick="switchView('home')" aria-label="back">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10 3 L5 8 L10 13"/>
-        </svg>
+      <button class="icon-btn" onclick="switchView('today')" aria-label="back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <div class="brand">
         <span class="brand-mic">
@@ -1214,10 +1267,9 @@
       </div>
       <div style="width:34px"></div>
     </div>
-    
     <h1 class="settings-title" data-i18n="settings_title">Ben</h1>
     <p class="settings-email" id="settings-email"></p>
-    
+
     <div class="settings-section">
       <p class="settings-label" data-i18n="settings_lang">Dil</p>
       <div class="settings-row">
@@ -1228,27 +1280,40 @@
         </div>
       </div>
     </div>
-    
+
+    <div class="settings-section">
+      <p class="settings-label" data-i18n="settings_notifications">Bildirim</p>
+      <div class="settings-row">
+        <span class="settings-row-label" data-i18n="settings_push">Hatırlat bana</span>
+        <button class="toggle" id="push-toggle" onclick="togglePush()"></button>
+      </div>
+    </div>
+
     <div class="settings-section">
       <p class="settings-label" data-i18n="settings_account">Hesap</p>
       <button class="danger-btn" onclick="signOut()" data-i18n="settings_signout">Çıkış yap</button>
-      <button class="danger-btn" onclick="deleteAccount()" data-i18n="settings_delete">Hesabı sil</button>
     </div>
-    
-    <div style="margin-top:auto; padding-top:30px; font-size:11px; color:var(--mute); text-align:center; letter-spacing:0.05em;">
-      ofyaa · v0.3 · <span data-i18n="footer_made">İstanbul'dan sevgilerle</span>
+
+    <div style="margin-top:auto; padding-top:30px; font-size:11px; color:var(--mute); text-align:center; letter-spacing:0.05em; padding-bottom:80px;">
+      ofyaa · v1.0 · <span data-i18n="footer_made">İstanbul'dan sevgilerle</span>
     </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-tab" onclick="switchView('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><span data-i18n="tab_today">bugün</span></button>
+      <button class="nav-tab" onclick="switchView('tomorrow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="tab_tomorrow">yarın</span></button>
+      <button class="nav-tab" onclick="switchView('all')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span data-i18n="tab_all">tümü</span></button>
+      <button class="nav-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab_me">ben</span></button>
+    </nav>
   </div>
 
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-// CONFIG (replace with your Supabase project values)
+// CONFIG
 // ═══════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://yvvzouqsxdvpblccmfvp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2dnpvdXFzeGR2cGJsY2NtZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTM2NDgsImV4cCI6MjA5MjMyOTY0OH0._NZcbN8ZjNy1Sr5_B0ZdvnZSK-zgnX5NFDPUZVsa-9w';
@@ -1258,103 +1323,88 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 // ═══════════════════════════════════════════════════════════
-// i18n DICTIONARY
+// i18n
 // ═══════════════════════════════════════════════════════════
 const I18N = {
   tr: {
-    // Auth
-    auth_welcome: 'Hoş geldin.',
-    auth_sub: 'mail adresini yaz, giriş linki gönderelim.',
+    auth_welcome: 'Söyle, yapılsın.',
+    auth_sub: 'mail adresini yaz, giriş linki yollayalım.',
     auth_placeholder: 'mail adresin',
     auth_send: 'link gönder',
     auth_sending: 'gönderiliyor...',
     auth_footnote: 'Parola yok, sadece mail. Her girişte yeni link.',
-    auth_sent_title: 'Maili kontrol et.',
-    auth_sent_body: 'Bir giriş linki gönderdik. Tıkla, hazırsın.',
-    auth_wrong_email: 'mail mi yanlış? değiştir',
+    auth_sent_title: 'Mailini kontrol et.',
+    auth_sent_body: 'Bir giriş linki yolladık. Tıkla, hazırsın.',
+    auth_wrong_email: 'mail yanlış mı? değiştir',
     auth_err_invalid: 'geçerli bir mail yaz yaa.',
-    auth_err_send: 'of. link gönderilemedi, tekrar dene.',
+    auth_err_send: 'of. link gönderilemedi.',
     auth_err_rate: 'çok sık deniyorsun. bir dakika bekle.',
-    
-    // Home
-    home_subprompt: 'ne dersen de, olduğu gibi.',
-    rec_label: 'söyle, içinde kalmasın',
+    quick_placeholder: 'yapılacak bir şey söyle...',
+    today_remaining: 'kaldı',
+    upcoming: 'bekliyor',
     tab_today: 'bugün',
-    tab_archive: 'arşiv',
+    tab_tomorrow: 'yarın',
+    tab_all: 'tümü',
     tab_me: 'ben',
-    
-    // Prompts (rotation)
-    prompts: [
-      'Bugün en çok <span class="hl">kime</span> of dedin?',
-      'Uyumadan önce aklına <span class="hl">ne takıldı</span>?',
-      'Söyleyemediğin <span class="hl">bir şey</span> var mı?',
-      'Bugün hangi anda <span class="hl">kendini</span> görmezden geldin?',
-      'Şu an bir <span class="hl">mesaj</span> atsan kim olurdu?',
-      'Sabah uyanınca ilk aklına <span class="hl">ne geldi</span>?',
-      '"<span class="hl">İyiyim</span>" dediğin kaç anda gerçekten iyiydin bugün?',
-      'Kendinle <span class="hl">en son</span> ne zaman konuştun?',
-      'Bugün en <span class="hl">dürüst</span> olduğun an hangisi?'
-    ],
-    
-    // Recording
     rec_status: 'dinliyorum',
+    rec_hint: 'ne yapacaksan söyle',
     rec_cancel: 'iptal',
     rec_finish: 'bitir',
-    rec_too_short: 'biraz daha söyle · en az 3 sn',
-    rec_mic_error: 'mikrofon izni lazım yaa',
+    rec_too_short: 'biraz daha söyle · en az 2 sn',
+    rec_mic_error: 'mikrofon izni lazım',
     rec_cancelled: 'iptal edildi',
-    
-    // Processing
-    processing_texts: [
-      'dinliyorum...',
-      'seni seninle buluşturuyorum...',
-      'özüne bakıyorum...'
-    ],
-    
-    // Insight
-    insight_back: '‹ bugün',
-    insight_time_morning: 'sabah kaydı',
-    insight_time_afternoon: 'öğleden sonra kaydı',
-    insight_time_evening: 'akşam kaydı',
-    insight_time_night: 'gece kaydı',
-    insight_duration_fmt: '{time} · yaklaşık {words} kelime',
-    insight_mood_label: 'BUGÜN NASILSIN',
-    insight_themes_label: 'NELER DÖNDÜ',
-    insight_summary_label: 'KISACA',
-    insight_question_label: 'TAŞIYACAĞIN SORU',
-    insight_discard: 'sil',
-    insight_save: 'kaydet',
-    toast_saved: 'kaydedildi',
-    toast_deleted: 'silindi',
-    toast_error: 'of. bir şey ters gitti',
-    toast_mock: 'mock mode · API yok',
-    
-    // History
-    history_title: 'Arşiv',
-    history_empty_text: 'İlk kaydın burada duracak. Bugüne dön, butona bas.',
-    history_empty_hand: 'bir şey söylerdin, söyle işte.',
-    history_count_zero: 'henüz kayıt yok',
-    history_count_fmt: '{n} kayıt · arşivde',
-    
-    // Settings
+    rec_no_speech: 'duyamadım. tekrar dener misin?',
+    processing_texts: ['dinliyorum...', 'düşünüyorum...', 'listeye yazıyorum...'],
+    preview_eyebrow: 'SÖYLEDİĞİN',
+    preview_task: 'GÖREV',
+    preview_discard: 'vazgeç',
+    preview_save: 'listeye ekle',
+    preview_typed: 'YAZDIĞIN',
+    pill_today: 'bugün',
+    pill_tomorrow: 'yarın',
+    pill_remind_15: '15dk önce',
+    pill_remind_30: '30dk önce',
+    pill_remind_60: '1 saat önce',
+    pill_remind_1d: '1 gün önce',
+    pill_remind_off: 'hatırlatma yok',
+    pill_calendar: 'takvime ekle',
+    pill_repeat: 'tekrarla',
+    pill_repeat_daily: 'her gün',
+    pill_repeat_weekly: 'haftalık',
+    pill_repeat_monthly: 'aylık',
+    pill_repeat_none: 'tek seferlik',
+    section_overdue: 'GEÇMİŞTEN KALAN',
+    section_today: 'BUGÜN',
+    section_done: 'YAPTIN',
     settings_title: 'Ben',
     settings_lang: 'Dil',
     settings_lang_desc: 'Arayüz dili',
+    settings_notifications: 'Bildirim',
+    settings_push: 'Hatırlat bana',
     settings_account: 'Hesap',
     settings_signout: 'Çıkış yap',
-    settings_delete: 'Hesabı sil',
-    settings_delete_confirm: 'Emin misin? Tüm kayıtların silinir, geri alınamaz.',
+    all_title: 'Tümü',
+    all_count_fmt: '{n} görev',
+    toast_added: 'eklendi',
+    toast_done: 'yaptın, tebrikler',
+    toast_pushed: 'yarına atıldı',
+    toast_deleted: 'silindi',
+    toast_error: 'of. bir şey ters gitti',
+    toast_push_on: 'bildirim açık',
+    toast_push_off: 'bildirim kapandı',
+    confirm_delete: 'silmek istediğine emin misin?',
+    confirm_signout: 'çıkış yapmak istediğine emin misin?',
     footer_made: 'İstanbul\'dan sevgilerle',
-    
-    // Dates
-    days: ['PAZAR', 'PAZARTESİ', 'SALI', 'ÇARŞAMBA', 'PERŞEMBE', 'CUMA', 'CUMARTESİ'],
-    days_short: ['PAZ', 'PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT'],
-    months: ['OCAK', 'ŞUBAT', 'MART', 'NİSAN', 'MAYIS', 'HAZİRAN', 'TEMMUZ', 'AĞUSTOS', 'EYLÜL', 'EKİM', 'KASIM', 'ARALIK']
+    empty_prompt: 'Bugün <span class="hl">hiç bir şey</span> söylemedin.',
+    empty_hand: 'mikrofona bas, ya da yaz.',
+    empty_tomorrow: 'Yarın henüz boş. Hayırlısı.',
+    empty_all: 'Hiçbir görev yok. Sıfırdan başla.',
+    days: ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],
+    days_short: ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'],
+    months: ['OCAK','ŞUBAT','MART','NİSAN','MAYIS','HAZİRAN','TEMMUZ','AĞUSTOS','EYLÜL','EKİM','KASIM','ARALIK']
   },
-  
   en: {
-    // Auth
-    auth_welcome: 'Welcome.',
+    auth_welcome: 'Say it, get it done.',
     auth_sub: "drop your email. we'll send a sign-in link.",
     auth_placeholder: 'your email',
     auth_send: 'send link',
@@ -1364,128 +1414,98 @@ const I18N = {
     auth_sent_body: "we sent a sign-in link. click it, you're in.",
     auth_wrong_email: 'wrong email? change it',
     auth_err_invalid: 'enter a valid email.',
-    auth_err_send: 'ugh. link failed. try again.',
+    auth_err_send: 'ugh. link failed.',
     auth_err_rate: 'trying too often. wait a minute.',
-    
-    // Home
-    home_subprompt: 'say it however, just say it.',
-    rec_label: "say it, don't bottle it up",
+    quick_placeholder: 'say something to do...',
+    today_remaining: 'left',
+    upcoming: 'pending',
     tab_today: 'today',
-    tab_archive: 'archive',
+    tab_tomorrow: 'tomorrow',
+    tab_all: 'all',
     tab_me: 'me',
-    
-    prompts: [
-      'Who did you say <span class="hl">"ugh"</span> to most today?',
-      'What was <span class="hl">stuck in your mind</span> before sleep?',
-      'Is there <span class="hl">something</span> you couldn\'t say?',
-      'When did you <span class="hl">ignore yourself</span> today?',
-      'If you sent <span class="hl">one message</span> right now, to whom?',
-      'What was your <span class="hl">first thought</span> this morning?',
-      'How many "<span class="hl">I\'m fine</span>"s were actually fine today?',
-      'When did you <span class="hl">last talk</span> to yourself?',
-      'What was your most <span class="hl">honest</span> moment today?'
-    ],
-    
-    // Recording
     rec_status: 'listening',
+    rec_hint: 'tell me what you have to do',
     rec_cancel: 'cancel',
-    rec_finish: 'finish',
-    rec_too_short: 'say a bit more · at least 3 sec',
+    rec_finish: 'done',
+    rec_too_short: 'say a bit more · at least 2 sec',
     rec_mic_error: 'mic permission needed',
     rec_cancelled: 'cancelled',
-    
-    // Processing
-    processing_texts: [
-      'listening...',
-      'bringing you to yourself...',
-      'looking at the core...'
-    ],
-    
-    // Insight
-    insight_back: '‹ today',
-    insight_time_morning: 'morning recording',
-    insight_time_afternoon: 'afternoon recording',
-    insight_time_evening: 'evening recording',
-    insight_time_night: 'night recording',
-    insight_duration_fmt: '{time} · about {words} words',
-    insight_mood_label: 'HOW YOU ARE',
-    insight_themes_label: 'WHAT CAME UP',
-    insight_summary_label: 'IN SHORT',
-    insight_question_label: 'QUESTION TO CARRY',
-    insight_discard: 'discard',
-    insight_save: 'save',
-    toast_saved: 'saved',
-    toast_deleted: 'deleted',
-    toast_error: 'ugh. something broke',
-    toast_mock: 'mock mode · no API',
-    
-    // History
-    history_title: 'Archive',
-    history_empty_text: 'Your first recording goes here. Head back, press the button.',
-    history_empty_hand: "you'd say something, say it.",
-    history_count_zero: 'no recordings yet',
-    history_count_fmt: '{n} recordings · in archive',
-    
-    // Settings
+    rec_no_speech: "couldn't hear. try again?",
+    processing_texts: ['listening...', 'thinking...', 'writing it down...'],
+    preview_eyebrow: 'YOU SAID',
+    preview_task: 'TASK',
+    preview_discard: 'discard',
+    preview_save: 'add to list',
+    preview_typed: 'YOU TYPED',
+    pill_today: 'today',
+    pill_tomorrow: 'tomorrow',
+    pill_remind_15: '15min before',
+    pill_remind_30: '30min before',
+    pill_remind_60: '1h before',
+    pill_remind_1d: '1 day before',
+    pill_remind_off: 'no reminder',
+    pill_calendar: 'add to calendar',
+    pill_repeat: 'repeat',
+    pill_repeat_daily: 'daily',
+    pill_repeat_weekly: 'weekly',
+    pill_repeat_monthly: 'monthly',
+    pill_repeat_none: 'one-time',
+    section_overdue: 'CARRIED OVER',
+    section_today: 'TODAY',
+    section_done: 'DONE',
     settings_title: 'Me',
     settings_lang: 'Language',
     settings_lang_desc: 'Interface language',
+    settings_notifications: 'Notifications',
+    settings_push: 'Remind me',
     settings_account: 'Account',
     settings_signout: 'Sign out',
-    settings_delete: 'Delete account',
-    settings_delete_confirm: 'Are you sure? All recordings will be deleted. Can\'t be undone.',
+    all_title: 'All',
+    all_count_fmt: '{n} tasks',
+    toast_added: 'added',
+    toast_done: 'nicely done',
+    toast_pushed: 'pushed to tomorrow',
+    toast_deleted: 'deleted',
+    toast_error: 'ugh. something broke',
+    toast_push_on: 'notifications on',
+    toast_push_off: 'notifications off',
+    confirm_delete: 'sure you want to delete?',
+    confirm_signout: 'sure you want to sign out?',
     footer_made: 'made with care in Istanbul',
-    
-    // Dates
-    days: ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'],
-    days_short: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
-    months: ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+    empty_prompt: 'You haven\'t <span class="hl">said anything</span> yet today.',
+    empty_hand: 'press the mic, or type.',
+    empty_tomorrow: 'Tomorrow is empty. Good for you.',
+    empty_all: 'No tasks. Start fresh.',
+    days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    days_short: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    months: ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
   }
 };
 
-let currentLang = localStorage.getItem('ofyaa_lang') || 
-  (navigator.language && navigator.language.startsWith('tr') ? 'tr' : 'tr');
-
-function t(key) {
-  return (I18N[currentLang] && I18N[currentLang][key]) || I18N.tr[key] || key;
-}
-
+let currentLang = localStorage.getItem('ofyaa_lang') || (navigator.language?.startsWith('tr') ? 'tr' : 'tr');
+function t(key) { return I18N[currentLang]?.[key] ?? I18N.tr[key] ?? key; }
 async function setLang(lang) {
-  if (lang !== 'tr' && lang !== 'en') return;
+  if (!I18N[lang]) return;
   currentLang = lang;
   localStorage.setItem('ofyaa_lang', lang);
   document.documentElement.lang = lang;
   applyI18n();
-  
-  // Update user profile if logged in
   if (state.user) {
-    try {
-      await sb.from('user_profiles').update({ language: lang }).eq('user_id', state.user.id);
-    } catch(e) { console.warn('profile lang update failed', e); }
+    try { await sb.from('user_profiles').update({ language: lang }).eq('user_id', state.user.id); } catch(e){}
   }
 }
-
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const val = t(key);
-    if (val) el.textContent = val;
+    const v = t(el.getAttribute('data-i18n'));
+    if (v) el.textContent = v;
   });
-  
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    el.placeholder = t(key);
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
   });
-  
-  // Update active state on lang buttons
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
   });
-  
-  // Refresh dynamic content if visible
-  if (state.currentView === 'home') refreshHome();
-  if (state.currentView === 'history') refreshHistory();
-  if (state.currentView === 'settings') refreshSettings();
+  refreshCurrentView();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1505,101 +1525,43 @@ const state = {
   animationFrame: null,
   startTime: null,
   timerInterval: null,
-  currentInsight: null
-};
-
-// Mock pools for fallback (when API fails)
-const MOCK_POOLS = {
-  tr: {
-    moods: [
-      "biraz yorgun, biraz kızgın — ikisi de geçerli",
-      "eh, fena değil aslında. altta bir meraklanma var",
-      "kararlı ama acele etmiyorsun, hoş",
-      "içten içe dağınık bir gün — ama sen iyi taşımışsın"
-    ],
-    themes: [
-      ["iş", "toplantı", "yorgunluk"],
-      ["aile", "anne", "uzun konuşma"],
-      ["ilişki", "mesaj", "küskün"]
-    ],
-    summaries: [
-      "Bugün biraz sıkışık hissettin. Söylediğinde kafan rahatlamış.",
-      "İçinde kaldığını söyledin; artık dışarıda."
-    ],
-    questions: [
-      "Bu yorgunluk fiziksel mi, yoksa bir şey mi taşıyor?",
-      "Kime 'of ya' demek istedin, ama diyemedin?"
-    ]
-  },
-  en: {
-    moods: [
-      "a bit tired, a bit angry — both valid",
-      "eh, not bad actually. curiosity simmering underneath",
-      "determined but not rushing, nice",
-      "internally scattered — but you carried it well"
-    ],
-    themes: [
-      ["work", "meeting", "tired"],
-      ["family", "mom", "long talk"],
-      ["relationship", "text", "distant"]
-    ],
-    summaries: [
-      "You felt squeezed today. Said it out loud, felt lighter.",
-      "You said it was stuck inside. It's outside now."
-    ],
-    questions: [
-      "Is this tiredness physical, or carrying something?",
-      "Who did you want to sigh at but couldn't?"
-    ]
-  }
+  pendingTask: null,      // parsed but not yet saved
+  pendingSource: 'text',
+  pendingRawText: ''      // what user said/typed
 };
 
 // ═══════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════
 async function initAuth() {
-  // Load saved language first
   applyI18n();
-  
-  // Set up language buttons on auth screen
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
   });
-  
-  // Check existing session
   const { data: { session } } = await sb.auth.getSession();
-  
-  if (session) {
-    await onAuthenticated(session.user);
-  } else {
-    switchView('auth');
-  }
-  
-  // Listen for auth changes (magic link callback)
+  if (session) await onAuthenticated(session.user);
+  else switchView('auth');
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      await onAuthenticated(session.user);
-    } else if (event === 'SIGNED_OUT') {
-      state.user = null;
-      switchView('auth');
-    }
+    if (event === 'SIGNED_IN' && session) await onAuthenticated(session.user);
+    else if (event === 'SIGNED_OUT') { state.user = null; switchView('auth'); }
   });
 }
 
 async function onAuthenticated(user) {
   state.user = user;
-  
-  // Load user's language preference
   try {
-    const { data } = await sb.from('user_profiles').select('language').eq('user_id', user.id).single();
-    if (data && data.language && data.language !== currentLang) {
+    const { data } = await sb.from('user_profiles').select('language').eq('user_id', user.id).maybeSingle();
+    if (data?.language && data.language !== currentLang) {
       currentLang = data.language;
       localStorage.setItem('ofyaa_lang', data.language);
       applyI18n();
+    } else if (!data) {
+      // create profile if missing
+      try { await sb.from('user_profiles').insert({ user_id: user.id, language: currentLang }); } catch(e){}
     }
   } catch(e) {}
-  
-  switchView('home');
+  await runCarryForward();
+  switchView('today');
 }
 
 async function handleAuthSubmit(e) {
@@ -1607,33 +1569,24 @@ async function handleAuthSubmit(e) {
   const emailInput = document.getElementById('auth-email');
   const btn = document.getElementById('auth-submit-btn');
   const errorEl = document.getElementById('auth-error');
-  
   const email = emailInput.value.trim().toLowerCase();
-  if (!email || !email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
+  if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
     errorEl.textContent = t('auth_err_invalid');
     errorEl.style.display = 'block';
     return false;
   }
-  
   errorEl.style.display = 'none';
   btn.disabled = true;
   btn.textContent = t('auth_sending');
-  
   try {
     const { error } = await sb.auth.signInWithOtp({
-      email: email,
-      options: {
-        emailRedirectTo: window.location.origin + window.location.pathname,
-        data: { language: currentLang }
-      }
+      email,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
     });
-    
     if (error) throw error;
-    
     document.getElementById('auth-sent-email').textContent = email;
     switchView('auth-sent');
   } catch (err) {
-    console.error('Auth error:', err);
     const isRate = (err.message || '').toLowerCase().includes('rate');
     errorEl.textContent = isRate ? t('auth_err_rate') : t('auth_err_send');
     errorEl.style.display = 'block';
@@ -1641,35 +1594,13 @@ async function handleAuthSubmit(e) {
     btn.disabled = false;
     btn.textContent = t('auth_send');
   }
-  
   return false;
 }
 
-function backToAuth() {
-  switchView('auth');
-}
-
+function backToAuth() { switchView('auth'); }
 async function signOut() {
+  if (!confirm(t('confirm_signout'))) return;
   await sb.auth.signOut();
-  // onAuthStateChange listener handles view switch
-}
-
-async function deleteAccount() {
-  if (!confirm(t('settings_delete_confirm'))) return;
-  
-  try {
-    // Delete all recordings first (RLS will enforce, but explicit)
-    await sb.from('recordings').delete().eq('user_id', state.user.id);
-    await sb.from('user_profiles').delete().eq('user_id', state.user.id);
-    
-    // Supabase doesn't let client delete auth.users without admin;
-    // sign out and inform user
-    await sb.auth.signOut();
-    showToast(t('toast_deleted'));
-  } catch (err) {
-    console.error('Delete error:', err);
-    showToast(t('toast_error'));
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1680,86 +1611,183 @@ function switchView(name) {
   const el = document.getElementById('view-' + name);
   if (el) el.classList.add('active');
   state.currentView = name;
-  
-  if (name === 'home') refreshHome();
-  if (name === 'history') refreshHistory();
-  if (name === 'settings') refreshSettings();
+  refreshCurrentView();
+}
+
+function refreshCurrentView() {
+  if (state.currentView === 'today') refreshToday();
+  if (state.currentView === 'tomorrow') refreshTomorrow();
+  if (state.currentView === 'all') refreshAll();
+  if (state.currentView === 'settings') refreshSettings();
 }
 
 // ═══════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════
-function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-function formatDate(date) {
-  const d = t('days');
-  const m = t('months');
-  return `${d[date.getDay()]} · ${m[date.getMonth()]}`;
+function pad(n) { return String(n).padStart(2, '0'); }
+function formatTime(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (d.getHours() === 0 && d.getMinutes() === 0) return null;
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-
+function isToday(iso) {
+  if (!iso) return false;
+  const d = new Date(iso), n = new Date();
+  return d.toDateString() === n.toDateString();
+}
+function isTomorrow(iso) {
+  if (!iso) return false;
+  const d = new Date(iso), n = new Date(); n.setDate(n.getDate() + 1);
+  return d.toDateString() === n.toDateString();
+}
+function isPastDate(iso) {
+  if (!iso) return false;
+  const d = new Date(iso), n = new Date(); n.setHours(0,0,0,0);
+  return d < n;
+}
 function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
+  return `${m}:${pad(s)}`;
 }
-
-function showToast(msg, acid = false) {
+function showToast(msg, color = '') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
-  toast.classList.toggle('acid', acid);
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2600);
+  toast.className = 'toast show' + (color ? ' ' + color : '');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.className = 'toast', 2600);
+}
+function reminderLabel(min) {
+  if (!min) return null;
+  if (min === 15) return t('pill_remind_15');
+  if (min === 30) return t('pill_remind_30');
+  if (min === 60) return t('pill_remind_60');
+  if (min === 1440) return t('pill_remind_1d');
+  return `${min}dk`;
+}
+function recurrenceLabel(rule) {
+  if (rule === 'daily') return t('pill_repeat_daily');
+  if (rule === 'weekly') return t('pill_repeat_weekly');
+  if (rule === 'monthly') return t('pill_repeat_monthly');
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════════
-// HOME
+// CARRY FORWARD (client-side, on app open)
 // ═══════════════════════════════════════════════════════════
-async function refreshHome() {
-  const now = new Date();
-  document.getElementById('home-date').textContent = formatDate(now);
-  document.getElementById('home-date-num').textContent = now.getDate();
-  
-  const prompts = t('prompts');
-  const promptIdx = now.getDate() % prompts.length;
-  document.getElementById('home-prompt').innerHTML = prompts[promptIdx];
-  
-  await refreshStreak();
-}
-
-async function refreshStreak() {
-  const streakEl = document.getElementById('streak');
-  streakEl.innerHTML = '';
-  
-  const since = new Date();
-  since.setDate(since.getDate() - 7);
-  
-  let recordings = [];
+async function runCarryForward() {
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
   try {
-    const { data } = await sb.from('recordings')
-      .select('created_at')
-      .gte('created_at', since.toISOString())
-      .order('created_at', { ascending: false });
-    recordings = data || [];
-  } catch(e) { console.warn('streak fetch failed', e); }
-  
-  const today = new Date().toDateString();
-  
-  for (let i = 6; i >= 0; i--) {
-    const day = new Date();
-    day.setDate(day.getDate() - i);
-    const dayStr = day.toDateString();
-    const hasEntry = recordings.some(r => new Date(r.created_at).toDateString() === dayStr);
-    
-    const dot = document.createElement('div');
-    dot.className = 'streak-dot';
-    if (dayStr === today) dot.classList.add('today');
-    else if (hasEntry) dot.classList.add('filled');
-    streakEl.appendChild(dot);
+    const { data } = await sb.from('tasks')
+      .select('id, due_at, carried_count')
+      .eq('status', 'todo')
+      .lt('due_at', todayStart.toISOString());
+    for (const tsk of data || []) {
+      const old = new Date(tsk.due_at);
+      const updated = new Date(todayStart);
+      updated.setHours(old.getHours(), old.getMinutes(), 0, 0);
+      await sb.from('tasks').update({
+        due_at: updated.toISOString(),
+        carried_count: (tsk.carried_count ?? 0) + 1,
+        reminder_sent: false
+      }).eq('id', tsk.id);
+    }
+  } catch (e) { console.warn('carry-forward failed', e); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PARSE TASK (Claude or fallback)
+// ═══════════════════════════════════════════════════════════
+async function parseTaskFromText(text) {
+  try {
+    const resp = await fetch('/api/parse-task', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language: currentLang })
+    });
+    if (!resp.ok) throw new Error('parse fail');
+    return await resp.json();
+  } catch (e) {
+    // fallback parsing — simple heuristics
+    return fallbackParse(text);
   }
 }
 
+function fallbackParse(text) {
+  const result = {
+    title: text.trim(),
+    due_at: null,
+    remind_before_minutes: null,
+    recurrence_rule: 'none',
+    recurrence_day: null,
+    send_to_calendar: false
+  };
+  const lower = text.toLowerCase();
+  const now = new Date();
+  // tomorrow / bugün / yarın
+  if (/\b(yarın|tomorrow)\b/.test(lower)) {
+    const d = new Date(now); d.setDate(d.getDate() + 1); d.setHours(9,0,0,0);
+    result.due_at = d.toISOString();
+  } else if (/\b(bugün|today)\b/.test(lower)) {
+    const d = new Date(now);
+    result.due_at = d.toISOString();
+  }
+  // time HH:MM
+  const tm = text.match(/\b(\d{1,2})[:.](\d{2})\b/);
+  if (tm) {
+    const d = result.due_at ? new Date(result.due_at) : new Date(now);
+    d.setHours(parseInt(tm[1]), parseInt(tm[2]), 0, 0);
+    result.due_at = d.toISOString();
+    result.remind_before_minutes = 15;
+  }
+  if (/takvim|calendar/.test(lower)) result.send_to_calendar = true;
+  if (/her gün|daily/.test(lower)) result.recurrence_rule = 'daily';
+  else if (/her hafta|weekly/.test(lower)) result.recurrence_rule = 'weekly';
+  else if (/her ay|monthly/.test(lower)) result.recurrence_rule = 'monthly';
+  return result;
+}
+
 // ═══════════════════════════════════════════════════════════
-// WAVEFORM
+// QUICK ADD (text)
+// ═══════════════════════════════════════════════════════════
+async function handleQuickKey(e) {
+  if (e.key !== 'Enter') return;
+  const input = document.getElementById('quick-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.disabled = true;
+  state.pendingRawText = text;
+  state.pendingSource = 'text';
+  switchView('processing');
+  startProcessingAnimation();
+  const parsed = await parseTaskFromText(text);
+  stopProcessingAnimation();
+  state.pendingTask = parsed;
+  input.value = '';
+  input.disabled = false;
+  showPreview();
+}
+
+let processingInterval = null;
+function startProcessingAnimation() {
+  const texts = t('processing_texts');
+  const el = document.getElementById('processing-text');
+  let i = 0;
+  el.style.opacity = '1';
+  el.textContent = texts[0];
+  processingInterval = setInterval(() => {
+    i = (i + 1) % texts.length;
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = texts[i]; el.style.opacity = '1'; }, 300);
+  }, 1300);
+}
+function stopProcessingAnimation() {
+  if (processingInterval) clearInterval(processingInterval);
+}
+
+// ═══════════════════════════════════════════════════════════
+// VOICE RECORDING
 // ═══════════════════════════════════════════════════════════
 function initWaveform() {
   const wf = document.getElementById('waveform');
@@ -1784,40 +1812,30 @@ function animateWaveform() {
   const buffer = new Uint8Array(state.analyser.frequencyBinCount);
   state.analyser.getByteFrequencyData(buffer);
   const step = Math.floor(buffer.length / bars.length);
-  
   bars.forEach((bar, i) => {
     const value = buffer[i * step] || 0;
     const height = Math.max(4, (value / 255) * 130);
     bar.style.height = height + 'px';
-    if (value > 40) bar.classList.add('active');
-    else bar.classList.remove('active');
+    bar.classList.toggle('active', value > 40);
   });
-  
   state.animationFrame = requestAnimationFrame(animateWaveform);
 }
 
-// ═══════════════════════════════════════════════════════════
-// RECORDING
-// ═══════════════════════════════════════════════════════════
 async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     state.audioStream = stream;
     state.audioChunks = [];
     state.transcript = '';
-    
     state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const source = state.audioContext.createMediaStreamSource(stream);
     state.analyser = state.audioContext.createAnalyser();
     state.analyser.fftSize = 256;
     source.connect(state.analyser);
-    
     state.mediaRecorder = new MediaRecorder(stream);
-    state.mediaRecorder.ondataavailable = e => {
-      if (e.data && e.data.size > 0) state.audioChunks.push(e.data);
-    };
+    state.mediaRecorder.ondataavailable = e => { if (e.data?.size > 0) state.audioChunks.push(e.data); };
     state.mediaRecorder.start();
-    
+
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR) {
       try {
@@ -1825,86 +1843,57 @@ async function startRecording() {
         state.recognition.continuous = true;
         state.recognition.interimResults = true;
         state.recognition.lang = currentLang === 'en' ? 'en-US' : 'tr-TR';
-        
         state.recognition.onresult = (event) => {
           for (let i = event.resultIndex; i < event.results.length; i++) {
-            if (event.results[i].isFinal) {
-              state.transcript += event.results[i][0].transcript + ' ';
-            }
+            if (event.results[i].isFinal) state.transcript += event.results[i][0].transcript + ' ';
           }
         };
-        
         state.recognition.onend = () => {
           if (state.recording && state.recognition) {
-            try { state.recognition.start(); } catch (e) {}
+            try { state.recognition.start(); } catch(e) {}
           }
         };
-        
         state.recognition.start();
-      } catch (e) {
-        state.recognition = null;
-      }
+      } catch(e) { state.recognition = null; }
     }
-    
     state.startTime = Date.now();
     state.timerInterval = setInterval(updateTimer, 100);
     state.recording = true;
-    
     switchView('recording');
     animateWaveform();
   } catch (err) {
-    console.error(err);
-    showToast(t('rec_mic_error'));
+    showToast(t('rec_mic_error'), 'pink');
   }
 }
 
 function stopRecording() {
   if (!state.recording) return;
   const duration = (Date.now() - state.startTime) / 1000;
-  if (duration < 3) { showToast(t('rec_too_short')); return; }
-  
+  if (duration < 2) { showToast(t('rec_too_short')); return; }
   state.recording = false;
-  
   if (state.recognition) {
     const r = state.recognition;
     state.recognition = null;
-    try { r.stop(); } catch (e) {}
+    try { r.stop(); } catch(e){}
   }
-  
   if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
-    state.mediaRecorder.onstop = () => decideAndProcess(duration);
+    state.mediaRecorder.onstop = () => processVoice(duration);
     state.mediaRecorder.stop();
   } else {
-    decideAndProcess(duration);
-  }
-}
-
-function decideAndProcess(duration) {
-  const transcript = (state.transcript || '').trim();
-  const words = transcript.split(/\s+/).filter(Boolean).length;
-  const minExpectedWords = Math.max(3, Math.floor(duration * 0.5));
-  
-  cleanupRecording();
-  
-  if (words >= minExpectedWords && transcript.length >= 10) {
-    processTranscript(transcript, duration);
-  } else {
-    const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
-    state.audioChunks = [];
-    processAudio(blob, duration);
+    processVoice(duration);
   }
 }
 
 function cancelRecording() {
   if (!state.recording) return;
   state.recording = false;
-  if (state.recognition) { try { state.recognition.stop(); } catch (e) {} state.recognition = null; }
-  if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
-    try { state.mediaRecorder.stop(); } catch (e) {}
+  if (state.recognition) { try { state.recognition.stop(); } catch(e){} state.recognition = null; }
+  if (state.mediaRecorder?.state !== 'inactive') {
+    try { state.mediaRecorder.stop(); } catch(e){}
   }
   cleanupRecording();
   state.audioChunks = [];
-  switchView('home');
+  switchView('today');
   showToast(t('rec_cancelled'));
 }
 
@@ -1919,263 +1908,462 @@ function cleanupRecording() {
   state.mediaRecorder = null;
 }
 
-// ═══════════════════════════════════════════════════════════
-// ANALYSIS
-// ═══════════════════════════════════════════════════════════
-const USE_MOCK_FALLBACK = true;
-
-async function processTranscript(transcript, duration) {
-  await runAnalysis({
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ transcript, duration, language: currentLang })
-  }, { transcript, duration });
-}
-
-async function processAudio(audioBlob, duration) {
-  const formData = new FormData();
-  formData.append('audio', audioBlob, 'recording.webm');
-  formData.append('duration', String(duration));
-  formData.append('language', currentLang);
-  await runAnalysis({ method: 'POST', body: formData }, { duration });
-}
-
-async function runAnalysis(fetchOptions, meta) {
+async function processVoice(duration) {
+  cleanupRecording();
+  const transcript = (state.transcript || '').trim();
+  if (!transcript || transcript.length < 3) {
+    switchView('today');
+    showToast(t('rec_no_speech'), 'pink');
+    return;
+  }
+  state.pendingRawText = transcript;
+  state.pendingSource = 'voice';
   switchView('processing');
-  
-  const processingTexts = t('processing_texts');
-  const textEl = document.getElementById('processing-text');
-  textEl.textContent = processingTexts[0];
-  
-  let i = 0;
-  const textInterval = setInterval(() => {
-    i = (i + 1) % processingTexts.length;
-    textEl.style.opacity = '0';
-    setTimeout(() => {
-      textEl.textContent = processingTexts[i];
-      textEl.style.opacity = '1';
-    }, 300);
-  }, 1500);
-  
-  let insight = null;
-  let apiError = null;
-  
-  try {
-    const response = await fetch('/api/analyze', fetchOptions);
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || `API ${response.status}`);
-    }
-    const data = await response.json();
-    insight = {
-      mood: data.mood,
-      themes: data.themes,
-      summary: data.summary,
-      question: data.question,
-      transcript: data.transcript || meta.transcript || '',
-      source: data.source
-    };
-  } catch (err) {
-    apiError = err.message;
-    if (USE_MOCK_FALLBACK) {
-      await new Promise(r => setTimeout(r, 1400));
-      const pool = MOCK_POOLS[currentLang] || MOCK_POOLS.tr;
-      insight = {
-        mood: pickRandom(pool.moods),
-        themes: pickRandom(pool.themes),
-        summary: pickRandom(pool.summaries),
-        question: pickRandom(pool.questions),
-        transcript: meta.transcript || '[mock]',
-        source: 'mock'
-      };
-    }
-  }
-  
-  clearInterval(textInterval);
-  
-  if (!insight) {
-    showToast(t('toast_error'));
-    switchView('home');
-    return;
-  }
-  
-  state.currentInsight = {
-    id: null, // will be set by Supabase on save
-    date: new Date().toISOString(),
-    duration: Math.floor(meta.duration),
-    ...insight,
-    language: currentLang,
-    isMock: !!apiError
-  };
-  
-  renderInsight(state.currentInsight);
-  switchView('insight');
-  
-  if (apiError && USE_MOCK_FALLBACK) {
-    setTimeout(() => showToast(t('toast_mock')), 600);
-  }
-}
-
-function renderInsight(insight) {
-  const d = new Date(insight.date || insight.created_at);
-  document.getElementById('insight-date').textContent = formatDate(d);
-  
-  const hour = d.getHours();
-  let key = 'insight_time_night';
-  if (hour >= 5 && hour < 12) key = 'insight_time_morning';
-  else if (hour >= 12 && hour < 17) key = 'insight_time_afternoon';
-  else if (hour >= 17 && hour < 22) key = 'insight_time_evening';
-  document.getElementById('insight-time').textContent = t(key);
-  
-  const duration = insight.duration || insight.duration_seconds || 0;
-  const words = Math.floor(duration * 140 / 60);
-  document.getElementById('insight-duration').textContent = 
-    t('insight_duration_fmt').replace('{time}', formatDuration(duration)).replace('{words}', words);
-  
-  document.getElementById('insight-mood').textContent = insight.mood;
-  
-  const themesEl = document.getElementById('insight-themes');
-  themesEl.innerHTML = '';
-  (insight.themes || []).forEach(th => {
-    const chip = document.createElement('span');
-    chip.className = 'theme-chip';
-    chip.textContent = th;
-    themesEl.appendChild(chip);
-  });
-  
-  document.getElementById('insight-summary').textContent = insight.summary;
-  document.getElementById('insight-question').textContent = insight.question;
+  startProcessingAnimation();
+  const parsed = await parseTaskFromText(transcript);
+  stopProcessingAnimation();
+  state.pendingTask = parsed;
+  showPreview();
 }
 
 // ═══════════════════════════════════════════════════════════
-// SAVE / DISCARD → Supabase
+// PREVIEW + EDIT
 // ═══════════════════════════════════════════════════════════
-async function saveEntry() {
-  if (!state.currentInsight || !state.user) return;
-  
+function showPreview() {
+  document.getElementById('preview-eyebrow').textContent =
+    state.pendingSource === 'voice' ? t('preview_eyebrow') : t('preview_typed');
+  document.getElementById('preview-quote').textContent = state.pendingRawText;
+  document.getElementById('preview-title').value = state.pendingTask.title || state.pendingRawText;
+  renderPreviewPills();
+  switchView('preview');
+}
+
+function renderPreviewPills() {
+  const wrap = document.getElementById('preview-pills');
+  wrap.innerHTML = '';
+  const tk = state.pendingTask;
+
+  // when pill
+  const whenLabel = tk.due_at
+    ? (isToday(tk.due_at) ? t('pill_today') : isTomorrow(tk.due_at) ? t('pill_tomorrow') : new Date(tk.due_at).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US', {day:'numeric', month:'short'}))
+    : t('pill_today');
+  const timeStr = formatTime(tk.due_at);
+  wrap.appendChild(makePill(`${whenLabel}${timeStr ? ' · ' + timeStr : ''}`, true, '🕐', () => cyclePillWhen()));
+  // remind pill
+  wrap.appendChild(makePill(tk.remind_before_minutes ? reminderLabel(tk.remind_before_minutes) : t('pill_remind_off'),
+    !!tk.remind_before_minutes, '🔔', () => cyclePillRemind()));
+  // recurrence pill
+  wrap.appendChild(makePill(tk.recurrence_rule === 'none' ? t('pill_repeat_none') : recurrenceLabel(tk.recurrence_rule),
+    tk.recurrence_rule !== 'none', '↻', () => cyclePillRepeat()));
+  // calendar pill
+  wrap.appendChild(makeCalPill(tk.send_to_calendar ? t('pill_calendar') : '+ ' + t('pill_calendar'),
+    tk.send_to_calendar, '📅', () => { tk.send_to_calendar = !tk.send_to_calendar; renderPreviewPills(); }));
+}
+
+function makePill(label, active, emoji, onClick) {
+  const b = document.createElement('button');
+  b.className = 'preview-pill' + (active ? ' active' : '');
+  b.innerHTML = `<span style="font-size:13px;">${emoji}</span> ${label}`;
+  b.onclick = onClick;
+  return b;
+}
+function makeCalPill(label, active, emoji, onClick) {
+  const b = document.createElement('button');
+  b.className = 'preview-pill cal' + (active ? ' active' : '');
+  b.innerHTML = `<span style="font-size:13px;">${emoji}</span> ${label}`;
+  b.onclick = onClick;
+  return b;
+}
+
+function cyclePillWhen() {
+  const tk = state.pendingTask;
+  if (!tk.due_at || isToday(tk.due_at)) {
+    // → tomorrow
+    const d = new Date(); d.setDate(d.getDate() + 1);
+    const old = tk.due_at ? new Date(tk.due_at) : null;
+    if (old) d.setHours(old.getHours(), old.getMinutes(), 0, 0);
+    else d.setHours(9,0,0,0);
+    tk.due_at = d.toISOString();
+  } else {
+    // → today
+    const d = new Date();
+    const old = new Date(tk.due_at);
+    d.setHours(old.getHours(), old.getMinutes(), 0, 0);
+    tk.due_at = d.toISOString();
+  }
+  renderPreviewPills();
+}
+
+function cyclePillRemind() {
+  const tk = state.pendingTask;
+  const cycle = [null, 15, 30, 60, 1440];
+  const i = cycle.indexOf(tk.remind_before_minutes);
+  tk.remind_before_minutes = cycle[(i + 1) % cycle.length];
+  renderPreviewPills();
+}
+
+function cyclePillRepeat() {
+  const tk = state.pendingTask;
+  const cycle = ['none', 'daily', 'weekly', 'monthly'];
+  const i = cycle.indexOf(tk.recurrence_rule);
+  tk.recurrence_rule = cycle[(i + 1) % cycle.length];
+  renderPreviewPills();
+}
+
+function discardPreview() {
+  state.pendingTask = null;
+  state.pendingRawText = '';
+  switchView('today');
+}
+
+async function saveTask() {
+  if (!state.pendingTask || !state.user) return;
+  const tk = state.pendingTask;
+  const titleInput = document.getElementById('preview-title').value.trim();
+  if (!titleInput) return;
   try {
-    const { error } = await sb.from('recordings').insert({
+    const { error } = await sb.from('tasks').insert({
       user_id: state.user.id,
-      duration_seconds: state.currentInsight.duration,
-      language: state.currentInsight.language || currentLang,
-      source: state.currentInsight.source || 'mock',
-      transcript: state.currentInsight.transcript || '',
-      mood: state.currentInsight.mood,
-      themes: state.currentInsight.themes,
-      summary: state.currentInsight.summary,
-      question: state.currentInsight.question
+      title: titleInput,
+      due_at: tk.due_at,
+      remind_before_minutes: tk.remind_before_minutes,
+      recurrence_rule: tk.recurrence_rule || 'none',
+      recurrence_day: tk.recurrence_day,
+      send_to_calendar: tk.send_to_calendar || false,
+      source: state.pendingSource
     });
-    
     if (error) throw error;
-    
-    state.currentInsight = null;
-    switchView('home');
-    showToast(t('toast_saved'), true);
-  } catch (err) {
-    console.error('Save error:', err);
-    showToast(t('toast_error'));
+    state.pendingTask = null;
+    state.pendingRawText = '';
+    switchView('today');
+    showToast(t('toast_added'), 'acid');
+  } catch (e) {
+    console.error('save error', e);
+    showToast(t('toast_error'), 'pink');
   }
 }
 
-function discardEntry() {
-  state.currentInsight = null;
-  switchView('home');
-  showToast(t('toast_deleted'));
+// ═══════════════════════════════════════════════════════════
+// TASK CARDS + SWIPE
+// ═══════════════════════════════════════════════════════════
+function renderTaskCard(tk) {
+  const wrap = document.createElement('div');
+  wrap.className = 'task-wrap';
+  wrap.dataset.taskId = tk.id;
+
+  const bgL = document.createElement('div');
+  bgL.className = 'task-swipe-bg left';
+  bgL.innerHTML = `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="task-swipe-bg-text">YAPTIM</span>`;
+  wrap.appendChild(bgL);
+
+  const bgR = document.createElement('div');
+  bgR.className = 'task-swipe-bg right';
+  bgR.innerHTML = `<span class="task-swipe-bg-text">YARIN</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`;
+  wrap.appendChild(bgR);
+
+  const card = document.createElement('div');
+  card.className = 'task' + (tk.status === 'done' ? ' done' : '') + (isPastDate(tk.due_at) && tk.status === 'todo' ? ' overdue' : '');
+
+  const check = document.createElement('button');
+  check.className = 'task-check';
+  check.setAttribute('aria-label', 'complete');
+  check.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  check.onclick = (e) => { e.stopPropagation(); toggleTaskDone(tk, card); };
+  card.appendChild(check);
+
+  const body = document.createElement('div');
+  body.className = 'task-body';
+  const title = document.createElement('div');
+  title.className = 'task-title';
+  title.textContent = tk.title;
+  body.appendChild(title);
+
+  const meta = document.createElement('div');
+  meta.className = 'task-meta';
+  const tm = formatTime(tk.due_at);
+  if (tm) {
+    const chip = document.createElement('span');
+    chip.className = 'task-chip time';
+    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${tm}`;
+    meta.appendChild(chip);
+  }
+  if (tk.remind_before_minutes) {
+    const chip = document.createElement('span');
+    chip.className = 'task-chip bell';
+    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>${reminderLabel(tk.remind_before_minutes)}`;
+    meta.appendChild(chip);
+  }
+  if (tk.send_to_calendar) {
+    const chip = document.createElement('span');
+    chip.className = 'task-chip calendar';
+    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>takvim`;
+    meta.appendChild(chip);
+  }
+  if (tk.recurrence_rule && tk.recurrence_rule !== 'none') {
+    const chip = document.createElement('span');
+    chip.className = 'task-chip recurring';
+    chip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>${recurrenceLabel(tk.recurrence_rule)}`;
+    meta.appendChild(chip);
+  }
+  if (tk.carried_count > 0 && tk.status === 'todo') {
+    const chip = document.createElement('span');
+    chip.className = 'task-chip carried';
+    chip.textContent = `↻ ${tk.carried_count}× ertelendi`;
+    meta.appendChild(chip);
+  }
+  if (meta.children.length > 0) body.appendChild(meta);
+  card.appendChild(body);
+
+  // delete button
+  const actions = document.createElement('div');
+  actions.className = 'task-actions';
+  const delBtn = document.createElement('button');
+  delBtn.className = 'task-action-btn';
+  delBtn.setAttribute('aria-label', 'delete');
+  delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
+  delBtn.onclick = (e) => { e.stopPropagation(); deleteTask(tk); };
+  actions.appendChild(delBtn);
+  card.appendChild(actions);
+
+  // SWIPE handlers
+  let startX = 0, startY = 0, dx = 0, decided = null;
+  card.addEventListener('touchstart', (e) => {
+    if (tk.status === 'done') return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    decided = null;
+    card.classList.add('swiping');
+  }, { passive: true });
+  card.addEventListener('touchmove', (e) => {
+    if (tk.status === 'done') return;
+    const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+    const ddx = cx - startX, ddy = cy - startY;
+    if (!decided) decided = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+    if (decided === 'x') {
+      dx = ddx;
+      card.style.transform = `translateX(${dx}px) rotate(${dx * 0.02}deg)`;
+      bgL.style.opacity = Math.min(1, Math.max(0, dx / 60));
+      bgR.style.opacity = Math.min(1, Math.max(0, -dx / 60));
+    }
+  }, { passive: true });
+  card.addEventListener('touchend', () => {
+    if (tk.status === 'done') return;
+    card.classList.remove('swiping');
+    bgL.style.opacity = 0; bgR.style.opacity = 0;
+    if (dx > 90) {
+      card.style.transform = 'translateX(120%) rotate(8deg)';
+      toggleTaskDone(tk, card);
+    } else if (dx < -90) {
+      card.style.transform = 'translateX(-120%) rotate(-8deg)';
+      pushTaskTomorrow(tk);
+    } else {
+      card.style.transform = '';
+    }
+    dx = 0;
+  });
+
+  wrap.appendChild(card);
+  return wrap;
 }
 
-// ═══════════════════════════════════════════════════════════
-// HISTORY
-// ═══════════════════════════════════════════════════════════
-async function refreshHistory() {
-  const content = document.getElementById('history-content');
-  const countEl = document.getElementById('history-count');
-  
-  content.innerHTML = '<div style="padding:40px 0; text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
-  countEl.textContent = '...';
-  
-  let entries = [];
+async function toggleTaskDone(tk, cardEl) {
+  const newStatus = tk.status === 'done' ? 'todo' : 'done';
+  if (newStatus === 'done' && cardEl) {
+    spawnConfetti(cardEl);
+    setTimeout(() => showToast(t('toast_done'), 'acid'), 80);
+  }
   try {
-    const { data, error } = await sb.from('recordings')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-    if (error) throw error;
-    entries = data || [];
-  } catch(e) {
-    console.warn('history fetch failed', e);
+    await sb.from('tasks').update({
+      status: newStatus,
+      completed_at: newStatus === 'done' ? new Date().toISOString() : null
+    }).eq('id', tk.id);
+  } catch(e) { console.error(e); }
+  setTimeout(refreshCurrentView, newStatus === 'done' ? 300 : 0);
+}
+
+async function pushTaskTomorrow(tk) {
+  if (!tk.due_at) {
+    const t2 = new Date(); t2.setDate(t2.getDate() + 1); t2.setHours(9,0,0,0);
+    tk.due_at = t2.toISOString();
   }
-  
-  countEl.textContent = entries.length === 0 
-    ? t('history_count_zero')
-    : t('history_count_fmt').replace('{n}', entries.length);
-  
-  if (entries.length === 0) {
-    content.innerHTML = `
-      <div class="history-empty">
-        <div class="empty-sticker">of.</div>
-        <p class="empty-text">${t('history_empty_text')}</p>
-        <p class="empty-hand">${t('history_empty_hand')}</p>
-      </div>
+  const d = new Date(tk.due_at);
+  d.setDate(d.getDate() + 1);
+  try {
+    await sb.from('tasks').update({
+      due_at: d.toISOString(),
+      carried_count: (tk.carried_count ?? 0) + 1,
+      reminder_sent: false
+    }).eq('id', tk.id);
+    showToast(t('toast_pushed'));
+  } catch(e) { console.error(e); }
+  setTimeout(refreshCurrentView, 300);
+}
+
+async function deleteTask(tk) {
+  if (!confirm(t('confirm_delete'))) return;
+  try {
+    await sb.from('tasks').delete().eq('id', tk.id);
+    showToast(t('toast_deleted'));
+    refreshCurrentView();
+  } catch(e) { console.error(e); }
+}
+
+function spawnConfetti(cardEl) {
+  const rect = cardEl.getBoundingClientRect();
+  const colors = ['#D4F542','#BAE033','#F5A89B','#2A1F3A'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti';
+    p.style.background = colors[i % colors.length];
+    p.style.left = (rect.left + rect.width * 0.5) + 'px';
+    p.style.top = (rect.top + rect.height * 0.5) + 'px';
+    document.body.appendChild(p);
+    const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.5;
+    const dist = 60 + Math.random() * 80;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist - 40;
+    p.animate([
+      { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+    ], { duration: 800 + Math.random() * 400, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1)' });
+    setTimeout(() => p.remove(), 1300);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// LIST RENDERING
+// ═══════════════════════════════════════════════════════════
+async function refreshToday() {
+  const now = new Date();
+  document.getElementById('today-date').textContent =
+    `${t('months')[now.getMonth()]} · ${now.getDate()}`;
+  document.getElementById('today-name').textContent = t('days')[now.getDay()];
+
+  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+  const tomorrowStart = new Date(todayStart); tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+
+  let tasks = [];
+  try {
+    // today's tasks (and undated)
+    const { data } = await sb.from('tasks')
+      .select('*')
+      .eq('recurrence_rule', 'none')
+      .or(`and(due_at.gte.${todayStart.toISOString()},due_at.lt.${tomorrowStart.toISOString()}),due_at.is.null`)
+      .order('due_at', { ascending: true, nullsFirst: false });
+    tasks = data || [];
+  } catch (e) { console.warn('today fetch failed', e); }
+
+  const todoTasks = tasks.filter(t => t.status === 'todo');
+  const doneTasks = tasks.filter(t => t.status === 'done');
+  document.getElementById('today-remaining').textContent = todoTasks.length;
+
+  const list = document.getElementById('task-list-today');
+  list.innerHTML = '';
+
+  if (tasks.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.innerHTML = `
+      <div class="empty-sticker">of.</div>
+      <p class="empty-prompt">${t('empty_prompt')}</p>
+      <p class="empty-hand">${t('empty_hand')}</p>
     `;
+    list.appendChild(empty);
     return;
   }
-  
-  content.innerHTML = '<div class="history-list" id="history-list"></div>';
-  const list = document.getElementById('history-list');
-  
-  const daysShort = t('days_short');
-  
-  entries.forEach(e => {
-    const d = new Date(e.created_at);
-    const themes = e.themes || [];
-    const dotClass = 
-      themes.some(th => ['iş','baskı','yorgunluk','endişe','work','pressure','tired','anxiety'].includes(th)) ? 'dot-pink' :
-      themes.some(th => ['aile','spor','arkadaşlar','sevgi','minnet','family','sport','friends','love','gratitude'].includes(th)) ? 'dot-acid' :
-      'dot-bruise';
-    
-    const item = document.createElement('div');
-    item.className = 'entry';
-    item.innerHTML = `
-      <div>
-        <div class="entry-date-num">${d.getDate()}</div>
-        <div class="entry-date-day">${daysShort[d.getDay()]}</div>
-      </div>
-      <div>
-        <p class="entry-mood-text">${e.mood || ''}</p>
-        <p class="entry-meta">${formatDuration(e.duration_seconds)} · ${themes.slice(0,2).join(', ')}</p>
-      </div>
-      <div class="entry-dot ${dotClass}"></div>
-    `;
-    item.onclick = () => {
-      state.currentInsight = {
-        id: e.id,
-        date: e.created_at,
-        duration: e.duration_seconds,
-        mood: e.mood,
-        themes: e.themes,
-        summary: e.summary,
-        question: e.question,
-        source: e.source
-      };
-      renderInsight(state.currentInsight);
-      document.querySelector('.insight-actions').style.display = 'none';
-      switchView('insight');
-      setTimeout(() => {
-        document.querySelector('.insight-actions').style.display = 'flex';
-      }, 500);
-    };
-    list.appendChild(item);
-  });
+
+  if (todoTasks.length > 0) {
+    const label = document.createElement('div');
+    label.className = 'task-section-label';
+    label.textContent = t('section_today');
+    list.appendChild(label);
+    todoTasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
+  }
+  if (doneTasks.length > 0) {
+    const label = document.createElement('div');
+    label.className = 'task-section-label';
+    label.textContent = t('section_done');
+    list.appendChild(label);
+    doneTasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
+  }
+}
+
+async function refreshTomorrow() {
+  const n = new Date(); n.setDate(n.getDate() + 1);
+  document.getElementById('tomorrow-date').textContent =
+    `${t('months')[n.getMonth()]} · ${n.getDate()}`;
+  document.getElementById('tomorrow-name').textContent = t('days')[n.getDay()];
+
+  const start = new Date(n); start.setHours(0,0,0,0);
+  const end = new Date(start); end.setDate(end.getDate() + 1);
+  let tasks = [];
+  try {
+    const { data } = await sb.from('tasks')
+      .select('*')
+      .eq('recurrence_rule', 'none')
+      .gte('due_at', start.toISOString())
+      .lt('due_at', end.toISOString())
+      .order('due_at', { ascending: true });
+    tasks = data || [];
+  } catch(e) {}
+  document.getElementById('tomorrow-count').textContent = tasks.filter(t => t.status === 'todo').length;
+  const list = document.getElementById('task-list-tomorrow');
+  list.innerHTML = '';
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-sticker">☀</div><p class="empty-prompt">${t('empty_tomorrow')}</p></div>`;
+    return;
+  }
+  tasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
+}
+
+async function refreshAll() {
+  let tasks = [];
+  try {
+    const { data } = await sb.from('tasks')
+      .select('*')
+      .eq('recurrence_rule', 'none')
+      .order('status', { ascending: true })
+      .order('due_at', { ascending: true, nullsFirst: false });
+    tasks = data || [];
+  } catch(e) {}
+  document.getElementById('all-count').textContent =
+    tasks.length === 0 ? '—' : t('all_count_fmt').replace('{n}', tasks.length);
+  const list = document.getElementById('task-list-all');
+  list.innerHTML = '';
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-sticker">·</div><p class="empty-prompt">${t('empty_all')}</p></div>`;
+    return;
+  }
+  tasks.forEach(tk => list.appendChild(renderTaskCard(tk)));
 }
 
 // ═══════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════
 function refreshSettings() {
-  if (state.user) {
-    document.getElementById('settings-email').textContent = state.user.email || '';
+  if (state.user) document.getElementById('settings-email').textContent = state.user.email || '';
+  // push toggle
+  const t1 = document.getElementById('push-toggle');
+  if ('Notification' in window) {
+    t1.classList.toggle('on', Notification.permission === 'granted');
+  } else {
+    t1.disabled = true;
   }
   applyI18n();
+}
+
+async function togglePush() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    showToast(t('toast_push_off'));
+    document.getElementById('push-toggle').classList.remove('on');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    document.getElementById('push-toggle').classList.add('on');
+    showToast(t('toast_push_on'), 'acid');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2184,6 +2372,5 @@ function refreshSettings() {
 document.addEventListener('gesturestart', e => e.preventDefault());
 initAuth();
 </script>
-
 </body>
 </html>
