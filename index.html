@@ -42,6 +42,15 @@
   }
   
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  /* iOS Safari 300ms tap-delay'ı kaldır, double-tap-zoom'u engelle.
+     Bottom-nav, butonlar ve tıklanabilir tüm elementlerin tepkisini hızlandırır. */
+  button, a, input, textarea, select, label,
+  .nav-tab, .add-btn, .mic-btn, .install-banner-btn, .install-banner-close,
+  .ios-modal-close, .pill, .task-card, .day-card, .toggle-row,
+  [onclick] {
+    touch-action: manipulation;
+  }
   
   html, body {
     height: 100%;

@@ -1,55 +1,46 @@
-// ofyaa service worker — v1
-// Yapısı: app shell'i cache'le, dinamik istekleri network-first
+// ofyaa service worker — v2
+// Stratejisi: NETWORK-FIRST her şey için. Sadece offline'da cache fallback.
+// v1'in agresif cache'lemesi UI sorunları yaratıyordu, basitleştirildi.
 
-const CACHE_NAME = 'ofyaa-v1';
-const APP_SHELL = [
-  '/',
-  '/index.html',
-];
+const CACHE_NAME = 'ofyaa-v2';
+const OFFLINE_FALLBACK = '/index.html';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => cache.add(OFFLINE_FALLBACK))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+  if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
 
-  // API çağrıları her zaman network — cache'leme
-  if (url.pathname.startsWith('/api/')) return;
-  // Supabase, Anthropic, fonts — cache'leme
-  if (url.hostname.includes('supabase.co') ||
-      url.hostname.includes('googleapis.com') ||
-      url.hostname.includes('gstatic.com') ||
-      url.hostname.includes('anthropic.com')) return;
-
-  // Sayfa navigasyonu: önce network, başarısızsa cache (offline desteği)
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
         .then((resp) => {
-          const copy = resp.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          if (resp && resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(OFFLINE_FALLBACK, copy));
+          }
           return resp;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(() => caches.match(OFFLINE_FALLBACK))
     );
     return;
   }
 
-  // Diğerleri: cache-first
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
