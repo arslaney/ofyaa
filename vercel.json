@@ -2,6 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/analyze.js": { "maxDuration": 30 },
-    "api/parse-task.js": { "maxDuration": 15 }
-  }
+    "api/parse-task.js": { "maxDuration": 15 },
+    "api/send-daily-pushes.js": { "maxDuration": 60 }
+  },
+  "crons": [
+    {
+      "path": "/api/send-daily-pushes",
+      "schedule": "0 6 * * *"
+    }
+  ]
 }

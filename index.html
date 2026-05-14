@@ -1622,6 +1622,8 @@ const I18N = {
     toast_error: 'of. bir şey ters gitti',
     toast_push_on: 'bildirim açık',
     toast_push_off: 'bildirim kapandı',
+    toast_push_denied: 'tarayıcı bildirimi engelledi',
+    toast_push_unsupported: 'tarayıcı bildirimi desteklemiyor',
     confirm_delete: 'silmek istediğine emin misin?',
     confirm_signout: 'çıkış yapmak istediğine emin misin?',
     footer_made: 'İstanbul\'dan sevgilerle',
@@ -1720,6 +1722,8 @@ const I18N = {
     toast_error: 'ugh. something broke',
     toast_push_on: 'notifications on',
     toast_push_off: 'notifications off',
+    toast_push_denied: 'browser blocked notifications',
+    toast_push_unsupported: 'browser does not support notifications',
     confirm_delete: 'sure you want to delete?',
     confirm_signout: 'sure you want to sign out?',
     footer_made: 'made with care in Istanbul',
@@ -2546,28 +2550,119 @@ async function refreshArchive() {
 // ═══════════════════════════════════════════════════════════
 function refreshSettings() {
   if (state.user) document.getElementById('settings-email').textContent = state.user.email || '';
-  // push toggle
   const t1 = document.getElementById('push-toggle');
-  if ('Notification' in window) {
-    t1.classList.toggle('on', Notification.permission === 'granted');
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (t1) t1.disabled = true;
   } else {
-    t1.disabled = true;
+    syncPushToggleState();
   }
   applyI18n();
 }
 
+// VAPID public key — push subscription için gerekli (public, güvenli)
+const VAPID_PUBLIC_KEY = 'BPawli_co-1nGb4JIZ9qnoNtsFW-aEpeHhIez5vjdZIx_3ycHZCSbBBirja0e077A-LYNv4gbdNNnJ7VuP4tTp0';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; ++i) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+async function getServiceWorkerRegistration() {
+  if (!('serviceWorker' in navigator)) return null;
+  return await navigator.serviceWorker.ready;
+}
+
+async function subscribeUserToPush() {
+  const reg = await getServiceWorkerRegistration();
+  if (!reg) throw new Error('no service worker');
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+  }
+  // Supabase'e kaydet
+  const json = sub.toJSON();
+  await sb.from('push_subscriptions').upsert({
+    user_id: state.user.id,
+    endpoint: json.endpoint,
+    p256dh: json.keys.p256dh,
+    auth: json.keys.auth
+  }, { onConflict: 'endpoint' });
+  return sub;
+}
+
+async function unsubscribeUserFromPush() {
+  const reg = await getServiceWorkerRegistration();
+  if (!reg) return;
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) {
+    const endpoint = sub.endpoint;
+    await sub.unsubscribe();
+    try { await sb.from('push_subscriptions').delete().eq('endpoint', endpoint); } catch(e){}
+  }
+}
+
 async function togglePush() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') {
-    showToast(t('toast_push_off'));
-    document.getElementById('push-toggle').classList.remove('on');
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    showToast(t('toast_push_unsupported'), 'pink');
     return;
   }
-  const perm = await Notification.requestPermission();
-  if (perm === 'granted') {
-    document.getElementById('push-toggle').classList.add('on');
-    showToast(t('toast_push_on'), 'acid');
+  const toggleEl = document.getElementById('push-toggle');
+  const isOn = toggleEl.classList.contains('on');
+
+  if (isOn) {
+    // Kapatma
+    try {
+      await unsubscribeUserFromPush();
+      toggleEl.classList.remove('on');
+      showToast(t('toast_push_off'));
+    } catch(e) {
+      console.error('unsub failed', e);
+      showToast(t('toast_error'), 'pink');
+    }
+    return;
   }
+
+  // Açma — önce izin
+  let perm = Notification.permission;
+  if (perm === 'default') perm = await Notification.requestPermission();
+  if (perm !== 'granted') {
+    showToast(t('toast_push_denied'), 'pink');
+    return;
+  }
+  try {
+    await subscribeUserToPush();
+    toggleEl.classList.add('on');
+    showToast(t('toast_push_on'), 'acid');
+  } catch(e) {
+    console.error('sub failed', e);
+    showToast(t('toast_error'), 'pink');
+  }
+}
+
+// Settings ekranı açılınca toggle durumunu gerçek subscription'a göre senkronla
+async function syncPushToggleState() {
+  const toggleEl = document.getElementById('push-toggle');
+  if (!toggleEl) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    toggleEl.disabled = true;
+    return;
+  }
+  if (Notification.permission !== 'granted') {
+    toggleEl.classList.remove('on');
+    return;
+  }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    toggleEl.classList.toggle('on', !!sub);
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════════════════════════

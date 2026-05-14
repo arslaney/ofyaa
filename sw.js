@@ -1,8 +1,7 @@
-// ofyaa service worker — v2
-// Stratejisi: NETWORK-FIRST her şey için. Sadece offline'da cache fallback.
-// v1'in agresif cache'lemesi UI sorunları yaratıyordu, basitleştirildi.
+// ofyaa service worker — v3
+// + push notification handler + notification click
 
-const CACHE_NAME = 'ofyaa-v2';
+const CACHE_NAME = 'ofyaa-v3';
 const OFFLINE_FALLBACK = '/index.html';
 
 self.addEventListener('install', (event) => {
@@ -43,4 +42,40 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
+});
+
+// ─── PUSH NOTIFICATIONS ─────────────────────────────────────
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch(e) {}
+
+  const title = data.title || 'ofyaa';
+  const options = {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    tag: 'ofyaa-daily',           // aynı tag → eski bildirim üzerine yazılır
+    renotify: false,
+    requireInteraction: false,
+    data: { url: data.url || '/' }
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+  event.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    // Açık ofyaa sekmesi varsa onu odakla
+    for (const c of all) {
+      if (c.url.includes(self.location.origin)) {
+        await c.focus();
+        return;
+      }
+    }
+    // Yoksa yeni pencere aç
+    await self.clients.openWindow(url);
+  })());
 });
