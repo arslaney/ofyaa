@@ -4887,11 +4887,12 @@ async function refreshList() {
     tasks = data || [];
   } catch (e) { console.warn('list fetch failed', e); }
 
-  // snoozed_at bugün veya geçmişte olanları aktif say (yarına ertelenen ama yarın gelmişse görsün)
+  // Aktif: snoozed_at yoksa veya geçmişse
+  // Ertelenmiş: snoozed_at gelecekte. Bunlar listede ayrı bölümde gösterilir.
+  // Kart deck modunda — sadece aktifler gösterilir, ertelenenler yarın gelir.
   const now = new Date();
   const active = tasks.filter(tk => {
     if (!tk.snoozed_at) return true;
-    // snoozed_at gelecekteyse "ertelenmiş" — listeye alma şimdilik
     return new Date(tk.snoozed_at) <= now;
   });
   const snoozed = tasks.filter(tk => {
@@ -4902,7 +4903,10 @@ async function refreshList() {
   const countEl = document.getElementById('list-count');
   if (countEl) {
     if (tasks.length === 0) countEl.textContent = '';
-    else countEl.textContent = t('list_count_fmt').replace('{n}', active.length);
+    else {
+      const totalShowing = listViewMode === 'list' ? active.length : (active.length + snoozed.length);
+      countEl.textContent = t('list_count_fmt').replace('{n}', totalShowing);
+    }
   }
 
   // Mod'a göre göster/gizle
