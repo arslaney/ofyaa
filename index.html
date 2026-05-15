@@ -1548,6 +1548,22 @@
     animation: wiggle 0.9s ease-in-out;
   }
 
+  /* Başlık + tüm liste butonu — yan yana */
+  .list-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .list-header-row > div { flex: 1; min-width: 0; }
+  .list-header-row .view-toggle {
+    align-self: flex-start;
+    margin-top: 8px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
   /* ═══════════════════════════════════════════════════════════
      CARD DECK — basit tek kart, ekrana sığar
      ═══════════════════════════════════════════════════════════ */
@@ -1560,7 +1576,6 @@
     align-items: stretch;
   }
   .view-toggle {
-    align-self: flex-end;
     background: var(--ink);
     color: var(--cream);
     border: none;
@@ -1570,11 +1585,11 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 9px 16px;
-    margin-bottom: 12px;
+    padding: 9px 14px;
     border-radius: 100px;
     transition: all 0.18s;
     box-shadow: 0 4px 12px rgba(10, 10, 10, 0.12);
+    white-space: nowrap;
   }
   .view-toggle:hover { background: var(--bruise); transform: translateY(-1px); }
   .view-toggle:active { transform: scale(0.96); }
@@ -2796,8 +2811,13 @@
       </button>
     </div>
 
-    <h1 class="list-title" data-i18n="list_title">Yapacaklar</h1>
-    <p class="list-sub" id="list-count"></p>
+    <div class="list-header-row">
+      <div>
+        <h1 class="list-title" data-i18n="list_title">Yapacaklar</h1>
+        <p class="list-sub" id="list-count"></p>
+      </div>
+      <button class="view-toggle" id="view-toggle-list" onclick="toggleListView()" data-i18n="view_as_list">TÜM LİSTE</button>
+    </div>
 
     <div class="quick-add">
       <input class="quick-add-input" id="quick-input"
@@ -2818,7 +2838,6 @@
 
     <!-- KART DECK — basit tek kart -->
     <div class="card-deck-wrap" id="card-deck-wrap">
-      <button class="view-toggle" id="view-toggle-list" onclick="toggleListView()" data-i18n="view_as_list">tüm liste</button>
       <div class="card-deck" id="card-deck"></div>
       <div class="deck-actions">
         <button class="deck-act tomorrow" onclick="cardAction('tomorrow')" aria-label="yarına ertele">
@@ -4918,10 +4937,8 @@ async function refreshList() {
     deckWrap.style.display = 'none';
     list.style.display = '';
     if (viewToggle) {
-      viewToggle.textContent = t('view_as_cards');
+      viewToggle.textContent = t('view_as_cards').toUpperCase();
       viewToggle.classList.add('list-mode');
-      // Liste modunda toggle butonunu listenin üstüne taşı
-      list.parentNode.insertBefore(viewToggle, list);
     }
     renderListView(active, snoozed);
     return;
@@ -4931,9 +4948,8 @@ async function refreshList() {
   deckWrap.style.display = 'flex';
   list.style.display = 'none';
   if (viewToggle) {
-    viewToggle.textContent = t('view_as_list');
+    viewToggle.textContent = t('view_as_list').toUpperCase();
     viewToggle.classList.remove('list-mode');
-    deckWrap.appendChild(viewToggle); // deck wrap'in içinde tut
   }
 
   deckState.tasks = active;
