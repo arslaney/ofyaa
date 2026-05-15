@@ -1608,7 +1608,7 @@
     width: 100%;
     border-radius: 26px;
     padding: 32px 26px 26px;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     justify-content: space-between;
     min-height: 340px;
@@ -1621,7 +1621,12 @@
     -webkit-user-select: none;
     touch-action: pan-y;
     cursor: grab;
+    visibility: visible;
+    opacity: 1;
   }
+  /* depth-2/3 eskiden kalan kayıt için tek kart modunda saklı */
+  .deck-card.depth-2,
+  .deck-card.depth-3 { display: none !important; }
   .deck-card.dragging { transition: none; cursor: grabbing; }
   .deck-card.c-acid  { background: var(--acid); color: var(--ink); }
   .deck-card.c-cream { background: var(--cream-warm); color: var(--ink); }
@@ -1687,8 +1692,7 @@
   .deck-card .dc-edit-mini svg { width: 15px; height: 15px; }
   .deck-card .dc-edit-mini:active { transform: scale(0.92); }
 
-  /* Eski depth-2, depth-3 sınıflarını gizle - tek kart yeter */
-  .deck-card.depth-2, .deck-card.depth-3 { display: none; }
+  /* Eski depth-2, depth-3 sınıflarını yukarıda zaten gizledik */
 
   /* Alt aksiyon butonları */
   .deck-actions {
@@ -5127,9 +5131,30 @@ function renderDeck() {
   }
 
   // SADECE TEK KART — istif yok, bug yok
-  const tk = deckState.tasks[deckState.idx];
-  const card = buildDeckCard(tk, 'depth-1');
-  deck.appendChild(card);
+  try {
+    const tk = deckState.tasks[deckState.idx];
+    if (!tk) {
+      console.warn('[ofyaa] no task at idx', deckState.idx, 'of', deckState.tasks.length);
+      return;
+    }
+    const card = buildDeckCard(tk, 'depth-1');
+    deck.appendChild(card);
+  } catch (e) {
+    console.error('[ofyaa] renderDeck failed:', e);
+    // FALLBACK — ham basit kart, hata olmadan render
+    const tk = deckState.tasks[deckState.idx];
+    const fallback = document.createElement('div');
+    fallback.className = 'deck-card c-acid depth-1';
+    fallback.style.cursor = 'pointer';
+    fallback.innerHTML = `
+      <div>
+        <div class="dc-tag">${t('section_today') || 'BUGÜN'}</div>
+        <div class="dc-title">${(tk?.title || 'görev').replace(/[<>&]/g, '')}</div>
+      </div>
+      <div class="dc-meta">${deckState.idx + 1} / ${deckState.tasks.length}</div>
+    `;
+    deck.appendChild(fallback);
+  }
 }
 
 function attachDeckSwipe(card, tk) {
