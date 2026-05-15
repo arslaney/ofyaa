@@ -3995,10 +3995,15 @@ async function handlePasswordLogin(e) {
       }
       errorEl.style.display = 'block';
     } else if (data && data.user) {
-      // BAŞARILI — onAuthStateChange'i bekleme, direkt geç
+      // BAŞARILI — hemen state'i ayarla, hard reload ile temiz başlangıç
       localStorage.setItem('ofyaa_entered', '1');
-      hideLanding();
-      await onAuthenticated(data.user);
+      // Toast göster, sonra reload (kullanıcı geçişi görür)
+      btn.textContent = '✓';
+      btn.style.background = 'var(--acid)';
+      btn.style.color = 'var(--ink)';
+      setTimeout(() => {
+        window.location.href = '/?app=1';
+      }, 400);
     }
   } catch (err) {
     errorEl.textContent = err.message || t('auth_err_send');
