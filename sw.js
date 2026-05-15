@@ -1,7 +1,7 @@
 // ofyaa service worker — v4
 // Network-first her şeyde. Offline'da cache fallback. Push handler.
 
-const CACHE_NAME = 'ofyaa-v4';
+const CACHE_NAME = 'ofyaa-v5';
 const OFFLINE_FALLBACK = '/index.html';
 
 self.addEventListener('install', (event) => {

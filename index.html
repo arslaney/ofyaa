@@ -1,6 +1,29 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<script>
+// Self-heal: ?heal=1 ile eski SW + cache zorla temizlenir, taze yüklenir.
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.has('heal') || params.has('reset')) {
+    (async () => {
+      try {
+        if ('serviceWorker' in navigator) {
+          var regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+        if ('caches' in window) {
+          var keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+      } catch (e) { console.warn(e); }
+      // localStorage'ı koru (oturum + tercihler), session'ı koru
+      // Reload — clean state ile
+      window.location.replace(window.location.origin + window.location.pathname);
+    })();
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 <title>ofyaa · söyle, yapılsın</title>
