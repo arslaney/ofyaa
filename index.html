@@ -3983,7 +3983,7 @@ async function handlePasswordLogin(e) {
   btn.disabled = true;
   btn.textContent = t('auth_signing_in');
   try {
-    const { error } = await sb.auth.signInWithPassword({ email, password });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const msg = (error.message || '').toLowerCase();
       if (msg.includes('invalid login') || msg.includes('credentials')) {
@@ -3994,6 +3994,11 @@ async function handlePasswordLogin(e) {
         errorEl.textContent = error.message;
       }
       errorEl.style.display = 'block';
+    } else if (data && data.user) {
+      // BAŞARILI — onAuthStateChange'i bekleme, direkt geç
+      localStorage.setItem('ofyaa_entered', '1');
+      hideLanding();
+      await onAuthenticated(data.user);
     }
   } catch (err) {
     errorEl.textContent = err.message || t('auth_err_send');
