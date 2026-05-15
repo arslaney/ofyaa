@@ -4378,21 +4378,45 @@ async function startRecording() {
     if (SR) {
       try {
         state.recognition = new SR();
-        state.recognition.continuous = true;
+        // continuous=false, çoğu mobile tarayıcıda daha kararlı
+        state.recognition.continuous = false;
         state.recognition.interimResults = true;
+        state.recognition.maxAlternatives = 1;
         state.recognition.lang = currentLang === 'en' ? 'en-US' : 'tr-TR';
+        // Hem final hem interim'i sakla — final gelmezse interim'i kullan
+        state.lastInterim = '';
         state.recognition.onresult = (event) => {
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            if (event.results[i].isFinal) state.transcript += event.results[i][0].transcript + ' ';
+          let finalText = '';
+          let interimText = '';
+          for (let i = 0; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalText += transcript + ' ';
+            } else {
+              interimText += transcript;
+            }
+          }
+          if (finalText) {
+            state.transcript += finalText;
+            state.lastInterim = '';
+          } else {
+            state.lastInterim = interimText;
           }
         };
+        state.recognition.onerror = (event) => {
+          console.warn('[speech recognition error]', event.error);
+        };
         state.recognition.onend = () => {
+          // Recording hâlâ aktifse tekrar başlat — uzun kayıt için
           if (state.recording && state.recognition) {
             try { state.recognition.start(); } catch(e) {}
           }
         };
         state.recognition.start();
-      } catch(e) { state.recognition = null; }
+      } catch(e) {
+        console.warn('[speech recognition init failed]', e);
+        state.recognition = null;
+      }
     }
     state.startTime = Date.now();
     state.timerInterval = setInterval(updateTimer, 100);
@@ -4448,8 +4472,17 @@ function cleanupRecording() {
 
 async function processVoice(duration) {
   cleanupRecording();
-  const transcript = (state.transcript || '').trim();
-  if (!transcript || transcript.length < 3) {
+  // Önce final transcript, yoksa interim'i kullan — Samsung Chrome bazen final üretmiyor
+  let transcript = (state.transcript || '').trim();
+  if (!transcript || transcript.length < 2) {
+    const interim = (state.lastInterim || '').trim();
+    if (interim && interim.length >= 2) {
+      transcript = interim;
+    }
+  }
+  state.lastInterim = '';
+
+  if (!transcript || transcript.length < 2) {
     switchView('list');
     showToast(t('rec_no_speech'), 'pink');
     return;
