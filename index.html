@@ -1462,6 +1462,68 @@
   .settings-row-btn:active { background: var(--acid); }
   .settings-row-btn svg { color: var(--mute); flex-shrink: 0; }
 
+  /* Swipe hint */
+  .swipe-hint {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin: 16px 0 8px;
+    box-shadow: 0 8px 24px rgba(10,10,10,0.18);
+    animation: hintFadeIn 0.4s ease;
+  }
+  @keyframes hintFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .swipe-hint-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .swipe-hint-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--acid);
+    color: var(--ink);
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .swipe-hint-close {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--acid);
+    color: var(--ink);
+    border: none;
+    border-radius: 100px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+  }
+  .swipe-hint-close:active { background: var(--acid-deep); transform: scale(0.97); }
+
+  /* Wiggle — ilk kart için "kaydırılabilir" ipucu */
+  @keyframes wiggle {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(18px) rotate(0.5deg); }
+    40% { transform: translateX(-12px) rotate(-0.3deg); }
+    60% { transform: translateX(8px) rotate(0.2deg); }
+    80% { transform: translateX(-4px); }
+  }
+  .task-card.wiggle {
+    animation: wiggle 0.9s ease-in-out;
+  }
+
   /* ═══════════════════════════════════════════════════════════
      LANDING PAGE — editorial, demo-first
      ═══════════════════════════════════════════════════════════ */
@@ -2833,6 +2895,9 @@ const I18N = {
     pw_saved: 'şifren kaydedildi',
     pw_err_short: 'şifre en az 6 karakter olmalı',
     pw_err_mismatch: 'iki şifre aynı değil',
+    hint_swipe_right: 'sağa kaydır: yaptım',
+    hint_swipe_left: 'sola kaydır: sonra',
+    hint_got_it: 'ANLADIM',
     quick_placeholder: 'bir şey yaz...',
     quick_add: 'EKLE',
     install_title: 'Telefona ekle',
@@ -3007,6 +3072,9 @@ const I18N = {
     pw_saved: 'password saved',
     pw_err_short: 'password must be at least 6 characters',
     pw_err_mismatch: 'passwords don\'t match',
+    hint_swipe_right: 'swipe right: done',
+    hint_swipe_left: 'swipe left: later',
+    hint_got_it: 'GOT IT',
     quick_placeholder: 'type something...',
     quick_add: 'ADD',
     install_title: 'Install on phone',
@@ -4238,29 +4306,36 @@ function renderTaskCard(tk) {
     card.appendChild(actions);
   }
 
-  // SWIPE handlers
-  let startX = 0, startY = 0, dx = 0, decided = null;
-  card.addEventListener('touchstart', (e) => {
+  // SWIPE handlers (touch + mouse)
+  let startX = 0, startY = 0, dx = 0, decided = null, isDown = false;
+
+  function onStart(clientX, clientY) {
     if (tk.status === 'done') return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
+    startX = clientX;
+    startY = clientY;
     decided = null;
+    dx = 0;
+    isDown = true;
     card.classList.add('swiping');
-  }, { passive: true });
-  card.addEventListener('touchmove', (e) => {
-    if (tk.status === 'done') return;
-    const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
-    const ddx = cx - startX, ddy = cy - startY;
-    if (!decided) decided = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+  }
+  function onMove(clientX, clientY) {
+    if (!isDown || tk.status === 'done') return;
+    const ddx = clientX - startX, ddy = clientY - startY;
+    if (!decided) {
+      // Karara varmak için biraz hareket beklesin (5px tolerance)
+      if (Math.abs(ddx) < 5 && Math.abs(ddy) < 5) return;
+      decided = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+    }
     if (decided === 'x') {
       dx = ddx;
       card.style.transform = `translateX(${dx}px) rotate(${dx * 0.02}deg)`;
       bgL.style.opacity = Math.min(1, Math.max(0, dx / 60));
       bgR.style.opacity = Math.min(1, Math.max(0, -dx / 60));
     }
-  }, { passive: true });
-  card.addEventListener('touchend', () => {
-    if (tk.status === 'done') return;
+  }
+  function onEnd() {
+    if (!isDown || tk.status === 'done') { isDown = false; return; }
+    isDown = false;
     card.classList.remove('swiping');
     bgL.style.opacity = 0; bgR.style.opacity = 0;
     if (dx > 90) {
@@ -4273,7 +4348,27 @@ function renderTaskCard(tk) {
       card.style.transform = '';
     }
     dx = 0;
+  }
+
+  // Touch
+  card.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  card.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  card.addEventListener('touchend', onEnd);
+  card.addEventListener('touchcancel', onEnd);
+
+  // Mouse — bilgisayarda
+  card.addEventListener('mousedown', (e) => {
+    // Edit/delete butonlarına tıklamayı drag sayma
+    if (e.target.closest('.task-edit-btn') || e.target.closest('.task-delete-btn')) return;
+    onStart(e.clientX, e.clientY);
+    e.preventDefault(); // text selection'ı engelle
   });
+  // Mouse move/up window'da çünkü fare karttan çıkabilir
+  card.addEventListener('mousemove', (e) => {
+    if (isDown) onMove(e.clientX, e.clientY);
+  });
+  card.addEventListener('mouseup', onEnd);
+  card.addEventListener('mouseleave', () => { if (isDown) onEnd(); });
 
   wrap.appendChild(card);
   return wrap;
@@ -4572,6 +4667,48 @@ async function refreshList() {
       list.appendChild(card);
     });
   }
+
+  // İlk seferde swipe hint göster
+  maybeShowSwipeHint(active.length);
+}
+
+function maybeShowSwipeHint(taskCount) {
+  if (taskCount === 0) return;
+  if (localStorage.getItem('ofyaa_swipe_hint_seen') === '1') return;
+  // Sayfanın altında küçük bir hint göster
+  const existing = document.getElementById('swipe-hint');
+  if (existing) return;
+  const hint = document.createElement('div');
+  hint.id = 'swipe-hint';
+  hint.className = 'swipe-hint';
+  hint.innerHTML = `
+    <div class="swipe-hint-row">
+      <span class="swipe-hint-arrow">→</span>
+      <span data-i18n="hint_swipe_right">sağa kaydır: yaptım</span>
+    </div>
+    <div class="swipe-hint-row">
+      <span class="swipe-hint-arrow">←</span>
+      <span data-i18n="hint_swipe_left">sola kaydır: sonra</span>
+    </div>
+    <button class="swipe-hint-close" onclick="dismissSwipeHint()" data-i18n="hint_got_it">ANLADIM</button>
+  `;
+  // Doğrudan task-list-main'in sonuna ekle
+  const list = document.getElementById('task-list-main');
+  list.appendChild(hint);
+  applyI18n();
+  // İlk kartı sallayarak hareket olduğunu göster (1 saniye sonra)
+  setTimeout(() => {
+    const firstCard = document.querySelector('.task-list .task-card:not(.done)');
+    if (firstCard) {
+      firstCard.classList.add('wiggle');
+      setTimeout(() => firstCard.classList.remove('wiggle'), 1200);
+    }
+  }, 800);
+}
+
+function dismissSwipeHint() {
+  localStorage.setItem('ofyaa_swipe_hint_seen', '1');
+  document.getElementById('swipe-hint')?.remove();
 }
 
 async function refreshArchive() {
