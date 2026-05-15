@@ -3,6 +3,7 @@
   "functions": {
     "api/analyze.js": { "maxDuration": 30 },
     "api/parse-task.js": { "maxDuration": 15 },
+    "api/transcribe.js": { "maxDuration": 30 },
     "api/send-daily-pushes.js": { "maxDuration": 60 }
   },
   "crons": [

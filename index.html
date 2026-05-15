@@ -3236,6 +3236,7 @@ const I18N = {
     rec_cancel: 'iptal',
     rec_finish: 'bitir',
     rec_too_short: 'biraz daha söyle · en az 2 sn',
+    rec_transcribing: 'yazıya çeviriyor...',
     rec_mic_error: 'mikrofon izni lazım',
     rec_cancelled: 'iptal edildi',
     rec_no_speech: 'duyamadım. tekrar dener misin?',
@@ -3422,6 +3423,7 @@ const I18N = {
     rec_cancel: 'cancel',
     rec_finish: 'done',
     rec_too_short: 'say a bit more · at least 2 sec',
+    rec_transcribing: 'transcribing...',
     rec_mic_error: 'mic permission needed',
     rec_cancelled: 'cancelled',
     rec_no_speech: "couldn't hear. try again?",
@@ -4364,6 +4366,23 @@ function animateWaveform() {
   state.animationFrame = requestAnimationFrame(animateWaveform);
 }
 
+// Tarayıcının desteklediği en iyi format'ı seç — Deepgram her ikisini de alır
+function pickRecorderOptions() {
+  const candidates = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/mp4',
+    'audio/ogg;codecs=opus',
+    'audio/ogg'
+  ];
+  for (const mt of candidates) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mt)) {
+      return { mimeType: mt, audioBitsPerSecond: 64000 };
+    }
+  }
+  return {}; // default
+}
+
 async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -4375,7 +4394,7 @@ async function startRecording() {
     state.analyser = state.audioContext.createAnalyser();
     state.analyser.fftSize = 256;
     source.connect(state.analyser);
-    state.mediaRecorder = new MediaRecorder(stream);
+    state.mediaRecorder = new MediaRecorder(stream, pickRecorderOptions());
     state.mediaRecorder.ondataavailable = e => { if (e.data?.size > 0) state.audioChunks.push(e.data); };
     state.mediaRecorder.start();
 
@@ -4477,7 +4496,50 @@ function cleanupRecording() {
 
 async function processVoice(duration) {
   cleanupRecording();
-  // Önce final transcript, yoksa interim'i kullan — Samsung Chrome bazen final üretmiyor
+
+  // 1. Önce sunucuya yolla — en güvenilir yöntem
+  if (state.audioChunks && state.audioChunks.length > 0) {
+    const mimeType = state.audioChunks[0].type || 'audio/webm';
+    const blob = new Blob(state.audioChunks, { type: mimeType });
+    state.audioChunks = [];
+    if (blob.size > 500) {
+      // Önce list view'a dön, "transcribe ediliyor" toast'ı göster
+      switchView('list');
+      const input = document.getElementById('quick-input');
+      if (input) {
+        input.value = '';
+        input.placeholder = t('rec_transcribing');
+      }
+      showToast(t('rec_transcribing'), 'acid');
+      try {
+        const resp = await fetch(`/api/transcribe?lang=${currentLang}`, {
+          method: 'POST',
+          headers: { 'Content-Type': mimeType },
+          body: blob
+        });
+        const data = await resp.json();
+        if (resp.ok && data.transcript && data.transcript.trim().length >= 2) {
+          if (input) {
+            input.value = data.transcript.trim();
+            input.placeholder = t('quick_placeholder');
+            toggleAddBtn();
+            input.focus();
+          }
+          // Hemen ekle de — kullanıcı extra adım atmasın
+          // (kullanıcı isterse silebilir, isterse EKLE'ye basabilir)
+          return;
+        } else {
+          console.warn('transcribe empty', data);
+        }
+      } catch (e) {
+        console.error('transcribe fetch failed', e);
+      }
+      // restore placeholder
+      if (input) input.placeholder = t('quick_placeholder');
+    }
+  }
+
+  // 2. Sunucu fail olduysa — Web Speech transcript'ini fallback olarak kullan
   let transcript = (state.transcript || '').trim();
   if (!transcript || transcript.length < 2) {
     const interim = (state.lastInterim || '').trim();
@@ -4486,20 +4548,22 @@ async function processVoice(duration) {
     }
   }
   state.lastInterim = '';
+  state.transcript = '';
 
-  if (!transcript || transcript.length < 2) {
+  if (transcript && transcript.length >= 2) {
     switchView('list');
-    showToast(t('rec_no_speech'), 'pink');
+    const input = document.getElementById('quick-input');
+    if (input) {
+      input.value = transcript;
+      toggleAddBtn();
+      input.focus();
+    }
     return;
   }
-  // Transcript'i input'a düşür, kullanıcı görüp EKLE'ye bassın
+
+  // 3. Hepsi başarısız — kullanıcıya söyle
   switchView('list');
-  const input = document.getElementById('quick-input');
-  if (input) {
-    input.value = transcript;
-    toggleAddBtn();
-    input.focus();
-  }
+  showToast(t('rec_no_speech'), 'pink');
 }
 
 // ═══════════════════════════════════════════════════════════
