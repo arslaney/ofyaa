@@ -1561,21 +1561,24 @@
   }
   .view-toggle {
     align-self: flex-end;
-    background: transparent;
+    background: var(--ink);
+    color: var(--cream);
     border: none;
     font-family: 'Inter Tight', sans-serif;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--mute);
     cursor: pointer;
-    padding: 6px 4px;
-    margin-bottom: 8px;
-    opacity: 0.7;
+    padding: 9px 16px;
+    margin-bottom: 12px;
+    border-radius: 100px;
+    transition: all 0.18s;
+    box-shadow: 0 4px 12px rgba(10, 10, 10, 0.12);
   }
-  .view-toggle:hover { opacity: 1; }
-  .view-toggle.list-mode { color: var(--ink); opacity: 1; }
+  .view-toggle:hover { background: var(--bruise); transform: translateY(-1px); }
+  .view-toggle:active { transform: scale(0.96); }
+  .view-toggle.list-mode { background: var(--acid); color: var(--ink); }
 
   .card-deck {
     position: relative;
