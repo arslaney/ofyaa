@@ -1532,16 +1532,18 @@
     flex: 1;
     position: relative;
     margin: 0 -22px;
-    padding: 8px 22px 100px;
-    overflow: hidden;
+    padding: 8px 22px 110px;  /* bottom nav için boşluk */
+    overflow: visible;
     display: flex;
     flex-direction: column;
+    min-height: 0;
   }
   .card-deck {
     flex: 1;
     position: relative;
-    min-height: 340px;
-    perspective: 900px;
+    min-height: 360px;
+    /* Alt aksiyonlar için yer ayır */
+    margin-bottom: 90px;
   }
 
   /* Arka plan swipe ipuçları */
@@ -1571,7 +1573,7 @@
   /* Tek bir kart */
   .deck-card {
     position: absolute;
-    left: 10px; right: 10px; top: 10px; bottom: 80px;
+    left: 10px; right: 10px; top: 0; bottom: 0;
     border-radius: 26px;
     padding: 28px 26px 24px;
     display: flex;
@@ -1584,8 +1586,9 @@
     user-select: none;
     -webkit-user-select: none;
     cursor: grab;
-    z-index: 3;
     box-shadow: 0 14px 40px rgba(10,10,10,0.08), 0 2px 6px rgba(10,10,10,0.04);
+    transform-origin: center top;
+    backface-visibility: hidden;
   }
   .deck-card.dragging { cursor: grabbing; transition: none; }
   /* Renk varyantları */
@@ -1596,11 +1599,11 @@
   .deck-card.c-ink   { background: var(--ink); color: var(--cream); }
 
   /* İstifleme — arkadaki kartlar küçük ve soluk */
-  .deck-card.depth-1 { transform: translateY(0)    scale(1);    z-index: 5; opacity: 1; }
-  .deck-card.depth-2 { transform: translateY(12px) scale(0.94); z-index: 4; opacity: 0.55; }
-  .deck-card.depth-3 { transform: translateY(24px) scale(0.88); z-index: 3; opacity: 0.25; }
-  .deck-card.depth-out-right { transform: translateX(135%) rotate(14deg); opacity: 0; pointer-events: none; }
-  .deck-card.depth-out-left  { transform: translateX(-135%) rotate(-14deg); opacity: 0; pointer-events: none; }
+  .deck-card.depth-1 { transform: translateY(0)    scale(1);    z-index: 30; opacity: 1; }
+  .deck-card.depth-2 { transform: translateY(14px) scale(0.95); z-index: 20; opacity: 0.5; pointer-events: none; }
+  .deck-card.depth-3 { transform: translateY(28px) scale(0.9);  z-index: 10; opacity: 0.2; pointer-events: none; }
+  .deck-card.depth-out-right { transform: translateX(140%) rotate(16deg) !important; opacity: 0; pointer-events: none; z-index: 30; }
+  .deck-card.depth-out-left  { transform: translateX(-140%) rotate(-16deg) !important; opacity: 0; pointer-events: none; z-index: 30; }
 
   .deck-card .dc-tag {
     font-family: 'Inter Tight', sans-serif;
@@ -1612,7 +1615,7 @@
   }
   .deck-card .dc-title {
     font-family: 'Gloock', serif;
-    font-size: clamp(28px, 6.5vw, 38px);
+    font-size: clamp(26px, 6vw, 36px);
     line-height: 1.05;
     letter-spacing: -0.025em;
     margin-top: 14px;
@@ -1654,24 +1657,26 @@
     justify-content: center;
     cursor: pointer;
     color: var(--ink);
+    z-index: 2;
   }
   .deck-card.c-ink .dc-edit-mini,
   .deck-card.c-bruise .dc-edit-mini { background: rgba(245, 240, 225, 0.12); color: var(--cream); }
   .deck-card .dc-edit-mini svg { width: 14px; height: 14px; }
   .deck-card .dc-edit-mini:active { transform: scale(0.92); }
 
-  /* Alt aksiyon butonları (swipe yerine) */
+  /* Alt aksiyon butonları — DECK İÇİNDE, kartların altında */
   .deck-actions {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 16px;
+    bottom: 8px;
     display: flex;
-    gap: 14px;
-    z-index: 4;
+    gap: 18px;
+    z-index: 40;
+    pointer-events: auto;
   }
   .deck-act {
-    width: 56px; height: 56px;
+    width: 58px; height: 58px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1681,24 +1686,22 @@
   }
   .deck-act.tomorrow {
     background: var(--cream);
-    border: 1.5px solid rgba(10, 10, 10, 0.12);
+    border: 1.5px solid rgba(10, 10, 10, 0.18);
     color: var(--bruise);
   }
   .deck-act.done {
     background: var(--ink);
     color: var(--acid);
     border: none;
-    width: 66px; height: 66px;
+    width: 68px; height: 68px;
   }
   .deck-act:active { transform: scale(0.92); }
-  .deck-act svg { width: 22px; height: 22px; }
-  .deck-act.done svg { width: 26px; height: 26px; }
+  .deck-act svg { width: 24px; height: 24px; }
+  .deck-act.done svg { width: 28px; height: 28px; }
 
-  /* Liste görünümüne geç butonu */
+  /* Liste görünümüne geç butonu — input'un hemen altında */
   .view-toggle {
-    position: absolute;
-    top: -2px;
-    right: 22px;
+    align-self: flex-end;
     background: transparent;
     border: none;
     font-family: 'Inter Tight', sans-serif;
@@ -1708,9 +1711,9 @@
     text-transform: uppercase;
     color: var(--mute);
     cursor: pointer;
-    padding: 8px;
+    padding: 6px 0;
+    margin-bottom: 4px;
     opacity: 0.7;
-    z-index: 4;
   }
   .view-toggle:hover { opacity: 1; }
   .view-toggle.list-mode { color: var(--ink); opacity: 1; }
@@ -1718,7 +1721,7 @@
   /* Empty deck — hepsi yapıldı veya hiç görev yok */
   .deck-empty {
     position: absolute;
-    inset: 10px 10px 80px;
+    inset: 0;
     border-radius: 26px;
     background: var(--cream-warm);
     color: var(--ink);
@@ -1732,7 +1735,7 @@
   }
   .deck-empty-title {
     font-family: 'Gloock', serif;
-    font-size: 32px;
+    font-size: 30px;
     line-height: 1.05;
     letter-spacing: -0.025em;
     margin-bottom: 10px;
