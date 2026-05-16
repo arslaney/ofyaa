@@ -3864,17 +3864,16 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // AUTH + INIT
 // ═══════════════════════════════════════════════════════════
 async function initAuth() {
-  // FAILSAFE: 8 saniye sonra hala spinner'daysak landing'e geç
+  // FAILSAFE: 5 saniye sonra hala spinner'daysak ekrana bir şey göster
   const failsafeTimer = setTimeout(() => {
-    console.warn('[ofyaa] initAuth timeout — falling back to landing');
+    console.warn('[ofyaa] initAuth timeout — falling back');
     try {
       hideLanding();
       const spinner = document.getElementById('view-auth-loading');
       if (spinner) spinner.classList.remove('active');
-      if (shouldSkipLanding()) switchView('auth');
-      else showLanding();
+      switchView('auth');
     } catch(e) { console.error(e); }
-  }, 8000);
+  }, 5000);
 
   try {
     applyI18n();
@@ -3888,8 +3887,16 @@ async function initAuth() {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
     });
 
-    const { data: { session } } = await sb.auth.getSession();
-    clearTimeout(failsafeTimer); // session check tamam, failsafe artık gereksiz
+    // getSession'a 3sn timeout ver — Samsung Chrome'da bazen takılıyor
+    const sessionResult = await Promise.race([
+      sb.auth.getSession(),
+      new Promise((resolve) => setTimeout(() => resolve({ data: { session: null }, timeout: true }), 3000))
+    ]);
+    const session = sessionResult?.data?.session;
+    if (sessionResult?.timeout) {
+      console.warn('[ofyaa] getSession timed out, treating as no session');
+    }
+    clearTimeout(failsafeTimer);
 
     if (session) {
       localStorage.setItem('ofyaa_entered', '1');
@@ -3902,7 +3909,7 @@ async function initAuth() {
           if (spinner) spinner.classList.remove('active');
           switchView('list');
         } catch(e) {}
-      }, 5000);
+      }, 4000);
       try {
         await onAuthenticated(session.user);
       } finally {
@@ -3935,20 +3942,45 @@ async function initAuth() {
   }
 }
 
+// 3 saniye timeout — promise return etmediyse atla
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`timeout: ${label || 'op'}`)), ms))
+  ]).catch(e => {
+    console.warn('[ofyaa] timeout/error in', label, e?.message || e);
+    return null;
+  });
+}
+
 async function onAuthenticated(user) {
   state.user = user;
+  // Her await timeout-korumalı — biri takılırsa view'a yine de geç
   try {
-    const { data } = await sb.from('user_profiles').select('language').eq('user_id', user.id).maybeSingle();
+    const result = await withTimeout(
+      sb.from('user_profiles').select('language').eq('user_id', user.id).maybeSingle(),
+      3000,
+      'user_profiles.select'
+    );
+    const data = result?.data;
     if (data?.language && data.language !== currentLang) {
       currentLang = data.language;
       localStorage.setItem('ofyaa_lang', data.language);
       applyI18n();
-    } else if (!data) {
-      // create profile if missing
-      try { await sb.from('user_profiles').insert({ user_id: user.id, language: currentLang }); } catch(e){}
+    } else if (data === null || data === undefined) {
+      // create profile if missing — fire and forget
+      withTimeout(
+        sb.from('user_profiles').insert({ user_id: user.id, language: currentLang }),
+        3000,
+        'user_profiles.insert'
+      );
     }
-  } catch(e) {}
-  await runCarryForward();
+  } catch(e) { console.warn('profile fetch failed', e); }
+
+  // runCarryForward — async ama no-op, yine de timeout
+  try { await withTimeout(runCarryForward(), 2000, 'carryForward'); } catch(e){}
+
+  // EN ÖNEMLİSİ — burası mutlaka çalışmalı
   switchView('list');
   setupInstallButton();
   maybeShowIosInstall();
