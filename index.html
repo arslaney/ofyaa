@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>ofyaa — kreatif stüdyo</title>
-<meta name="description" content="ofyaa: fikirden ekrana. Web &amp; uygulama, foto/video çekim, marka ve içerik işleri üreten kreatif stüdyo.">
-<meta name="theme-color" content="#F5F0E1">
+<title>ofyaa® — kreatif stüdyo &amp; yazılım evi</title>
+<meta name="description" content="ofyaa: dijital ürünler, web &amp; uygulama, foto/video prodüksiyon ve marka işleri üreten kreatif stüdyo & yazılım evi.">
+<meta name="theme-color" content="#05060c">
 
 <!-- Eski PWA kurulumları (start_url /?app=1) uygulamanın yeni adresine gitsin -->
 <script>
@@ -18,8 +18,8 @@
 </script>
 
 <!-- Open Graph -->
-<meta property="og:title" content="ofyaa — kreatif stüdyo">
-<meta property="og:description" content="Fikirden ekrana. Web &amp; uygulama, foto/video çekim, marka ve içerik.">
+<meta property="og:title" content="ofyaa® — kreatif stüdyo & yazılım evi">
+<meta property="og:description" content="Dijital ürünler, web & uygulama, foto/video prodüksiyon, marka.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ofyaa.com">
 <meta property="og:image" content="https://ofyaa.com/icons/icon-512.png">
@@ -30,288 +30,444 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #F5F0E1;
-  --bg-soft: #EDE6D2;
-  --ink: #17130C;
-  --ink-soft: #4A4436;
-  --line: #17130C22;
-  --accent: #E8551F;
-  --serif: "Fraunces", Georgia, serif;
-  --sans: "Space Grotesk", system-ui, sans-serif;
+  --bg: #05060c;
+  --bg-2: #0a0c16;
+  --panel: rgba(255,255,255,0.03);
+  --panel-2: rgba(255,255,255,0.055);
+  --line: rgba(255,255,255,0.09);
+  --line-soft: rgba(255,255,255,0.06);
+  --txt: #eef0f6;
+  --txt-2: #9aa3b5;
+  --txt-3: #626b7d;
+  --violet: #7c3aed;
+  --cyan: #22d3ee;
+  --pink: #ec4899;
+  --blue: #3b82f6;
+  --grad: linear-gradient(100deg, #a78bfa, #22d3ee 45%, #ec4899 90%);
+  --sans: "Inter", system-ui, sans-serif;
+  --disp: "Space Grotesk", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --pad: clamp(20px, 4.5vw, 64px);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  background: var(--bg); color: var(--txt);
+  font-family: var(--sans); font-size: 16px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
 }
-::selection { background: var(--accent); color: var(--bg); }
+::selection { background: var(--violet); color: #fff; }
 a { color: inherit; }
 img, video { max-width: 100%; display: block; }
+.mono { font-family: var(--mono); }
+
+/* film greni — tüm sayfa */
+body::after {
+  content: ""; position: fixed; inset: -50%; z-index: 90; pointer-events: none; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 9s steps(6) infinite;
+}
+@keyframes grain {
+  0%,100% { transform: translate(0,0); } 20% { transform: translate(-4%,3%); }
+  40% { transform: translate(3%,-4%); } 60% { transform: translate(-3%,-2%); } 80% { transform: translate(4%,4%); }
+}
 
 /* ---------- nav ---------- */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px clamp(20px, 4vw, 48px);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 100;
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px; border-radius: 999px;
+  background: rgba(10,12,22,0.6); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--line); box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+  white-space: nowrap;
 }
 .wordmark {
-  font-family: var(--serif); font-weight: 700; font-size: 26px;
-  text-decoration: none; letter-spacing: -0.02em;
+  font-family: var(--disp); font-weight: 700; font-size: 19px; letter-spacing: -0.02em;
+  text-decoration: none; padding: 6px 14px;
 }
-.wordmark i { color: var(--accent); font-style: normal; }
-.nav-links { display: flex; gap: 26px; align-items: center; }
+.wordmark sup { font-size: 10px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-links a {
-  text-decoration: none; font-size: 14px; font-weight: 500;
-  text-transform: lowercase; letter-spacing: 0.04em; opacity: .8;
-  transition: opacity .2s, color .2s;
+  text-decoration: none; font-size: 13.5px; font-weight: 500; color: var(--txt-2);
+  padding: 8px 14px; border-radius: 999px; transition: color .2s, background .2s;
 }
-.nav-links a:hover { opacity: 1; color: var(--accent); }
-.nav-links a.app-link {
-  border: 1.5px solid var(--ink); border-radius: 999px;
-  padding: 7px 16px; opacity: 1;
-  transition: background .2s, color .2s;
+.nav-links a:hover { color: var(--txt); background: var(--panel-2); }
+.nav-cta {
+  text-decoration: none; font-size: 13.5px; font-weight: 600; color: #fff;
+  padding: 9px 18px; border-radius: 999px; margin-left: 6px;
+  background: linear-gradient(100deg, var(--violet), var(--blue));
+  box-shadow: 0 0 22px rgba(124,58,237,0.45);
+  transition: box-shadow .25s, transform .25s;
 }
-.nav-links a.app-link:hover { background: var(--ink); color: var(--bg); }
-@media (max-width: 640px) {
-  .nav-links a:not(.app-link) { display: none; }
-}
+.nav-cta:hover { box-shadow: 0 0 34px rgba(124,58,237,0.7); transform: translateY(-1px); }
+@media (max-width: 720px) { .nav-links { display: none; } }
 
 /* ---------- hero ---------- */
-header {
-  min-height: 100svh; display: flex; flex-direction: column;
-  justify-content: flex-end; position: relative;
-  padding: 120px clamp(20px, 4vw, 48px) 0;
+header { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg video { width: 100%; height: 100%; object-fit: cover; }
+/* video yüklenemezse de arkada yaşayan bir zemin dursun */
+.hero-bg::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background:
+    radial-gradient(700px 500px at 25% 30%, rgba(124,58,237,.28), transparent 65%),
+    radial-gradient(650px 480px at 75% 65%, rgba(34,211,238,.16), transparent 65%),
+    radial-gradient(600px 420px at 60% 15%, rgba(236,72,153,.14), transparent 65%),
+    var(--bg);
+  animation: bgdrift 16s ease-in-out infinite alternate;
 }
-.hero-kicker {
-  font-size: 13px; letter-spacing: .28em; text-transform: uppercase;
-  color: var(--ink-soft); margin-bottom: 18px;
+@keyframes bgdrift { to { transform: scale(1.12) translate(-1.5%, 1.5%); } }
+.hero-veil {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(to bottom, rgba(5,6,12,.62), rgba(5,6,12,.28) 40%, rgba(5,6,12,.92) 96%),
+    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(5,6,12,.6) 100%);
 }
-.hero-kicker::before { content: "●"; color: var(--accent); margin-right: 10px; font-size: 9px; vertical-align: 2px; }
+.hero-inner { position: relative; z-index: 2; width: 100%; padding: 130px var(--pad) 90px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .06em; color: var(--txt-2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(8px);
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 10px #34d399; animation: pulse 2.2s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
 h1 {
-  font-family: var(--serif); font-weight: 600;
-  font-size: clamp(56px, 12vw, 168px);
-  line-height: .95; letter-spacing: -0.03em;
+  font-family: var(--disp); font-weight: 700;
+  font-size: clamp(46px, 9vw, 124px); line-height: 1.02; letter-spacing: -0.035em;
+  margin: 26px 0 24px; max-width: 13ch;
 }
-h1 em { font-style: italic; color: var(--accent); }
-.hero-sub {
-  max-width: 520px; margin: 28px 0 48px;
-  font-size: clamp(16px, 1.6vw, 19px); color: var(--ink-soft);
+h1 .grad {
+  background: var(--grad); background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 6s ease-in-out infinite;
 }
+@keyframes shimmer { 0%,100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+.hero-sub { max-width: 560px; font-size: clamp(16px, 1.6vw, 19px); color: var(--txt-2); }
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin: 38px 0 60px; }
+.btn-primary {
+  text-decoration: none; font-weight: 600; font-size: 15px; color: #fff;
+  padding: 15px 30px; border-radius: 14px; position: relative;
+  background: linear-gradient(100deg, var(--violet), var(--blue));
+  box-shadow: 0 0 30px rgba(124,58,237,.4), inset 0 1px 0 rgba(255,255,255,.2);
+  transition: transform .25s, box-shadow .25s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 46px rgba(124,58,237,.65), inset 0 1px 0 rgba(255,255,255,.2); }
+.btn-ghost {
+  text-decoration: none; font-weight: 600; font-size: 15px; color: var(--txt);
+  padding: 15px 30px; border-radius: 14px;
+  border: 1px solid var(--line); background: rgba(255,255,255,.04); backdrop-filter: blur(8px);
+  transition: background .25s, border-color .25s, transform .25s;
+}
+.btn-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); transform: translateY(-2px); }
+.hero-stats { display: flex; gap: clamp(28px, 5vw, 70px); flex-wrap: wrap; }
+.stat b { display: block; font-family: var(--disp); font-size: clamp(26px, 3vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
+.stat b i { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat span { font-size: 13px; color: var(--txt-3); }
+.scroll-cue {
+  position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .25em; color: var(--txt-3);
+  animation: bob 2.4s ease-in-out infinite;
+}
+@keyframes bob { 50% { transform: translate(-50%, 8px); } }
+
+/* ---------- marquee ---------- */
 .marquee {
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  overflow: hidden; white-space: nowrap; padding: 14px 0;
-  margin: 0 calc(-1 * clamp(20px, 4vw, 48px));
+  border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-2); overflow: hidden; white-space: nowrap; padding: 20px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
 }
-.marquee-track { display: inline-block; animation: marquee 28s linear infinite; }
+.marquee-track { display: inline-block; animation: marquee 30s linear infinite; }
 .marquee span {
-  font-family: var(--serif); font-size: 20px; margin: 0 24px;
-  text-transform: lowercase;
+  font-family: var(--mono); font-size: 14px; color: var(--txt-2);
+  margin: 0 18px; padding: 8px 18px; border: 1px solid var(--line-soft); border-radius: 999px;
+  display: inline-block;
 }
-.marquee span::after { content: "✳"; color: var(--accent); margin-left: 48px; font-family: var(--sans); }
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ---------- sections ---------- */
-section { padding: clamp(72px, 10vw, 140px) clamp(20px, 4vw, 48px); }
-.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 42px; flex-wrap: wrap; }
-h2 {
-  font-family: var(--serif); font-weight: 600;
-  font-size: clamp(34px, 5vw, 64px); letter-spacing: -0.02em; line-height: 1.05;
+section { padding: clamp(80px, 10vw, 150px) var(--pad); position: relative; }
+.sec-kicker {
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--txt-3); margin-bottom: 16px;
 }
-.sec-no { font-size: 13px; letter-spacing: .2em; color: var(--ink-soft); }
+.sec-kicker::before { content: "// "; color: var(--cyan); }
+h2 {
+  font-family: var(--disp); font-weight: 700; letter-spacing: -0.03em;
+  font-size: clamp(34px, 5.4vw, 68px); line-height: 1.05; margin-bottom: 18px;
+}
+h2 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sec-sub { color: var(--txt-2); max-width: 560px; margin-bottom: 48px; }
 
 /* ---------- works ---------- */
-.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 34px; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 38px; }
 .filters button {
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  letter-spacing: .03em; text-transform: lowercase; cursor: pointer;
-  border: 1.5px solid var(--line); border-radius: 999px;
-  background: transparent; color: var(--ink); padding: 8px 18px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .03em; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: transparent; color: var(--txt-2); padding: 9px 20px;
   transition: all .2s;
 }
-.filters button:hover { border-color: var(--ink); }
-.filters button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.grid {
-  display: grid; gap: 28px;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+.filters button:hover { color: var(--txt); border-color: rgba(255,255,255,.25); }
+.filters button.active {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(100deg, var(--violet), var(--blue));
+  box-shadow: 0 0 18px rgba(124,58,237,.35);
 }
-.card { cursor: pointer; text-decoration: none; color: inherit; }
-.card-cover {
-  aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden;
-  position: relative; background: var(--bg-soft);
-  border: 1px solid var(--line);
+.grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+.card {
+  position: relative; cursor: pointer; border-radius: 20px; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line-soft);
+  transition: transform .35s ease, border-color .35s, box-shadow .35s;
 }
-.card-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
-.card:hover .card-cover img { transform: scale(1.04); }
-.card-cover .ph {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  transition: transform .5s ease;
+.card:hover {
+  transform: translateY(-6px); border-color: rgba(167,139,250,.4);
+  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 40px rgba(124,58,237,.12);
 }
-.card:hover .card-cover .ph { transform: scale(1.04); }
-.ph b {
-  font-family: var(--serif); font-weight: 700; font-style: italic;
-  font-size: clamp(64px, 8vw, 110px); color: #F5F0E1cc; letter-spacing: -0.04em;
+.card .spot {
+  position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .35s; pointer-events: none;
+  background: radial-gradient(420px at var(--mx, 50%) var(--my, 50%), rgba(167,139,250,.14), transparent 65%);
 }
-.card-meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; gap: 12px; }
-.card-title { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
-.card-tags { font-size: 12.5px; color: var(--ink-soft); text-transform: lowercase; white-space: nowrap; }
-.card-desc { font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
-.works-empty { color: var(--ink-soft); font-style: italic; padding: 40px 0; }
+.card:hover .spot { opacity: 1; }
+.card-cover { aspect-ratio: 16 / 10; overflow: hidden; position: relative; background: var(--bg-2); }
+.card-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.card:hover .card-cover img { transform: scale(1.05); }
+.card-cover .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.ph b { font-family: var(--disp); font-weight: 700; font-size: 92px; color: rgba(255,255,255,.85); letter-spacing: -0.04em; text-shadow: 0 6px 40px rgba(0,0,0,.5); }
+.card-body { padding: 22px 24px 26px; position: relative; z-index: 2; }
+.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.card-title { font-family: var(--disp); font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.card-year { font-family: var(--mono); font-size: 12px; color: var(--txt-3); }
+.card-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 10px; }
+.card-tags em {
+  font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--txt-2);
+  border: 1px solid var(--line-soft); border-radius: 999px; padding: 3px 10px;
+}
+.card-desc { font-size: 14px; color: var(--txt-2); }
+.card-arrow {
+  position: absolute; top: 18px; right: 18px; z-index: 2;
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(5,6,12,.55); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  font-size: 15px; opacity: 0; transform: translate(6px, -6px) rotate(-45deg); transition: all .35s;
+}
+.card:hover .card-arrow { opacity: 1; transform: none; }
+.works-empty { color: var(--txt-3); font-family: var(--mono); font-size: 14px; padding: 40px 0; }
 
-/* ---------- project overlay ---------- */
+/* ---------- proje detay ---------- */
 .overlay {
-  position: fixed; inset: 0; z-index: 100; background: var(--bg);
-  overflow-y: auto; padding: 90px clamp(20px, 4vw, 48px) 80px;
-  opacity: 0; pointer-events: none; transition: opacity .25s;
+  position: fixed; inset: 0; z-index: 200; background: rgba(5,6,12,.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  overflow-y: auto; padding: 110px var(--pad) 90px;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
 }
 .overlay.open { opacity: 1; pointer-events: auto; }
 .overlay-close {
-  position: fixed; top: 18px; right: clamp(20px, 4vw, 48px); z-index: 101;
-  width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--ink);
-  background: var(--bg); color: var(--ink); font-size: 20px; cursor: pointer;
-  transition: background .2s, color .2s;
+  position: fixed; top: 20px; right: var(--pad); z-index: 201;
+  width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line);
+  background: rgba(255,255,255,.06); color: var(--txt); font-size: 18px; cursor: pointer;
+  transition: all .2s;
 }
-.overlay-close:hover { background: var(--ink); color: var(--bg); }
-.overlay h3 { font-family: var(--serif); font-size: clamp(38px, 6vw, 80px); font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
-.overlay .o-meta { display: flex; gap: 18px; flex-wrap: wrap; margin: 18px 0 8px; font-size: 13px; letter-spacing: .06em; text-transform: lowercase; color: var(--ink-soft); }
-.overlay .o-desc { max-width: 640px; font-size: 17px; margin: 18px 0 12px; }
-.overlay .o-link { display: inline-block; margin: 10px 0 30px; font-weight: 500; color: var(--accent); }
-.o-media { display: grid; gap: 22px; margin-top: 26px; }
-.o-media > * { border-radius: 14px; border: 1px solid var(--line); width: 100%; }
+.overlay-close:hover { background: rgba(255,255,255,.14); transform: rotate(90deg); }
+.overlay h3 { font-family: var(--disp); font-weight: 700; font-size: clamp(36px, 6vw, 76px); letter-spacing: -0.03em; line-height: 1.02; }
+.o-meta { display: flex; gap: 12px; flex-wrap: wrap; margin: 22px 0 6px; }
+.o-meta em { font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--txt-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; }
+.o-desc { max-width: 640px; font-size: 17px; color: var(--txt-2); margin: 18px 0 12px; }
+.o-link {
+  display: inline-block; margin: 12px 0 30px; text-decoration: none; font-weight: 600;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.o-media { display: grid; gap: 22px; margin-top: 28px; }
+.o-media > * { border-radius: 18px; border: 1px solid var(--line-soft); width: 100%; }
 .o-media .yt { aspect-ratio: 16 / 9; }
-.o-media .yt iframe { width: 100%; height: 100%; border: 0; border-radius: 14px; }
+.o-media .yt iframe { width: 100%; height: 100%; border: 0; border-radius: 18px; }
 
-/* ---------- services ---------- */
-#hizmetler { background: var(--ink); color: var(--bg); }
-#hizmetler .sec-no { color: #F5F0E188; }
-.svc-list { border-top: 1px solid #F5F0E126; }
+/* ---------- services bento ---------- */
+#hizmetler { background: var(--bg-2); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+.bento { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .svc {
-  display: grid; grid-template-columns: 64px 1fr 2fr; gap: 20px; align-items: baseline;
-  padding: 30px 0; border-bottom: 1px solid #F5F0E126;
+  position: relative; border-radius: 20px; padding: 30px 28px; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line-soft);
+  transition: transform .3s, border-color .3s;
 }
-.svc .n { font-size: 13px; color: #F5F0E177; }
-.svc h3 { font-family: var(--serif); font-size: clamp(24px, 3vw, 38px); font-weight: 600; }
-.svc p { color: #F5F0E1bb; font-size: 15px; }
-@media (max-width: 720px) { .svc { grid-template-columns: 44px 1fr; } .svc p { grid-column: 2; } }
+.svc:hover { transform: translateY(-5px); border-color: rgba(34,211,238,.35); }
+.svc .spot {
+  position: absolute; inset: 0; opacity: 0; transition: opacity .3s; pointer-events: none;
+  background: radial-gradient(380px at var(--mx, 50%) var(--my, 50%), rgba(34,211,238,.1), transparent 65%);
+}
+.svc:hover .spot { opacity: 1; }
+.svc .ico {
+  width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center;
+  font-size: 22px; margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(34,211,238,.18));
+  border: 1px solid var(--line);
+}
+.svc h3 { font-family: var(--disp); font-size: 21px; font-weight: 600; margin-bottom: 8px; }
+.svc p { font-size: 14.5px; color: var(--txt-2); }
+.svc .n { position: absolute; top: 24px; right: 26px; font-family: var(--mono); font-size: 12px; color: var(--txt-3); }
+
+/* ---------- process ---------- */
+.steps { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); counter-reset: step; }
+.step { position: relative; border-left: 1px solid var(--line); padding: 4px 0 4px 26px; }
+.step::before {
+  counter-increment: step; content: "0" counter(step);
+  font-family: var(--mono); font-size: 13px;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.step h3 { font-family: var(--disp); font-size: 19px; font-weight: 600; margin: 10px 0 6px; }
+.step p { font-size: 14px; color: var(--txt-2); }
 
 /* ---------- about ---------- */
 .about-body {
-  font-family: var(--serif); font-size: clamp(24px, 3.4vw, 42px);
-  line-height: 1.35; max-width: 980px; font-weight: 400; letter-spacing: -0.01em;
+  font-family: var(--disp); font-weight: 500; letter-spacing: -0.015em;
+  font-size: clamp(24px, 3.4vw, 44px); line-height: 1.35; max-width: 1000px;
 }
-.about-body em { color: var(--accent); }
+.about-body .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-/* ---------- contact ---------- */
-#iletisim { text-align: center; padding-bottom: 60px; }
-.contact-mail {
-  display: inline-block; margin: 26px 0 40px; text-decoration: none;
-  font-family: var(--serif); font-weight: 600;
-  font-size: clamp(28px, 6vw, 72px); letter-spacing: -0.02em;
-  border-bottom: 3px solid var(--accent); line-height: 1.2;
-  transition: color .2s;
+/* ---------- cta ---------- */
+#iletisim { text-align: center; overflow: hidden; }
+#iletisim::before {
+  content: ""; position: absolute; left: 50%; bottom: -260px; transform: translateX(-50%);
+  width: 900px; height: 520px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(124,58,237,.22), rgba(34,211,238,.08) 60%, transparent);
+  filter: blur(10px);
 }
-.contact-mail:hover { color: var(--accent); }
-.socials { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
-.socials a { font-size: 14px; text-transform: lowercase; letter-spacing: .05em; opacity: .75; }
-.socials a:hover { opacity: 1; color: var(--accent); }
+#iletisim h2 { margin-bottom: 10px; }
+.cta-mail {
+  display: inline-block; margin: 30px 0 46px; text-decoration: none;
+  font-family: var(--disp); font-weight: 700; letter-spacing: -0.02em;
+  font-size: clamp(26px, 5.4vw, 64px);
+  background: var(--grad); background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 6s ease-in-out infinite;
+}
+.cta-mail:hover { animation-duration: 1.6s; }
+.socials { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+.socials a {
+  text-decoration: none; font-family: var(--mono); font-size: 13px; color: var(--txt-2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 10px 22px;
+  transition: all .2s; background: rgba(255,255,255,.03);
+}
+.socials a:hover { color: var(--txt); border-color: rgba(255,255,255,.3); transform: translateY(-2px); }
 
 footer {
-  display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
-  padding: 26px clamp(20px, 4vw, 48px);
-  border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-soft);
+  display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 28px var(--pad); border-top: 1px solid var(--line-soft);
+  font-family: var(--mono); font-size: 12.5px; color: var(--txt-3);
 }
+footer a { color: var(--txt-3); text-decoration: none; }
+footer a:hover { color: var(--txt); }
 
 /* ---------- reveal ---------- */
-.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0s); }
 .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .marquee-track { animation: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="wordmark" href="#">ofyaa<i>*</i></a>
+  <a class="wordmark" href="#">ofyaa<sup>®</sup></a>
   <div class="nav-links">
-    <a href="#isler">işler</a>
-    <a href="#hizmetler">hizmetler</a>
-    <a href="#hakkinda">hakkında</a>
-    <a href="#iletisim">iletişim</a>
-    <a class="app-link" href="/app/">uygulama ↗</a>
+    <a href="#isler">İşler</a>
+    <a href="#hizmetler">Hizmetler</a>
+    <a href="#surec">Süreç</a>
+    <a href="#hakkinda">Hakkında</a>
   </div>
+  <a class="nav-cta" href="#iletisim">Konuşalım</a>
 </nav>
 
 <header>
-  <p class="hero-kicker">kreatif stüdyo — istanbul</p>
-  <h1>fikirden<br><em>ekrana.</em></h1>
-  <p class="hero-sub">ofyaa; web &amp; uygulama geliştiren, foto/video çeken, marka ve içerik üreten bağımsız bir stüdyo. Az iş, çok özen.</p>
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-track" id="marqueeTrack">
-      <span>web &amp; uygulama</span><span>foto / video çekim</span><span>marka &amp; tasarım</span><span>içerik üretimi</span>
+  <div class="hero-bg">
+    <video autoplay muted loop playsinline preload="metadata" poster="/media/hero-poster.jpg" onerror="this.remove()">
+      <source src="/media/hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-veil"></div>
+  <div class="hero-inner">
+    <span class="badge reveal"><span class="dot"></span> yeni projelere açığız — 2026</span>
+    <h1 class="reveal" style="--d:.08s">Fikri alır,<br><span class="grad">dijital ürüne</span><br>dönüştürürüz.</h1>
+    <p class="hero-sub reveal" style="--d:.16s">ofyaa; web &amp; mobil uygulamalar geliştiren, foto/video prodüksiyon yapan ve marka inşa eden bağımsız bir kreatif stüdyo + yazılım evi.</p>
+    <div class="hero-ctas reveal" style="--d:.24s">
+      <a class="btn-primary" href="#isler">İşlerimizi gör →</a>
+      <a class="btn-ghost" href="#iletisim">Projeni anlat</a>
+    </div>
+    <div class="hero-stats reveal" style="--d:.32s">
+      <div class="stat"><b><i data-count="12">0</i>+</b><span>tamamlanan proje</span></div>
+      <div class="stat"><b><i data-count="6">0</i>+</b><span>yıl deneyim</span></div>
+      <div class="stat"><b><i data-count="100">0</i>%</b><span>işine tutku</span></div>
     </div>
   </div>
+  <span class="scroll-cue">SCROLL ↓</span>
 </header>
 
-<section id="isler">
-  <div class="sec-head reveal">
-    <h2>seçili işler</h2>
-    <span class="sec-no">01 — portfolyo</span>
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <span>⚛ React</span><span>▲ Next.js</span><span>⬢ Node.js</span><span>⚡ Supabase</span><span>✦ Yapay Zekâ</span><span>◈ PWA</span><span>◐ UI/UX</span><span>🎬 Video Prodüksiyon</span><span>📷 Fotoğraf</span><span>◇ Figma</span><span>☁ Vercel</span>
   </div>
-  <div class="filters reveal" id="filters"></div>
+</div>
+
+<section id="isler">
+  <p class="sec-kicker reveal">seçili işler</p>
+  <h2 class="reveal" style="--d:.06s">Yaptıklarımız<br><span class="grad">kendini anlatır.</span></h2>
+  <p class="sec-sub reveal" style="--d:.12s">Ürün, çekim, marka — hepsi tek çatı altında. Az iş alır, çok özen gösteririz.</p>
+  <div class="filters reveal" id="filters" style="--d:.18s"></div>
   <div class="grid" id="worksGrid"></div>
-  <p class="works-empty" id="worksEmpty" hidden>Bu kategoride henüz iş yok — yakında.</p>
+  <p class="works-empty" id="worksEmpty" hidden>// bu kategoride henüz iş yok — yakında.</p>
 </section>
 
 <section id="hizmetler">
-  <div class="sec-head reveal">
-    <h2>hizmetler</h2>
-    <span class="sec-no">02 — neler yapıyoruz</span>
+  <p class="sec-kicker reveal">hizmetler</p>
+  <h2 class="reveal" style="--d:.06s">Uçtan uca <span class="grad">üretim.</span></h2>
+  <p class="sec-sub reveal" style="--d:.12s">Strateji, tasarım, yazılım ve prodüksiyon — aynı ekipten, aynı kalitede.</p>
+  <div class="bento">
+    <div class="svc reveal"><div class="spot"></div><span class="n">01</span><div class="ico">⌘</div><h3>Web &amp; Uygulama</h3><p>Next.js, PWA, yapay zekâ entegrasyonları. Hızlı, ölçeklenen, işini yapan dijital ürünler.</p></div>
+    <div class="svc reveal" style="--d:.08s"><div class="spot"></div><span class="n">02</span><div class="ico">🎬</div><h3>Foto / Video Prodüksiyon</h3><p>Ürün, mekân ve tanıtım çekimleri. Kurgu, renk ve ses dahil — yayına hazır teslim.</p></div>
+    <div class="svc reveal" style="--d:.16s"><div class="spot"></div><span class="n">03</span><div class="ico">✦</div><h3>Marka &amp; Tasarım</h3><p>İsim, logo, görsel dil, tasarım sistemi. Markanın her ekranda aynı hissettirmesi.</p></div>
+    <div class="svc reveal" style="--d:.24s"><div class="spot"></div><span class="n">04</span><div class="ico">▲</div><h3>İçerik &amp; Büyüme</h3><p>Sosyal medya içerik üretimi, SEO ve analitik. Yayınla, ölç, iyileştir.</p></div>
   </div>
-  <div class="svc-list">
-    <div class="svc reveal"><span class="n">01</span><h3>Web &amp; Uygulama</h3><p>Tasarımdan yayına: hızlı, sade, işini yapan siteler ve ürünler. PWA, sesli arayüzler, yapay zekâ entegrasyonları.</p></div>
-    <div class="svc reveal"><span class="n">02</span><h3>Foto / Video Çekim</h3><p>Ürün, mekân ve tanıtım çekimleri; kurgu ve renk dahil, yayına hazır teslim.</p></div>
-    <div class="svc reveal"><span class="n">03</span><h3>Marka &amp; Tasarım</h3><p>İsim, logo, görsel dil. Markanın her ekranda aynı hissettirmesi.</p></div>
-    <div class="svc reveal"><span class="n">04</span><h3>İçerik Üretimi</h3><p>Sosyal medya ve web için düzenli, planlı, markaya oturan içerik.</p></div>
+</section>
+
+<section id="surec">
+  <p class="sec-kicker reveal">süreç</p>
+  <h2 class="reveal" style="--d:.06s">Nasıl <span class="grad">çalışırız?</span></h2>
+  <p class="sec-sub reveal" style="--d:.12s">Dört adım. Sürpriz yok, sis yok — her aşamada ne olduğunu bilirsin.</p>
+  <div class="steps">
+    <div class="step reveal"><h3>Keşif</h3><p>Derdini dinleriz. Hedef, kitle, kapsam — birlikte netleştiririz.</p></div>
+    <div class="step reveal" style="--d:.08s"><h3>Tasarım</h3><p>Prototip ve görsel dil. Onaylamadan tek satır kod yazılmaz.</p></div>
+    <div class="step reveal" style="--d:.16s"><h3>Üretim</h3><p>Geliştirme ve/veya çekim. Haftalık görünür ilerleme.</p></div>
+    <div class="step reveal" style="--d:.24s"><h3>Yayın + Destek</h3><p>Canlıya alırız, ölçeriz, yanında kalırız.</p></div>
   </div>
 </section>
 
 <section id="hakkinda">
-  <div class="sec-head reveal">
-    <h2>hakkında</h2>
-    <span class="sec-no">03 — manifesto</span>
-  </div>
-  <p class="about-body reveal">Kalabalık ajans değiliz; <em>küçük ve keskin</em> bir stüdyoyuz. Her işi kendi işimiz gibi değil, kendi işimiz olarak yapıyoruz — çünkü buradaki her şey bizim imzamız.</p>
+  <p class="sec-kicker reveal">hakkında</p>
+  <p class="about-body reveal" style="--d:.08s">Kalabalık bir ajans değiliz — <span class="grad">küçük ve keskin</span> bir stüdyoyuz. Buradaki her iş imzamızı taşır; o yüzden her projeye kendi projemiz gibi değil, <span class="grad">kendi projemiz olarak</span> yaklaşırız.</p>
 </section>
 
 <section id="iletisim">
-  <div class="sec-head reveal" style="justify-content:center">
-    <h2>bir fikrin mi var?</h2>
-  </div>
-  <a class="contact-mail reveal" href="mailto:hello@ofyaa.com">hello@ofyaa.com</a>
-  <div class="socials reveal">
+  <p class="sec-kicker reveal" style="text-align:center">iletişim</p>
+  <h2 class="reveal" style="--d:.06s">Bir fikrin mi var?</h2>
+  <p class="sec-sub reveal" style="--d:.1s; margin: 0 auto;">Bir e-posta at, 24 saat içinde dönelim.</p>
+  <br>
+  <a class="cta-mail reveal" style="--d:.14s" href="mailto:hello@ofyaa.com">hello@ofyaa.com</a>
+  <div class="socials reveal" style="--d:.2s">
     <a href="https://instagram.com/ofyaa" target="_blank" rel="noopener">instagram</a>
     <a href="https://youtube.com/@ofyaa" target="_blank" rel="noopener">youtube</a>
     <a href="https://x.com/ofyaa" target="_blank" rel="noopener">x / twitter</a>
+    <a href="https://github.com/arslaney" target="_blank" rel="noopener">github</a>
   </div>
 </section>
 
 <footer>
-  <span>© <span id="year"></span> ofyaa — tüm hakları saklıdır.</span>
-  <span>fikirden ekrana ✳</span>
+  <span>© <span id="year"></span> ofyaa® — tüm hakları saklıdır.</span>
+  <span><a href="/app/">ofyaa app ↗</a></span>
 </footer>
 
 <!-- proje detay ekranı -->
@@ -326,20 +482,20 @@ footer {
    hiçbir yere dokunma. Görselleri /media/ klasörüne koy.
 
    Alanlar:
-     id       benzersiz kısa isim
-     title    başlık
-     year     yıl
-     cat      kategori: "web" | "cekim" | "tasarim" | "icerik"
-     tags     kartta görünen küçük etiketler
-     desc     kısa açıklama (kart + detay)
-     cover    kapak görseli, örn: "/media/proje/kapak.jpg" (boşsa renkli
-              placeholder gösterilir)
-     color    placeholder/vurgu rengi (cover yoksa kullanılır)
-     link     canlı iş varsa adresi (opsiyonel)
-     media    detay sayfası galerisi (opsiyonel):
-              { type: "image", src: "/media/x.jpg" }
-              { type: "video", src: "/media/x.mp4" }
-              { type: "youtube", id: "VIDEO_ID" }
+     id     benzersiz kısa isim
+     title  başlık
+     year   yıl
+     cat    kategori: "web" | "cekim" | "tasarim" | "icerik"
+     tags   etiketler (dizi)
+     desc   kısa açıklama
+     cover  kapak görseli, örn "/media/proje/kapak.jpg" (boşsa harfli
+            gradient placeholder gösterilir)
+     color  placeholder gradient rengi
+     link   canlı adres (opsiyonel)
+     media  detay galerisi (opsiyonel):
+            { type:"image", src:"/media/x.jpg" }
+            { type:"video", src:"/media/x.mp4" }
+            { type:"youtube", id:"VIDEO_ID" }
    ===================================================================== */
 const PROJECTS = [
   {
@@ -347,10 +503,10 @@ const PROJECTS = [
     title: "ofyaa · söyle, yapılsın",
     year: 2025,
     cat: "web",
-    tags: "pwa · yapay zekâ · ses",
-    desc: "Sesle görev ekleyen, tarihleri anlayan, zamanında hatırlatan görev asistanı. Tasarımı ve geliştirmesi tamamen stüdyoya ait.",
-    cover: "/icons/icon-512.png",
-    color: "#E8551F",
+    tags: ["pwa", "yapay zekâ", "ses"],
+    desc: "Sesle görev ekleyen, tarihleri anlayan, zamanında hatırlatan görev asistanı. Tasarım + geliştirme tamamen stüdyoya ait.",
+    cover: "",
+    color: "#7c3aed",
     link: "/app/",
     media: []
   },
@@ -359,10 +515,10 @@ const PROJECTS = [
     title: "Örnek Çekim Projesi",
     year: 2025,
     cat: "cekim",
-    tags: "ürün · video",
+    tags: ["ürün", "video"],
     desc: "Bu bir örnek kayıt — kendi çekimini eklemek için index.html içindeki PROJECTS listesini düzenle.",
     cover: "",
-    color: "#2E5E4E",
+    color: "#0e9488",
     media: []
   },
   {
@@ -370,10 +526,10 @@ const PROJECTS = [
     title: "Örnek Marka Çalışması",
     year: 2024,
     cat: "tasarim",
-    tags: "logo · kimlik",
+    tags: ["logo", "kimlik"],
     desc: "Bu bir örnek kayıt — gerçek işinle değiştir, cover alanına /media/ altındaki görseli yaz.",
     cover: "",
-    color: "#3B4A8C",
+    color: "#db2777",
     media: []
   }
 ];
@@ -393,20 +549,28 @@ let activeCat = "hepsi";
 
 function coverHTML(p) {
   if (p.cover) return `<img src="${p.cover}" alt="${p.title}" loading="lazy">`;
-  return `<div class="ph" style="background:linear-gradient(135deg, ${p.color}, ${p.color}99 60%, #17130C)"><b>${p.title.charAt(0).toLowerCase()}</b></div>`;
+  return `<div class="ph" style="background:
+    radial-gradient(340px 240px at 30% 30%, ${p.color}66, transparent 70%),
+    radial-gradient(300px 220px at 75% 75%, ${p.color}33, transparent 70%),
+    linear-gradient(135deg, #0a0c16, #05060c)"><b>${p.title.charAt(0).toLowerCase()}</b></div>`;
 }
 
 function renderGrid() {
   const list = PROJECTS.filter((p) => activeCat === "hepsi" || p.cat === activeCat);
   emptyMsg.hidden = list.length > 0;
-  grid.innerHTML = list.map((p) => `
-    <article class="card" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.title}">
+  grid.innerHTML = list.map((p, i) => `
+    <article class="card reveal in" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.title}">
+      <div class="spot"></div>
+      <span class="card-arrow">↗</span>
       <div class="card-cover">${coverHTML(p)}</div>
-      <div class="card-meta">
-        <span class="card-title">${p.title}</span>
-        <span class="card-tags">${p.year} · ${p.tags}</span>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-title">${p.title}</span>
+          <span class="card-year">${p.year}</span>
+        </div>
+        <div class="card-tags">${p.tags.map((t) => `<em>${t}</em>`).join("")}</div>
+        <p class="card-desc">${p.desc}</p>
       </div>
-      <p class="card-desc">${p.desc}</p>
     </article>`).join("");
 }
 renderGrid();
@@ -421,6 +585,15 @@ filters.addEventListener("click", (e) => {
   activeCat = btn.dataset.cat;
   filters.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b === btn));
   renderGrid();
+});
+
+/* ---------- kart/servis spotlight (fare takibi) ---------- */
+document.addEventListener("pointermove", (e) => {
+  const el = e.target.closest(".card, .svc");
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+  el.style.setProperty("--my", (e.clientY - r.top) + "px");
 });
 
 /* ---------- proje detayı ---------- */
@@ -439,11 +612,11 @@ function openProject(id) {
   if (!p) return;
   overlayContent.innerHTML = `
     <h3>${p.title}</h3>
-    <div class="o-meta"><span>${p.year}</span><span>${p.tags}</span></div>
+    <div class="o-meta"><em>${p.year}</em>${p.tags.map((t) => `<em>${t}</em>`).join("")}</div>
     <p class="o-desc">${p.desc}</p>
     ${p.link ? `<a class="o-link" href="${p.link}" target="_blank" rel="noopener">canlı gör ↗</a>` : ""}
     <div class="o-media">
-      ${p.cover && !p.cover.includes("/icons/") ? `<img src="${p.cover}" alt="${p.title}">` : ""}
+      ${p.cover ? `<img src="${p.cover}" alt="${p.title}">` : ""}
       ${(p.media || []).map(mediaHTML).join("")}
     </div>`;
   overlay.classList.add("open");
@@ -476,6 +649,21 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
 }, { threshold: 0.12 });
 document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+/* ---------- sayaç animasyonu ---------- */
+const cio = new IntersectionObserver((entries) => {
+  entries.forEach((en) => {
+    if (!en.isIntersecting) return;
+    cio.unobserve(en.target);
+    const target = +en.target.dataset.count, t0 = performance.now();
+    (function tick(now) {
+      const k = Math.min((now - t0) / 1400, 1);
+      en.target.textContent = Math.round(target * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}, { threshold: 0.6 });
+document.querySelectorAll("[data-count]").forEach((el) => cio.observe(el));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>
