@@ -2,13 +2,13 @@
   "name": "ofyaa",
   "short_name": "ofyaa",
   "description": "Söyle, yapılsın. Sesli ve yazılı görev takip.",
-  "start_url": "/?app=1",
+  "start_url": "/app/?app=1",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F5F0E1",
   "theme_color": "#F5F0E1",
   "lang": "tr",
-  "scope": "/",
+  "scope": "/app/",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -29,5 +29,8 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "lifestyle"]
+  "categories": [
+    "productivity",
+    "lifestyle"
+  ]
 }

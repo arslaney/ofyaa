@@ -124,7 +124,7 @@ module.exports = async (req, res) => {
       const title = 'ofyaa';
       const body = lines.slice(0, 4).join('\n') + (lines.length > 4 ? `\n+${lines.length - 4} daha` : '');
 
-      const payload = JSON.stringify({ title, body, url: '/' });
+      const payload = JSON.stringify({ title, body, url: '/app/' });
       const pushSub = {
         endpoint: sub.endpoint,
         keys: { p256dh: sub.p256dh, auth: sub.auth }
