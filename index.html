@@ -397,6 +397,13 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
 
 /* ---------- cta ---------- */
 #iletisim { text-align: center; overflow: hidden; }
+#iletisim > *:not(.cta-bg) { position: relative; z-index: 1; }
+.cta-bg { position: absolute; inset: 0; z-index: 0; }
+.cta-bg video { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+.cta-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(250,249,246,.85), rgba(250,249,246,.15) 60%, rgba(250,249,246,.4));
+}
 #iletisim::before {
   content: ""; position: absolute; left: 50%; bottom: -260px; transform: translateX(-50%);
   width: 900px; height: 520px; border-radius: 50%; pointer-events: none;
@@ -453,7 +460,8 @@ footer a:hover { color: var(--txt); }
 
 <header>
   <div class="hero-bg">
-    <video autoplay muted loop playsinline preload="metadata" poster="/media/hero-poster.jpg" onerror="this.remove()">
+    <video autoplay muted loop playsinline preload="metadata" poster="/media/hero-poster.jpg">
+      <source src="/media/hero.webm" type="video/webm">
       <source src="/media/hero.mp4" type="video/mp4">
     </video>
   </div>
@@ -522,6 +530,13 @@ footer a:hover { color: var(--txt); }
 </section>
 
 <section id="iletisim">
+  <div class="cta-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="metadata">
+      <source src="/media/waves.webm" type="video/webm">
+      <source src="/media/waves.mp4" type="video/mp4">
+    </video>
+    <div class="cta-veil"></div>
+  </div>
   <p class="sec-kicker reveal" style="text-align:center">iletişim</p>
   <h2 class="reveal" style="--d:.06s">Bir fikrin mi var?</h2>
   <p class="sec-sub reveal" style="--d:.1s; margin: 0 auto;">Bir e-posta at, 24 saat içinde dönelim.</p>
