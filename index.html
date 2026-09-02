@@ -99,6 +99,7 @@ nav {
 header { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; z-index: 0; }
 .hero-bg video { width: 100%; height: 100%; object-fit: cover; }
+.hero-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* video yüklenemezse de arkada yaşayan bir zemin dursun */
 .hero-bg::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
@@ -464,6 +465,7 @@ footer a:hover { color: var(--txt); }
       <source src="/media/hero.webm" type="video/webm">
       <source src="/media/hero.mp4" type="video/mp4">
     </video>
+    <canvas id="waveCanvas" aria-hidden="true"></canvas>
   </div>
   <div class="hero-veil"></div>
   <div class="hero-inner">
@@ -828,6 +830,61 @@ const cio = new IntersectionObserver((entries) => {
 document.querySelectorAll("[data-count]").forEach((el) => cio.observe(el));
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
+/* ---------- hero: video üzerinde akan dalga çizgileri ---------- */
+(function () {
+  const cv = document.getElementById("waveCanvas");
+  if (!cv) return;
+  const cx = cv.getContext("2d");
+  const TAU = Math.PI * 2;
+  let W = 0, H = 0, lines = [];
+
+  function seedLines() {
+    lines = [];
+    const n = 26;
+    for (let i = 0; i < n; i++) {
+      const comps = [];
+      for (let k = 0; k < 3; k++) {
+        comps.push({
+          A: 12 + Math.random() * 40,
+          k: (0.6 + Math.random() * 1.5) * TAU / Math.max(W, 800),
+          f: 0.02 + Math.random() * 0.05,   // yavaş akış (tur/sn)
+          p: Math.random() * TAU
+        });
+      }
+      lines.push({ y: (0.08 + 0.84 * i / (n - 1)), comps, a: 0.045 + Math.random() * 0.075, w: 0.8 + Math.random() });
+    }
+  }
+  function resize() {
+    const r = cv.parentElement.getBoundingClientRect();
+    W = cv.width = Math.round(r.width);
+    H = cv.height = Math.round(r.height);
+    seedLines();
+  }
+  function draw(t) {
+    cx.clearRect(0, 0, W, H);
+    for (const L of lines) {
+      cx.beginPath();
+      for (let px = -20; px <= W + 20; px += 10) {
+        let y = L.y * H;
+        for (const c of L.comps) y += c.A * Math.sin(c.k * px + TAU * c.f * t + c.p);
+        px === -20 ? cx.moveTo(px, y) : cx.lineTo(px, y);
+      }
+      cx.strokeStyle = "rgba(62,102,80," + L.a + ")";
+      cx.lineWidth = L.w;
+      cx.stroke();
+    }
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { draw(0); return; }
+  let running = true;
+  document.addEventListener("visibilitychange", () => { running = !document.hidden; });
+  (function loop(now) {
+    if (running) draw(now / 1000);
+    requestAnimationFrame(loop);
+  })(0);
+})();
 </script>
 </body>
 </html>
