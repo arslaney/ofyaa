@@ -604,6 +604,7 @@ const emptyMsg = document.getElementById("worksEmpty");
 let activeCat = "hepsi";
 let visibleList = [];
 let activeIdx = 0;
+const DEFAULT_ACTIVE_ID = "teklifverisi"; // sayfa açılışında genişleyen kart
 const isDesktop = () => window.innerWidth >= 768;
 
 function applyExpand() {
@@ -620,7 +621,7 @@ function applyExpand() {
 
 function renderGrid() {
   visibleList = PROJECTS.filter((p) => activeCat === "hepsi" || p.cat === activeCat);
-  activeIdx = 0;
+  activeIdx = Math.max(0, visibleList.findIndex((p) => p.id === DEFAULT_ACTIVE_ID));
   emptyMsg.hidden = visibleList.length > 0;
   grid.innerHTML = visibleList.map((p) => `
     <li class="xcard" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.title}">
