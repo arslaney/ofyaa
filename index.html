@@ -145,6 +145,15 @@ h1 .grad {
   transition: transform .25s, box-shadow .25s;
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(62,124,91,.32); }
+.btn-primary, .nav-cta, .xcard .xopen { overflow: hidden; }
+.btn-primary::after, .nav-cta::after, .xcard .xopen::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.5), transparent);
+  transform: skewX(-20deg); transition: left .6s ease; pointer-events: none;
+}
+.btn-primary:hover::after, .nav-cta:hover::after, .xcard .xopen:hover::after { left: 130%; }
+.nav-cta { position: relative; }
+.xcard .xopen { position: relative; }
 .btn-ghost {
   text-decoration: none; font-weight: 600; font-size: 15px; color: var(--txt);
   padding: 15px 30px; border-radius: 14px;
@@ -156,6 +165,17 @@ h1 .grad {
 .stat b { display: block; font-family: var(--disp); font-size: clamp(26px, 3vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
 .stat b i { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .stat span { font-size: 13px; color: var(--txt-3); }
+.float-chip {
+  position: absolute; z-index: 2; display: none;
+  font-family: var(--mono); font-size: 12.5px; color: var(--txt-2);
+  background: rgba(255,255,255,.75); backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 999px; padding: 10px 20px;
+  box-shadow: 0 12px 30px rgba(35,32,26,.1);
+}
+.fc1 { right: clamp(40px, 9vw, 150px); top: 30%; animation: floaty 6s ease-in-out infinite; }
+.fc2 { right: clamp(70px, 13vw, 240px); top: 52%; animation: floaty 7.5s ease-in-out infinite reverse; }
+@keyframes floaty { 50% { transform: translateY(-14px) rotate(-1.5deg); } }
+@media (min-width: 1000px) { .float-chip { display: block; } }
 .scroll-cue {
   position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2;
   font-family: var(--mono); font-size: 11px; letter-spacing: .25em; color: var(--txt-3);
@@ -221,7 +241,11 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
   min-width: 0; min-height: 0; outline: none;
   transition: border-color .35s;
 }
-.xcard[data-active="true"] { border-color: rgba(62,124,91,.4); }
+.xcard[data-active="true"] {
+  border-color: rgba(62,124,91,.4);
+  box-shadow: 0 30px 60px -20px rgba(35,32,26,.28), 0 12px 24px -14px rgba(35,32,26,.14);
+}
+.xcard { transition: border-color .35s, box-shadow .4s, transform .25s ease-out; will-change: transform; }
 .xcard:focus-visible { border-color: var(--amber); }
 .xcard img {
   position: absolute; inset: 0; width: 100%; height: 100%;
@@ -231,6 +255,22 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
   transition: filter .55s ease, transform .55s ease;
 }
 .xcard[data-active="true"] img { filter: none; transform: scale(1); }
+/* aktif kartta tarayıcı çerçevesi */
+.xcard .chrome {
+  position: absolute; top: 0; left: 0; right: 0; height: 36px; z-index: 2;
+  display: flex; align-items: center; gap: 6px; padding: 0 14px;
+  background: #fdfcfa; border-bottom: 1px solid var(--line-soft);
+  opacity: 0; transition: opacity .4s ease .08s;
+}
+.xcard[data-active="true"] .chrome { opacity: 1; }
+.xcard .chrome i { width: 10px; height: 10px; border-radius: 50%; }
+.xcard .chrome i:nth-child(1) { background: #ff5f57; }
+.xcard .chrome i:nth-child(2) { background: #febc2e; }
+.xcard .chrome i:nth-child(3) { background: #28c840; }
+.xcard .chrome span {
+  margin-left: 8px; font-family: var(--mono); font-size: 11px; color: var(--txt-3);
+  background: var(--bg-2); border-radius: 6px; padding: 3px 12px;
+}
 /* pasif kart: dikey başlık, okunur beyaz hap içinde */
 .xcard .vtitle {
   position: absolute; left: 16px; bottom: 16px; max-height: calc(100% - 32px);
@@ -315,6 +355,13 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
   transition: transform .3s, border-color .3s;
 }
 .svc:hover { transform: translateY(-5px); border-color: rgba(62,124,91,.35); box-shadow: 0 12px 28px rgba(35,32,26,.07); }
+.svc::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--grad); opacity: 0; transition: opacity .3s;
+}
+.svc:hover::before { opacity: 1; }
+.svc .ico { transition: transform .3s ease; }
+.svc:hover .ico { transform: scale(1.1) rotate(-5deg); }
 .svc .spot {
   position: absolute; inset: 0; opacity: 0; transition: opacity .3s; pointer-events: none;
   background: radial-gradient(380px at var(--mx, 50%) var(--my, 50%), rgba(62,124,91,.06), transparent 65%);
@@ -425,6 +472,8 @@ footer a:hover { color: var(--txt); }
       <div class="stat"><b><i data-count="100">0</i>%</b><span>işine tutku</span></div>
     </div>
   </div>
+  <div class="float-chip fc1">✦ fikirden ekrana</div>
+  <div class="float-chip fc2">🎬 çekim + yazılım, tek çatı</div>
   <span class="scroll-cue">SCROLL ↓</span>
 </header>
 
@@ -626,6 +675,7 @@ function renderGrid() {
   grid.innerHTML = visibleList.map((p) => `
     <li class="xcard" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.title}">
       <img src="${p.cover}" alt="${p.title}" loading="lazy">
+      <div class="chrome"><i></i><i></i><i></i><span>${p.link ? p.link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") : "ofyaa.com"}</span></div>
       <span class="vtitle">${p.title}</span>
       <article>
         <div class="xhead"><span class="xicon">${p.icon || ""}</span><h3 class="xtitle">${p.title}</h3></div>
@@ -652,6 +702,21 @@ grid.addEventListener("focusin", (e) => {
   if (card) activateCard(card);
 });
 window.addEventListener("resize", applyExpand);
+
+/* aktif karta hafif 3D tilt */
+const noMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+grid.addEventListener("pointermove", (e) => {
+  if (noMotion || !isDesktop()) return;
+  const card = e.target.closest('.xcard[data-active="true"]');
+  if (!card) return;
+  const r = card.getBoundingClientRect();
+  const dx = (e.clientX - r.left) / r.width - .5;
+  const dy = (e.clientY - r.top) / r.height - .5;
+  card.style.transform = `perspective(1400px) rotateX(${(-dy * 2.4).toFixed(2)}deg) rotateY(${(dx * 3).toFixed(2)}deg)`;
+});
+grid.addEventListener("pointerleave", () => {
+  grid.querySelectorAll(".xcard").forEach((c) => { c.style.transform = ""; });
+});
 
 /* ---------- filtreler ---------- */
 const filters = document.getElementById("filters");
