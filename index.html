@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ofyaa® — kreatif stüdyo &amp; yazılım evi</title>
 <meta name="description" content="ofyaa: dijital ürünler, web &amp; uygulama, foto/video prodüksiyon ve marka işleri üreten kreatif stüdyo & yazılım evi.">
-<meta name="theme-color" content="#05060c">
+<meta name="theme-color" content="#0b0908">
 
 <!-- Eski PWA kurulumları (start_url /?app=1) uygulamanın yeni adresine gitsin -->
 <script>
@@ -34,20 +34,20 @@
 
 <style>
 :root {
-  --bg: #05060c;
-  --bg-2: #0a0c16;
+  --bg: #0b0908;
+  --bg-2: #120e0b;
   --panel: rgba(255,255,255,0.03);
   --panel-2: rgba(255,255,255,0.055);
   --line: rgba(255,255,255,0.09);
   --line-soft: rgba(255,255,255,0.06);
-  --txt: #eef0f6;
-  --txt-2: #9aa3b5;
-  --txt-3: #626b7d;
-  --violet: #7c3aed;
-  --cyan: #22d3ee;
-  --pink: #ec4899;
-  --blue: #3b82f6;
-  --grad: linear-gradient(100deg, #a78bfa, #22d3ee 45%, #ec4899 90%);
+  --txt: #f2ede4;
+  --txt-2: #a89f91;
+  --txt-3: #6f675b;
+  --ember: #e2551e;
+  --amber: #ffa640;
+  --rust: #ba2c1a;
+  --copper: #d66c24;
+  --grad: linear-gradient(100deg, #ffd9a8, #ffa640 45%, #e2551e 90%);
   --sans: "Inter", system-ui, sans-serif;
   --disp: "Space Grotesk", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -60,7 +60,7 @@ body {
   font-family: var(--sans); font-size: 16px; line-height: 1.65;
   -webkit-font-smoothing: antialiased; overflow-x: hidden;
 }
-::selection { background: var(--violet); color: #fff; }
+::selection { background: var(--ember); color: #fff; }
 a { color: inherit; }
 img, video { max-width: 100%; display: block; }
 .mono { font-family: var(--mono); }
@@ -81,7 +81,7 @@ nav {
   position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 100;
   display: flex; align-items: center; gap: 6px;
   padding: 8px; border-radius: 999px;
-  background: rgba(10,12,22,0.6); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  background: rgba(16,12,9,0.6); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--line); box-shadow: 0 8px 40px rgba(0,0,0,0.45);
   white-space: nowrap;
 }
@@ -99,11 +99,11 @@ nav {
 .nav-cta {
   text-decoration: none; font-size: 13.5px; font-weight: 600; color: #fff;
   padding: 9px 18px; border-radius: 999px; margin-left: 6px;
-  background: linear-gradient(100deg, var(--violet), var(--blue));
-  box-shadow: 0 0 22px rgba(124,58,237,0.45);
+  background: linear-gradient(100deg, var(--ember), var(--copper));
+  box-shadow: 0 0 22px rgba(226,85,30,0.45);
   transition: box-shadow .25s, transform .25s;
 }
-.nav-cta:hover { box-shadow: 0 0 34px rgba(124,58,237,0.7); transform: translateY(-1px); }
+.nav-cta:hover { box-shadow: 0 0 34px rgba(226,85,30,0.7); transform: translateY(-1px); }
 @media (max-width: 720px) { .nav-links { display: none; } }
 
 /* ---------- hero ---------- */
@@ -114,9 +114,9 @@ header { position: relative; min-height: 100svh; display: flex; align-items: cen
 .hero-bg::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    radial-gradient(700px 500px at 25% 30%, rgba(124,58,237,.28), transparent 65%),
-    radial-gradient(650px 480px at 75% 65%, rgba(34,211,238,.16), transparent 65%),
-    radial-gradient(600px 420px at 60% 15%, rgba(236,72,153,.14), transparent 65%),
+    radial-gradient(700px 500px at 25% 30%, rgba(226,85,30,.24), transparent 65%),
+    radial-gradient(650px 480px at 75% 65%, rgba(255,166,64,.12), transparent 65%),
+    radial-gradient(600px 420px at 60% 15%, rgba(186,44,26,.12), transparent 65%),
     var(--bg);
   animation: bgdrift 16s ease-in-out infinite alternate;
 }
@@ -124,8 +124,8 @@ header { position: relative; min-height: 100svh; display: flex; align-items: cen
 .hero-veil {
   position: absolute; inset: 0; z-index: 1;
   background:
-    linear-gradient(to bottom, rgba(5,6,12,.62), rgba(5,6,12,.28) 40%, rgba(5,6,12,.92) 96%),
-    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(5,6,12,.6) 100%);
+    linear-gradient(to bottom, rgba(11,9,8,.62), rgba(11,9,8,.28) 40%, rgba(11,9,8,.92) 96%),
+    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(11,9,8,.6) 100%);
 }
 .hero-inner { position: relative; z-index: 2; width: 100%; padding: 130px var(--pad) 90px; }
 .badge {
@@ -152,11 +152,11 @@ h1 .grad {
 .btn-primary {
   text-decoration: none; font-weight: 600; font-size: 15px; color: #fff;
   padding: 15px 30px; border-radius: 14px; position: relative;
-  background: linear-gradient(100deg, var(--violet), var(--blue));
-  box-shadow: 0 0 30px rgba(124,58,237,.4), inset 0 1px 0 rgba(255,255,255,.2);
+  background: linear-gradient(100deg, var(--ember), var(--copper));
+  box-shadow: 0 0 30px rgba(226,85,30,.4), inset 0 1px 0 rgba(255,255,255,.2);
   transition: transform .25s, box-shadow .25s;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 46px rgba(124,58,237,.65), inset 0 1px 0 rgba(255,255,255,.2); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 46px rgba(226,85,30,.65), inset 0 1px 0 rgba(255,255,255,.2); }
 .btn-ghost {
   text-decoration: none; font-weight: 600; font-size: 15px; color: var(--txt);
   padding: 15px 30px; border-radius: 14px;
@@ -196,7 +196,7 @@ section { padding: clamp(80px, 10vw, 150px) var(--pad); position: relative; }
   font-family: var(--mono); font-size: 12.5px; letter-spacing: .22em; text-transform: uppercase;
   color: var(--txt-3); margin-bottom: 16px;
 }
-.sec-kicker::before { content: "// "; color: var(--cyan); }
+.sec-kicker::before { content: "// "; color: var(--amber); }
 h2 {
   font-family: var(--disp); font-weight: 700; letter-spacing: -0.03em;
   font-size: clamp(34px, 5.4vw, 68px); line-height: 1.05; margin-bottom: 18px;
@@ -215,8 +215,8 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
 .filters button:hover { color: var(--txt); border-color: rgba(255,255,255,.25); }
 .filters button.active {
   color: #fff; border-color: transparent;
-  background: linear-gradient(100deg, var(--violet), var(--blue));
-  box-shadow: 0 0 18px rgba(124,58,237,.35);
+  background: linear-gradient(100deg, var(--ember), var(--copper));
+  box-shadow: 0 0 18px rgba(226,85,30,.35);
 }
 .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
 .card {
@@ -225,12 +225,12 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
   transition: transform .35s ease, border-color .35s, box-shadow .35s;
 }
 .card:hover {
-  transform: translateY(-6px); border-color: rgba(167,139,250,.4);
-  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 40px rgba(124,58,237,.12);
+  transform: translateY(-6px); border-color: rgba(255,166,64,.35);
+  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 40px rgba(226,85,30,.12);
 }
 .card .spot {
   position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .35s; pointer-events: none;
-  background: radial-gradient(420px at var(--mx, 50%) var(--my, 50%), rgba(167,139,250,.14), transparent 65%);
+  background: radial-gradient(420px at var(--mx, 50%) var(--my, 50%), rgba(255,166,64,.1), transparent 65%);
 }
 .card:hover .spot { opacity: 1; }
 .card-cover { aspect-ratio: 16 / 10; overflow: hidden; position: relative; background: var(--bg-2); }
@@ -251,7 +251,7 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
 .card-arrow {
   position: absolute; top: 18px; right: 18px; z-index: 2;
   width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(5,6,12,.55); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  background: rgba(11,9,8,.55); border: 1px solid var(--line); backdrop-filter: blur(8px);
   font-size: 15px; opacity: 0; transform: translate(6px, -6px) rotate(-45deg); transition: all .35s;
 }
 .card:hover .card-arrow { opacity: 1; transform: none; }
@@ -259,7 +259,7 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
 
 /* ---------- proje detay ---------- */
 .overlay {
-  position: fixed; inset: 0; z-index: 200; background: rgba(5,6,12,.92);
+  position: fixed; inset: 0; z-index: 200; background: rgba(11,9,8,.92);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   overflow-y: auto; padding: 110px var(--pad) 90px;
   opacity: 0; pointer-events: none; transition: opacity .3s;
@@ -293,16 +293,16 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
   background: var(--panel); border: 1px solid var(--line-soft);
   transition: transform .3s, border-color .3s;
 }
-.svc:hover { transform: translateY(-5px); border-color: rgba(34,211,238,.35); }
+.svc:hover { transform: translateY(-5px); border-color: rgba(255,166,64,.3); }
 .svc .spot {
   position: absolute; inset: 0; opacity: 0; transition: opacity .3s; pointer-events: none;
-  background: radial-gradient(380px at var(--mx, 50%) var(--my, 50%), rgba(34,211,238,.1), transparent 65%);
+  background: radial-gradient(380px at var(--mx, 50%) var(--my, 50%), rgba(255,166,64,.08), transparent 65%);
 }
 .svc:hover .spot { opacity: 1; }
 .svc .ico {
   width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center;
   font-size: 22px; margin-bottom: 20px;
-  background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(34,211,238,.18));
+  background: linear-gradient(135deg, rgba(226,85,30,.22), rgba(255,166,64,.14));
   border: 1px solid var(--line);
 }
 .svc h3 { font-family: var(--disp); font-size: 21px; font-weight: 600; margin-bottom: 8px; }
@@ -332,7 +332,7 @@ h2 .grad { background: var(--grad); -webkit-background-clip: text; background-cl
 #iletisim::before {
   content: ""; position: absolute; left: 50%; bottom: -260px; transform: translateX(-50%);
   width: 900px; height: 520px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(124,58,237,.22), rgba(34,211,238,.08) 60%, transparent);
+  background: radial-gradient(closest-side, rgba(226,85,30,.2), rgba(255,166,64,.07) 60%, transparent);
   filter: blur(10px);
 }
 #iletisim h2 { margin-bottom: 10px; }
@@ -506,7 +506,7 @@ const PROJECTS = [
     tags: ["pwa", "yapay zekâ", "ses"],
     desc: "Sesle görev ekleyen, tarihleri anlayan, zamanında hatırlatan görev asistanı. Tasarım + geliştirme tamamen stüdyoya ait.",
     cover: "",
-    color: "#7c3aed",
+    color: "#e2551e",
     link: "/app/",
     media: []
   },
@@ -518,7 +518,7 @@ const PROJECTS = [
     tags: ["ürün", "video"],
     desc: "Bu bir örnek kayıt — kendi çekimini eklemek için index.html içindeki PROJECTS listesini düzenle.",
     cover: "",
-    color: "#0e9488",
+    color: "#5c6b46",
     media: []
   },
   {
@@ -529,7 +529,7 @@ const PROJECTS = [
     tags: ["logo", "kimlik"],
     desc: "Bu bir örnek kayıt — gerçek işinle değiştir, cover alanına /media/ altındaki görseli yaz.",
     cover: "",
-    color: "#db2777",
+    color: "#8c5a2b",
     media: []
   }
 ];
@@ -552,7 +552,7 @@ function coverHTML(p) {
   return `<div class="ph" style="background:
     radial-gradient(340px 240px at 30% 30%, ${p.color}66, transparent 70%),
     radial-gradient(300px 220px at 75% 75%, ${p.color}33, transparent 70%),
-    linear-gradient(135deg, #0a0c16, #05060c)"><b>${p.title.charAt(0).toLowerCase()}</b></div>`;
+    linear-gradient(135deg, #16100a, #0b0908)"><b>${p.title.charAt(0).toLowerCase()}</b></div>`;
 }
 
 function renderGrid() {
