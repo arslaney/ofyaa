@@ -22,11 +22,11 @@
 <meta property="og:description" content="Dijital ürünler, web & uygulama, foto/video prodüksiyon, marka.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ofyaa.com">
-<meta property="og:image" content="https://ofyaa.com/icons/icon-512.png">
+<meta property="og:image" content="https://ofyaa.com/icons/ofyaa-512.png">
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/ofyaa-192.png">
+<link rel="apple-touch-icon" href="/icons/ofyaa-apple.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +77,9 @@ nav {
 .wordmark {
   font-family: var(--disp); font-weight: 700; font-size: 19px; letter-spacing: -0.02em;
   text-decoration: none; padding: 6px 14px;
+  display: inline-flex; align-items: center; gap: 9px;
 }
+.wordmark .mark { width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 8px rgba(47,98,73,.3); }
 .wordmark sup { font-size: 10px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-links a {
@@ -449,7 +451,7 @@ footer a:hover { color: var(--txt); }
 <body>
 
 <nav>
-  <a class="wordmark" href="#">ofyaa<sup>®</sup></a>
+  <a class="wordmark" href="#"><svg class="mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4c8a66"/><stop offset="1" stop-color="#2f6249"/></linearGradient></defs><rect width="64" height="64" rx="17" fill="url(#lg)"/><path d="M11 25 C19 15, 27 35, 35 27 S51 15, 55 21" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3.4" stroke-linecap="round"/><path d="M9 36 C18 26, 26 44, 34 37 S50 26, 55 33" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round"/><path d="M11 47 C19 39, 28 53, 36 46 S51 38, 55 44" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3.4" stroke-linecap="round"/></svg>ofyaa<sup>®</sup></a>
   <div class="nav-links">
     <a href="#isler">İşler</a>
     <a href="#hizmetler">Hizmetler</a>
@@ -553,7 +555,7 @@ footer a:hover { color: var(--txt); }
 </section>
 
 <footer>
-  <span>© <span id="year"></span> ofyaa® — tüm hakları saklıdır.</span>
+  <span style="display:inline-flex;align-items:center;gap:8px"><svg class="mark" style="width:18px;height:18px;border-radius:5px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="lgf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4c8a66"/><stop offset="1" stop-color="#2f6249"/></linearGradient></defs><rect width="64" height="64" rx="17" fill="url(#lgf)"/><path d="M11 25 C19 15, 27 35, 35 27 S51 15, 55 21" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3.4" stroke-linecap="round"/><path d="M9 36 C18 26, 26 44, 34 37 S50 26, 55 33" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round"/><path d="M11 47 C19 39, 28 53, 36 46 S51 38, 55 44" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3.4" stroke-linecap="round"/></svg> © <span id="year"></span> ofyaa® — tüm hakları saklıdır.</span>
   <span><a href="/app/">ofyaa app ↗</a></span>
 </footer>
 
