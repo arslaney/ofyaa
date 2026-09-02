@@ -99,7 +99,7 @@ nav {
 header { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; z-index: 0; }
 .hero-bg video { width: 100%; height: 100%; object-fit: cover; }
-.hero-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#waveCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 /* video yüklenemezse de arkada yaşayan bir zemin dursun */
 .hero-bg::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
@@ -465,9 +465,9 @@ footer a:hover { color: var(--txt); }
       <source src="/media/hero.webm" type="video/webm">
       <source src="/media/hero.mp4" type="video/mp4">
     </video>
-    <canvas id="waveCanvas" aria-hidden="true"></canvas>
   </div>
   <div class="hero-veil"></div>
+  <canvas id="waveCanvas" aria-hidden="true"></canvas>
   <div class="hero-inner">
     <span class="badge reveal"><span class="dot"></span> yeni projelere açığız — 2026</span>
     <h1 class="reveal" style="--d:.08s">Fikri alır,<br><span class="grad">dijital ürüne</span><br>dönüştürürüz.</h1>
@@ -861,6 +861,12 @@ document.getElementById("year").textContent = new Date().getFullYear();
     H = cv.height = Math.round(r.height);
     seedLines();
   }
+  // alttaki deniz tepeleri (dalga videosundakiyle aynı dil)
+  const RIBBONS = [
+    { col: ["rgba(118,158,132,0.50)", "rgba(118,158,132,0)"], base: .66, amp: 52, k: 1.15, f: 0.045, p: 0.0 },
+    { col: ["rgba(214,196,164,0.55)", "rgba(214,196,164,0)"], base: .76, amp: 46, k: 0.85, f: 0.035, p: 2.1 },
+    { col: ["rgba(168,192,204,0.45)", "rgba(168,192,204,0)"], base: .86, amp: 40, k: 1.45, f: 0.055, p: 4.2 },
+  ];
   function draw(t) {
     cx.clearRect(0, 0, W, H);
     for (const L of lines) {
@@ -873,6 +879,23 @@ document.getElementById("year").textContent = new Date().getFullYear();
       cx.strokeStyle = "rgba(62,102,80," + L.a + ")";
       cx.lineWidth = L.w;
       cx.stroke();
+    }
+    for (const R of RIBBONS) {
+      const baseY = R.base * H;
+      cx.beginPath();
+      cx.moveTo(-20, H + 20);
+      for (let px = -20; px <= W + 20; px += 10) {
+        const y = baseY
+          + R.amp * Math.sin(R.k * TAU * px / W + TAU * R.f * t + R.p)
+          + R.amp * .5 * Math.sin(2.3 * R.k * TAU * px / W - TAU * R.f * t + R.p * 2);
+        cx.lineTo(px, y);
+      }
+      cx.lineTo(W + 20, H + 20);
+      cx.closePath();
+      const lg = cx.createLinearGradient(0, baseY - R.amp * 2, 0, H);
+      lg.addColorStop(0, R.col[0]); lg.addColorStop(1, R.col[1]);
+      cx.fillStyle = lg;
+      cx.fill();
     }
   }
   resize();
