@@ -60,3 +60,9 @@ Kıyaslanan raporun ürettiği `POLICE_FIYAT 1,39212935` / `DEPREM_POLICE 2,3809
 `POLICE_FIYAT − DEPREM_POLICE`, yani rapor farklı paydalar üzerinden hesaplanmış iki
 fiyatı birbirinden çıkarıyor. Ayrıca `1,23` için gereken yangın primi 16.587,94 iken
 o poliçedeki deprem hariç primin tamamı 14.576,28 — matematiksel olarak mümkün değil.
+
+## Rapor formülü
+
+Poliçe bazlı pivot raporun yangın/deprem fiyat sütunlarındaki `(1 + oran)` hatası ve
+düzeltilmiş formüller: [`rapor_formul_duzeltme.md`](rapor_formul_duzeltme.md).
+Raporun `ORT_SB_YANGIN_TEMINAT_TUTARI` alanı, buradaki `SABIT_KIYMET` grubunun toplamıdır.
