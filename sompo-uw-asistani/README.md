@@ -69,6 +69,14 @@ ile biter ve metin rengi olarak kullanılmamalıdır.
 - Ana teklif tablosu yatay kayan kaba alındı; sayfa gövdesi kaymıyor.
 - 1180px ve 860px kırılmaları; `prefers-reduced-motion` ve yazdırma.
 
+## Dosyalar
+
+| Dosya | Ne işe yarar |
+|---|---|
+| `uw_asistani.tsx` | Kaynak. Claude artifact'ini güncellemek için bunu yapıştırın. |
+| `uw-asistani.html` | Tek dosya, kendi kendine yeten sürüm. React gömülü; çift tıklayınca açılır, kurulum gerekmez. Yazı tipleri için internet ister; yoksa sistem yazı tipine düşer, işlev aynı kalır. |
+| `build-entry.tsx` | Derleme girişi. |
+
 ## Derleme
 
 ```bash
