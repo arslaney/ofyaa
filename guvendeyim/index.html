@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Güvendeyim</title>
+<meta name="theme-color" content="#CC0A2D">
+<meta name="description" content="Tatbikat ve acil durumlarda toplanma alanı takibi">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Güvendeyim">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="base.css">
+<style>
+  .hello { text-align: center; margin: 8px 0 24px; }
+  .hello h1 { font-size: 22px; }
+  .floor-pill { display: inline-block; background: #fff; border: 1.5px solid var(--line); border-radius: 99px; padding: 4px 12px; font-weight: 600; font-size: 14px; }
+
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .safe-btn {
+    width: min(72vw, 280px); aspect-ratio: 1; border-radius: 50%; border: 0;
+    background: radial-gradient(circle at 35% 30%, #19C267, var(--safe) 55%, var(--safe-dark));
+    color: #fff; font-size: 26px; font-weight: 800; letter-spacing: .02em;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: 0 14px 40px rgba(14,159,79,.35), inset 0 -6px 0 rgba(0,0,0,.12);
+    position: relative; transition: transform .1s;
+  }
+  .safe-btn:active { transform: scale(.97); }
+  .safe-btn svg { width: 64px; height: 64px; }
+  .safe-btn::before {
+    content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 3px solid var(--safe);
+    animation: pulse 2s ease-out infinite; opacity: 0;
+  }
+  @keyframes pulse { 0% { transform: scale(.92); opacity: .7 } 100% { transform: scale(1.15); opacity: 0 } }
+  .safe-btn:disabled { background: #C7C7CC; box-shadow: none; cursor: not-allowed; }
+  .safe-btn:disabled::before { display: none; }
+  .safe-btn.busy { pointer-events: none; }
+  .safe-btn.busy::before { animation-duration: .8s; }
+
+  .help-btn {
+    background: #fff; color: var(--help); border: 2px solid var(--help);
+    font-weight: 700; padding: 13px 22px; border-radius: 99px; font-size: 16px;
+    display: inline-flex; gap: 8px; align-items: center;
+  }
+  .help-btn:disabled { opacity: .4; }
+  .hint { text-align: center; color: var(--muted); font-size: 15px; max-width: 320px; margin: 0; }
+
+  .status { border-radius: var(--radius); padding: 22px 20px; text-align: center; color: #fff; width: 100%; }
+  .status.safe { background: var(--safe); }
+  .status.help { background: var(--help); }
+  .status .big { font-size: 26px; font-weight: 800; margin: 6px 0 4px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .status .big svg { width: 34px; height: 34px; }
+  .status p { margin: 4px 0 0; opacity: .95; }
+  .status .note { margin-top: 12px; background: rgba(255,255,255,.18); border-radius: 10px; padding: 8px 10px; font-size: 14px; }
+
+  .waiting { background: #fff; border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 14px 16px; text-align: center; color: var(--muted); font-size: 15px; width: 100%; }
+  .waiting b { color: var(--ink); }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--safe); margin-right: 6px; animation: blink 1.4s infinite; }
+  @keyframes blink { 50% { opacity: .25 } }
+
+  .install { margin-top: 28px; display: flex; gap: 12px; align-items: center; background: #fff; border-radius: 14px; padding: 12px 14px; }
+  .install img { width: 44px; height: 44px; border-radius: 10px; }
+  .install div { flex: 1; font-size: 14px; }
+  .install b { display: block; font-size: 15px; }
+
+  .names { list-style: none; padding: 0; margin: 12px 0 0; max-height: 52vh; overflow: auto; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; }
+  .names li button { width: 100%; text-align: left; padding: 14px; background: none; border: 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .names li:last-child button { border-bottom: 0; }
+  .names .empty { padding: 16px; color: var(--muted); text-align: center; }
+  .footer-links { text-align: center; margin-top: 18px; }
+  .kvkk { font-size: 12px; color: var(--muted); margin-top: 14px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo" data-logo></div>
+  <div class="app-tag"><img src="icons/icon-192.png" alt="">Güvendeyim</div>
+</header>
+
+<main class="wrap">
+  <div id="v-loading"><div class="spinner"></div></div>
+
+  <!-- KAYIT -->
+  <section id="v-register" hidden>
+    <div class="card">
+      <h1>Tatbikat Kaydı</h1>
+      <p class="sub">Bir kez kaydolun. Tatbikat günü toplanma alanına ulaşınca bu sayfayı açıp <b>Güvendeyim</b>'e basmanız yeterli.</p>
+      <form id="f-register" autocomplete="on">
+        <label class="lbl" for="name">Ad Soyad</label>
+        <input class="input" id="name" name="name" autocomplete="name" placeholder="Örn. Ayşe Yılmaz" required minlength="3" maxlength="80">
+        <label class="lbl">Bulunduğunuz kat</label>
+        <div class="chips" id="reg-floors"></div>
+        <label class="check"><input type="checkbox" id="guest"> Misafir / ziyaretçiyim</label>
+        <div style="margin-top:22px"><button class="btn" id="reg-btn" type="submit" disabled>Kaydol</button></div>
+        <p class="kvkk">Ad-soyad, kat ve tatbikat sırasında paylaştığınız konum yalnızca tahliye takibi amacıyla <span data-org-name></span> acil durum ekibi tarafından görülür.</p>
+      </form>
+    </div>
+    <div class="footer-links"><button class="link" data-go="pick">Daha önce kaydoldum, listeden kendimi seçeyim</button></div>
+  </section>
+
+  <!-- LİSTEDEN SEÇ -->
+  <section id="v-pick" hidden>
+    <div class="card">
+      <h1>Kendinizi bulun</h1>
+      <p class="sub">Katınızı seçin, listeden adınıza dokunun.</p>
+      <div class="chips" id="pick-floors"></div>
+      <div id="pick-list-wrap" hidden>
+        <input class="input" id="pick-search" placeholder="İsim ara…" style="margin-top:16px">
+        <ul class="names" id="pick-list"></ul>
+      </div>
+    </div>
+    <div class="footer-links"><button class="link" data-go="register">Listede yokum, kaydolacağım</button></div>
+  </section>
+
+  <!-- ANA EKRAN -->
+  <section id="v-home" hidden>
+    <div class="hello">
+      <h1 id="me-name"></h1>
+      <span class="floor-pill" id="me-floor"></span>
+    </div>
+    <div class="stage">
+      <div class="waiting" id="w-nodrill" hidden><b>Tatbikat henüz başlamadı.</b><br>Başladığında buton otomatik olarak aktif olur. Bu sayfayı kapatabilirsiniz.</div>
+      <div class="status" id="st" hidden></div>
+      <button class="safe-btn" id="safe-btn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+        <span id="safe-label">GÜVENDEYİM</span>
+      </button>
+      <p class="hint" id="hint">Toplanma alanına ulaştığınızda basın.</p>
+      <button class="help-btn" id="help-btn" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v6M12 16.5v.5"/></svg>
+        Yardıma ihtiyacım var
+      </button>
+    </div>
+
+    <div class="install" id="install" hidden>
+      <img src="icons/icon-192.png" alt="">
+      <div><b>Uygulama olarak ekleyin</b><span id="install-text">Tatbikat günü tek dokunuşla açılsın.</span></div>
+      <button class="btn sm" id="install-btn">Ekle</button>
+    </div>
+    <div class="footer-links"><button class="link" id="not-me">Ben değilim / bilgilerimi değiştir</button></div>
+  </section>
+</main>
+
+<script src="lib.js"></script>
+<script>
+const SLUG = GV.slug();
+const $ = s => document.querySelector(s);
+let org = null, me = GV.store.get('me_' + SLUG), pollTimer = null, busy = false;
+
+function show(view) {
+  ['loading', 'register', 'pick', 'home'].forEach(v => $('#v-' + v).hidden = v !== view);
+  clearInterval(pollTimer);
+  if (view === 'home') { refresh(); pollTimer = setInterval(refresh, 5000); }
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(b.dataset.go));
+
+function floorChips(el, onPick) {
+  el.innerHTML = '';
+  org.floors.forEach(f => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = GV.floorLabel(f); b.setAttribute('aria-pressed', 'false');
+    b.onclick = () => { el.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); onPick(f); };
+    el.appendChild(b);
+  });
+}
+
+// ── kayıt
+let regFloor = null;
+function validReg() { $('#reg-btn').disabled = !(regFloor && $('#name').value.trim().length >= 3); }
+$('#name').oninput = validReg;
+$('#f-register').onsubmit = async e => {
+  e.preventDefault();
+  $('#reg-btn').disabled = true; $('#reg-btn').textContent = 'Kaydediliyor…';
+  try {
+    const r = await GV.rpc('tb_register', { p_slug: SLUG, p_name: $('#name').value, p_floor: regFloor, p_guest: $('#guest').checked });
+    setMe(r);
+    GV.toast('Kaydınız alındı ✓', 'ok');
+  } catch (err) { GV.toast(err.message, 'err'); }
+  $('#reg-btn').textContent = 'Kaydol'; validReg();
+};
+
+// ── listeden seç
+let pickPeople = [];
+function renderPick() {
+  const q = $('#pick-search').value.trim().toLocaleLowerCase('tr');
+  const list = pickPeople.filter(p => p.name.toLocaleLowerCase('tr').includes(q));
+  $('#pick-list').innerHTML = list.length
+    ? list.map(p => `<li><button data-id="${p.id}">${GV.esc(p.name)}</button></li>`).join('')
+    : '<li class="empty">Bu katta eşleşen kayıt yok.</li>';
+  $('#pick-list').querySelectorAll('button').forEach(b => b.onclick = () => {
+    const p = pickPeople.find(x => x.id === b.dataset.id);
+    if (confirm(`${p.name} olarak devam edilsin mi?`)) setMe({ id: p.id, name: p.name, floor: pickFloor, token: null });
+  });
+}
+let pickFloor = null;
+$('#pick-search').oninput = renderPick;
+
+function setMe(r) {
+  me = { id: r.id, token: r.token, name: r.name, floor: r.floor };
+  GV.store.set('me_' + SLUG, me);
+  renderHome(); show('home');
+}
+$('#not-me').onclick = () => {
+  if (!confirm('Bu cihazdaki kayıt silinsin mi? Sonra yeniden kaydolabilir veya listeden seçebilirsiniz.')) return;
+  GV.store.del('me_' + SLUG); me = null; show('register');
+};
+
+// ── ana ekran
+let state = { drill: null, checkin: null };
+function renderHome() {
+  $('#me-name').textContent = `Merhaba, ${me.name.split(' ')[0]}`;
+  $('#me-floor').textContent = GV.floorLabel(me.floor);
+  const active = !!state.drill, c = state.checkin;
+  $('#w-nodrill').hidden = active;
+  $('#safe-btn').disabled = !active || busy;
+  $('#help-btn').disabled = !active || busy;
+  const st = $('#st');
+  if (active && c) {
+    st.hidden = false;
+    if (c.status === 'safe') {
+      st.className = 'status safe';
+      let note = '';
+      if (c.in_zone === false) note = '<div class="note">Konumunuz toplanma alanının dışında görünüyor. Alana ulaştıysanız tekrar basabilirsiniz.</div>';
+      st.innerHTML = `<div class="big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Güvendesiniz</div>
+        <p>Kaydınız ${GV.time(c.safe_at)}'de alındı. Koruma ekibi sizi listede görüyor.</p>${note}`;
+      $('#safe-btn').hidden = true; $('#hint').hidden = true;
+    } else {
+      st.className = 'status help';
+      st.innerHTML = `<div class="big">Yardım çağrınız iletildi</div>
+        <p>Koruma ekibi bilgilendirildi (${GV.time(c.updated_at)}). Güvenli alana ulaştığınızda aşağıdan <b>Güvendeyim</b>'e basın.</p>`;
+      $('#safe-btn').hidden = false; $('#hint').hidden = true;
+    }
+    $('#help-btn').hidden = c.status === 'help';
+  } else {
+    st.hidden = true; $('#safe-btn').hidden = false; $('#hint').hidden = false; $('#help-btn').hidden = false;
+  }
+}
+
+async function refresh() {
+  if (busy) return;
+  try {
+    const r = await GV.rpc('tb_me', { p_person: me.id });
+    if (!r) { GV.store.del('me_' + SLUG); me = null; GV.toast('Kaydınız bulunamadı, lütfen yeniden kaydolun.', 'err'); return show('register'); }
+    org = r.org; GV.applyBrand(org);
+    state = { drill: r.org.drill, checkin: r.checkin };
+    if (r.name !== me.name || r.floor !== me.floor) { me.name = r.name; me.floor = r.floor; GV.store.set('me_' + SLUG, me); }
+    renderHome();
+  } catch (err) { if (err.code !== 'network') GV.toast(err.message, 'err'); }
+}
+
+async function send(status) {
+  if (busy) return;
+  busy = true; renderHome();
+  $('#safe-btn').classList.add('busy');
+  const useGps = org.gps_mode !== 'off' && org.assembly;
+  $('#safe-label').textContent = useGps ? 'Konum alınıyor…' : 'Gönderiliyor…';
+  try {
+    const loc = useGps ? await GV.locate() : null;
+    $('#safe-label').textContent = 'Gönderiliyor…';
+    const r = await GV.rpc('tb_check_in', { p_person: me.id, p_token: me.token, p_status: status,
+      p_lat: loc?.lat ?? null, p_lng: loc?.lng ?? null, p_acc: loc?.acc ?? null });
+    state.checkin = r;
+    if (navigator.vibrate) navigator.vibrate(status === 'safe' ? [60, 40, 60] : 200);
+  } catch (err) {
+    if (err.code === 'out_of_zone') {
+      const m = err.raw.split(':')[1];
+      GV.toast(`Toplanma alanına ~${m} m uzaktasınız. Alana ulaşınca tekrar basın.`, 'err');
+    } else GV.toast(err.message, 'err');
+    if (err.code === 'no_active_drill') state.drill = null;
+  }
+  busy = false;
+  $('#safe-btn').classList.remove('busy'); $('#safe-label').textContent = 'GÜVENDEYİM';
+  renderHome();
+}
+$('#safe-btn').onclick = () => send('safe');
+$('#help-btn').onclick = () => { if (confirm('Koruma ekibine yardım çağrısı gönderilsin mi?')) send('help'); };
+
+// ── kurulum ipucu
+function setupInstall() {
+  if (GV.isStandalone()) return;
+  if (GV.canInstall()) { $('#install').hidden = false; $('#install-btn').hidden = false; }
+  else if (GV.isIOS()) {
+    $('#install').hidden = false; $('#install-btn').hidden = true;
+    $('#install-text').innerHTML = 'Safari\'de <b style="display:inline">Paylaş ⬆︎</b> → <b style="display:inline">Ana Ekrana Ekle</b>';
+  }
+}
+document.addEventListener('gv-installable', setupInstall);
+$('#install-btn').onclick = async () => { if (await GV.install()) $('#install').hidden = true; };
+
+// ── başlat
+(async () => {
+  try {
+    org = await GV.rpc('tb_get_org', { p_slug: SLUG });
+    if (!org) throw new Error('Kurum bulunamadı. Linki kontrol edin.');
+    GV.applyBrand(org);
+    floorChips($('#reg-floors'), f => { regFloor = f; validReg(); });
+    floorChips($('#pick-floors'), async f => {
+      pickFloor = f; $('#pick-list-wrap').hidden = false; $('#pick-list').innerHTML = '<li class="empty">Yükleniyor…</li>';
+      pickPeople = await GV.rpc('tb_people_by_floor', { p_slug: SLUG, p_floor: f }).catch(() => []);
+      renderPick();
+    });
+    state.drill = org.drill;
+    if (me) { renderHome(); show('home'); } else show('register');
+    setupInstall();
+  } catch (err) {
+    $('#v-loading').innerHTML = `<div class="card"><h2>Bağlanılamadı</h2><p class="sub">${GV.esc(err.message)}</p><button class="btn" onclick="location.reload()">Tekrar dene</button></div>`;
+  }
+})();
+document.addEventListener('visibilitychange', () => { if (!document.hidden && me && !$('#v-home').hidden) refresh(); });
+</script>
+</body>
+</html>
