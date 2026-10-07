@@ -92,6 +92,20 @@
   .people-table th { color: var(--muted); font-weight: 600; font-size: 13px; border-top: 0; }
   .x { border: 0; background: none; color: var(--brand); font-weight: 700; padding: 4px 8px; }
   .auth { max-width: 420px; margin: 40px auto; }
+  .me-card { margin-top: 14px; }
+  .me-form { display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; }
+  @media (max-width: 560px) { .me-form { grid-template-columns: 1fr 1fr; } .me-form .btn { grid-column: span 2; width: 100%; } }
+  .me-form .input { padding: 10px 12px; font-size: 15px; }
+  .me-view { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .me-view .who { flex: 1; min-width: 160px; }
+  .me-view .who b { display: block; font-size: 16px; }
+  .me-view .who span { font-size: 14px; color: var(--muted); }
+  .me-view .who span.ok { color: var(--safe-dark); font-weight: 700; }
+  .me-safe { display: inline-flex; align-items: center; gap: 10px; border: 0; border-radius: 14px; padding: 14px 22px;
+    background: var(--safe); color: #fff; font-weight: 800; font-size: 18px; letter-spacing: .02em; box-shadow: 0 6px 18px rgba(14,159,79,.3); }
+  .me-safe svg { width: 26px; height: 26px; }
+  .me-safe:disabled { background: #C7C7CC; box-shadow: none; cursor: not-allowed; }
+  .me-safe.done { background: #E3F6EA; color: var(--safe-dark); box-shadow: none; }
   .toolbar-r { display: flex; gap: 6px; }
   .iconbtn { border: 1.5px solid var(--line); background: #fff; border-radius: 10px; padding: 7px 10px; font-size: 13px; font-weight: 600; }
 </style>
@@ -140,6 +154,27 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <select id="drill-select" title="Geçmiş tatbikatlar"></select>
           <button class="btn sm" id="drill-btn">Tatbikatı Başlat</button>
+        </div>
+      </div>
+
+      <!-- KENDİ DURUMUM -->
+      <div class="card me-card" id="me-card">
+        <div id="me-setup" hidden>
+          <b>Kendi kaydınız</b>
+          <p class="small" style="margin:2px 0 10px">Siz de sayıma dahil olun; "Güvendeyim"e buradan basarsınız.</p>
+          <div class="me-form">
+            <input class="input" id="me-name" placeholder="Ad Soyad" maxlength="80">
+            <select class="input" id="me-floor"></select>
+            <button class="btn sm" id="me-save">Kaydet</button>
+          </div>
+        </div>
+        <div id="me-view" class="me-view" hidden>
+          <div class="who"><b id="me-label"></b><span id="me-status"></span></div>
+          <button class="me-safe" id="me-safe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+            <span id="me-safe-l">GÜVENDEYİM</span>
+          </button>
+          <button class="link" id="me-change" style="padding:4px">değiştir</button>
         </div>
       </div>
 
@@ -366,9 +401,62 @@ function render() {
   if (lastHelp && helpIds.some(id => !lastHelp.includes(id))) { beep(); GV.toast('🆘 Yeni yardım çağrısı!', 'err'); }
   lastHelp = helpIds;
 
+  renderMe();
   tick(); schedule();
   if (tab === 'people') renderPeople();
 }
+
+// ── panel sahibinin kendi "Güvendeyim"i
+let me = GV.store.get('panelme_' + SLUG) || GV.store.get('me_' + SLUG), meBusy = false;
+function renderMe() {
+  if (me && !S.people.some(p => p.id === me.id)) { me = null; GV.store.del('panelme_' + SLUG); }
+  $('#me-setup').hidden = !!me; $('#me-view').hidden = !me;
+  if (!me) {
+    const sel = $('#me-floor');
+    if (!sel.options.length) sel.innerHTML = '<option value="">Kat seçin</option>' + S.org.floors.map(f => `<option value="${GV.esc(f)}">${GV.esc(GV.floorLabel(f))}</option>`).join('');
+    return;
+  }
+  const p = S.people.find(x => x.id === me.id);
+  const active = S.org.drill && !drillSel;
+  $('#me-label').textContent = `${p.name} · ${GV.floorLabel(p.floor)}`;
+  const btn = $('#me-safe');
+  btn.classList.toggle('done', p.status === 'safe');
+  if (meBusy) return;
+  if (!active) { btn.disabled = true; $('#me-safe-l').textContent = 'GÜVENDEYİM'; $('#me-status').textContent = 'Tatbikat başlayınca aktif olur.'; $('#me-status').className = ''; }
+  else if (p.status === 'safe') { btn.disabled = true; $('#me-safe-l').textContent = 'Güvendesiniz'; $('#me-status').textContent = `Kaydınız ${GV.time(p.safe_at)}'de alındı.`; $('#me-status').className = 'ok'; }
+  else { btn.disabled = false; $('#me-safe-l').textContent = 'GÜVENDEYİM'; $('#me-status').textContent = 'Toplanma alanına ulaşınca basın.'; $('#me-status').className = ''; }
+}
+$('#me-save').onclick = async () => {
+  const name = $('#me-name').value.trim(), floor = $('#me-floor').value;
+  if (name.length < 3 || !floor) return GV.toast('Ad soyad ve kat seçin.', 'err');
+  try {
+    const r = await GV.rpc('tb_register', { p_slug: SLUG, p_name: name, p_floor: floor, p_guest: false });
+    me = { id: r.id, token: r.token, name: r.name, floor: r.floor };
+    GV.store.set('panelme_' + SLUG, me);
+    await load(false); GV.toast('Kaydınız alındı', 'ok');
+  } catch (e) { GV.toast(e.message, 'err'); }
+};
+$('#me-change').onclick = () => {
+  if (!confirm('Kendi kaydınızı bu panelden kaldırıp yeniden seçmek istiyor musunuz? (Kişi listesinden silinmez.)')) return;
+  me = null; GV.store.del('panelme_' + SLUG); GV.store.del('me_' + SLUG); $('#me-floor').innerHTML = ''; renderMe();
+};
+$('#me-safe').onclick = async () => {
+  if (meBusy) return;
+  meBusy = true; $('#me-safe').disabled = true;
+  const useGps = S.org.gps_mode !== 'off' && S.org.assembly;
+  $('#me-safe-l').textContent = useGps ? 'Konum alınıyor…' : 'Gönderiliyor…';
+  try {
+    const loc = useGps ? await GV.locate() : null;
+    await GV.rpc('tb_check_in', { p_person: me.id, p_token: me.token, p_status: 'safe',
+      p_lat: loc?.lat ?? null, p_lng: loc?.lng ?? null, p_acc: loc?.acc ?? null });
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    GV.toast('Güvendesiniz ✓', 'ok');
+  } catch (e) {
+    GV.toast(e.code === 'out_of_zone' ? `Toplanma alanına ~${e.raw.split(':')[1]} m uzaktasınız.` : e.message, 'err');
+  }
+  meBusy = false;
+  await load(false).catch(() => renderMe());
+};
 function row(p, editable) {
   const showFloor = floorSel === 'all';
   let meta = [];

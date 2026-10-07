@@ -1,5 +1,5 @@
 // Güvendeyim service worker — kabuk dosyaları önbellekte, API her zaman ağdan.
-const CACHE = 'gv-v2';
+const CACHE = 'gv-v3';
 const SHELL = ['./', './index.html', './base.css', './lib.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/favicon-32.png', './panel/', './panel/index.html'];
 
