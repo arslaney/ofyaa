@@ -3,6 +3,7 @@ const $ = selector => document.querySelector(selector);
 let snapshot = null;
 let loadingPromise = null;
 let authGeneration = 0;
+let refreshTimer = null;
 let selectedDraft = null;
 let activeView = 'desk';
 let analyticsPlatform='youtube';
@@ -51,6 +52,13 @@ function setView(view) {
  // Preserve email-link callback until the auth SDK consumes it.
  if (!/access_token=|refresh_token=|error=/.test(location.hash)) history.replaceState(null, '', '#' + view);
 }
+function stopRefresh() { if(refreshTimer!==null) clearInterval(refreshTimer);refreshTimer=null; }
+function startRefresh() {
+ stopRefresh();
+ if(!window.studioAuth.authorized||document.hidden)return;
+ refreshTimer=setInterval(()=>{if(window.studioAuth.authorized&&!document.hidden)void load();},60000);
+}
+document.addEventListener('visibilitychange',()=>{stopRefresh();if(!document.hidden&&window.studioAuth.authorized){void load();startRefresh();}});
 function load() {
  if (loadingPromise) return loadingPromise;
  loadingPromise = loadRecords().finally(() => { loadingPromise = null; });
@@ -77,12 +85,13 @@ async function loadRecords() {
  } finally { $('#refresh').disabled = false; }
 }
 function render() {
+ renderWorker();
  $('#brief-detail').textContent = snapshot.drafts.length + ' taslak revizyona döndü. Yeni taslaklar seçilmeden video üretimi ve kredi harcaması başlamaz.';
  const agents = clean($('#agents'));
  for (const agent of snapshot.agents) {
   const item = node('div', null, 'agent');
   const top = node('div', null, 'agent-top');
-  top.append(node('span', agent.name?.slice(0,1) || 'A', 'agent-avatar'), node('h3', agent.name), node('span', 'Teslim edildi', 'agent-state'));
+  top.append(node('span', agent.name?.slice(0,1) || 'A', 'agent-avatar'), node('h3', agent.name), node('span', agent.status==='running'?'Çalışıyor':agent.status==='completed'?'Teslim edildi':'Durumu incele', 'agent-state'));
   item.append(top, node('p', agent.summary)); agents.append(item);
  }
  $('#draft-count').textContent = snapshot.drafts.length + ' taslak · editör geri bildirimi var';
@@ -142,6 +151,16 @@ function renderCosts() {
  const issues=clean($('#issues'));
  for (const issue of snapshot.issues) {const el=node('article',null,'issue');el.append(node('h3',issue.title),node('p',issue.detail === 'all_three_original_drafts_require_revision_no_script_approved' ? 'Üç ilk taslak revizyona döndü. Henüz onaya hazır yeni senaryo yok.' : issue.detail));issues.append(el);}
 }
+const requestStatuses={received:'Sırada',running:'Çalışıyor',completed:'Tamamlandı',cancelled:'İptal edildi',blocked:'Engel var',needs_approval:'Onay bekliyor'};
+function renderWorker() {
+ const worker=snapshot?.worker;
+ $('#connection-label').textContent=snapshot?.workerConnected?'Koordinatör bağlı':worker?.enabled?'Koordinatör kontrolü bekleniyor':'Koordinatör bağlantısı kapalı';
+ const checked=worker?.lastCheckedAt?date(worker.lastCheckedAt,{hour:'2-digit',minute:'2-digit'}):'Henüz kontrol yok';
+ const next=worker?.enabled&&worker?.lastCheckedAt?new Date(Date.parse(worker.lastCheckedAt)+15*60000):null;
+ const nextLabel=next&&Number.isFinite(next.valueOf())?(next.valueOf()>Date.now()?date(next,{hour:'2-digit',minute:'2-digit'}):'Kontrol bekleniyor'):'Henüz belirlenmedi';
+ $('#connection-detail').textContent='Codex · 15 dakikalık kontrol. Son kontrol: '+checked+'. Sonraki kontrol: '+nextLabel+'. '+(snapshot?.workerConnected?'Talepler onay ve yetki kurallarıyla işlenir.':'Bağlantı yeni bir kontrolle doğrulanır.');
+ $('#agent-worker-detail').textContent=$('#connection-label').textContent+' · Son kontrol: '+checked;
+}
 function renderRequests() {
  const target=clean($('#requests'));
  if (!snapshot.requests.length) target.append(node('p','Henüz bu panelden talep kaydedilmedi.','empty'));
@@ -149,7 +168,12 @@ function renderRequests() {
   const el=node('article',null,'request');const titles={request_revision:'Revizyon talebi',request_new_drafts:'Yeni taslak talebi',approve_script:'Senaryo kararı',assign_task:'Yönetici görevi'};
   const draft=snapshot.drafts.find(d=>d.id===request.draftId);
   if(request.action==='assign_task') el.append(node('p',({writer:'Senarist',editor:'Editör',producer:'Prodüksiyon',coordinator:'Koordinatör'}[request.assignee]||'Ajan')+' · '+(request.requestedStart==='now'?'Şimdi yap talebi':'Sıraya alınması istendi')));
-  el.append(node('h3',(titles[request.action]||'Talep')+(draft?' · '+draft.title:'')),node('time',date(request.createdAt||request.receivedAt,{hour:'2-digit',minute:'2-digit'})),node('p',request.note||'Koordinatörün işlemesi bekleniyor.'),node('span','Kaydedildi · ajan başlatılmadı','badge'));target.append(el);
+  el.append(node('h3',(titles[request.action]||'Talep')+(draft?' · '+draft.title:'')),node('time',date(request.createdAt||request.receivedAt,{hour:'2-digit',minute:'2-digit'})),node('p',request.note||'Koordinatörün işlemesi bekleniyor.'),node('span',requestStatuses[request.status]||'Sırada','badge'));
+  if(request.message)el.append(node('p',request.message));
+  if(request.startedAt)el.append(node('p','Başladı · '+date(request.startedAt,{hour:'2-digit',minute:'2-digit'})));
+  if(request.completedAt)el.append(node('p','Tamamlandı · '+date(request.completedAt,{hour:'2-digit',minute:'2-digit'})));
+  if(request.resultSummary)el.append(node('p',request.resultSummary,'script'));
+  target.append(el);
  }
  $('#export').disabled=!snapshot.requests.length;
 }
@@ -166,6 +190,7 @@ function renderAnalytics() {
 }
 async function submit(action,draftId,note,button,extra={}) {
  if (!snapshot) {flash('Önce kayıtları yenile.',true);return;}
+ const generation=authGeneration;
  button.disabled=true;
  try {
   const input={action,draftId,note:note.trim() || 'Bu taslağı editörün gerekçelerine göre yeniden yaz; yeni sürümü bağımsız incelemeye gönder.',snapshotId:snapshot.snapshotId,...extra};
@@ -173,13 +198,15 @@ async function submit(action,draftId,note,button,extra={}) {
   if(!pendingRequests.has(fingerprint)) pendingRequests.set(fingerprint,crypto.randomUUID());
   const response=await window.studioAuth.fetch('/api/studio/requests',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',...(snapshot.writeToken ? {'X-Studio-Token':snapshot.writeToken} : {})},body:JSON.stringify({...input,requestId:pendingRequests.get(fingerprint)})});
   const result=await response.json();
+  if(generation!==authGeneration||!window.studioAuth.authorized)return;
   if (!response.ok) throw new Error(result.detail || ({stale_snapshot:'Kaynaklar değişti. Kayıtları yenileyip yeniden dene.', origin_and_token_required:'Oturum doğrulanamadı. Sayfayı yenile.',note_required_max_1000:'Lütfen 1–1000 karakterlik bir not yaz.'}[result.error]) || 'Talep kaydedilemedi. Kayıtları yenileyip yeniden dene.');
   pendingRequests.delete(fingerprint);
   if(action==='request_revision' && draftId) rememberNote(draftId,'');
   if(action==='assign_task') $('#task-note').value='';
   await load();
-  flash('Talep stüdyo kaydına alındı. Koordinatörün işlemesi bekleniyor; ajan veya ücretli üretim başlatılmadı.');
- } catch(error) {flash(error.message,true);} finally {button.disabled=false;}
+  if(generation!==authGeneration||!window.studioAuth.authorized)return;
+  flash(result.request?.message || 'Talep kaydedildi. Koordinatörün sonraki kontrolünde değerlendirilecek.');
+ } catch(error) {if(generation===authGeneration&&window.studioAuth.authorized)flash(error.message,true);} finally {button.disabled=false;}
 }
 for(const button of document.querySelectorAll('[data-view]')) button.addEventListener('click',()=>setView(button.dataset.view));
 $('#analytics-platform').addEventListener('change',event=>{analyticsPlatform=event.target.value;if(snapshot) renderAnalytics();});
@@ -195,22 +222,25 @@ function setMode() {
  const cloud = window.studioAuth.mode === 'cloud';
  $('#mode-label').textContent = cloud ? 'Özel stüdyo' : 'Yerel önizleme';
  $('#connection-label').textContent = cloud ? 'Güvenli giriş' : 'Yerel önizleme';
- $('#connection-detail').textContent = cloud ? 'Kayıtların çevrimiçi saklanır. Ajanların çalışması koordinatör tarafından başlatılır.' : 'Yerel dosya kayıtları. Otomatik ajan bağlantısı henüz kurulmadı.';
+ $('#connection-detail').textContent = cloud ? 'Koordinatörün son kontrolü kayıtlar yüklenince gösterilir.' : 'Yerel dosya kayıtları. Koordinatör durumu kayıtlar yüklenince gösterilir.';
  $('#auth-signout').hidden = !cloud;
 }
 window.addEventListener('studio-signed-out', () => {
  authGeneration++;
+ stopRefresh();
  window.studioCards?.clear();
  snapshot = null; selectedDraft = null; noteMemory.clear(); pendingRequests.clear();
  try { for (const key of Object.keys(sessionStorage)) if(key.startsWith('ofyaa-studio-note:')) sessionStorage.removeItem(key); } catch {}
  for(const id of ['agents','draft-list','draft-detail','schedule-list','budget','issues','requests','analytics-ranking']) clean($('#'+id));
+ for(const id of ['brief-detail','draft-count','analytics-scope','analytics-updated','error','notice'])$('#'+id).textContent='';
  $('#task-note').value = ''; $('#task-form').open = false;
  $('#content').hidden = true; $('#error').hidden = true; $('#notice').hidden = true;
  $('#updated').textContent = 'Giriş bekleniyor';
+ $('#connection-label').textContent='Giriş bekleniyor';$('#connection-detail').textContent='Koordinatör durumu girişten sonra gösterilir.';$('#agent-worker-detail').textContent='';
 });
-window.addEventListener('studio-authenticated', () => { setMode(); void load(); });
+window.addEventListener('studio-authenticated', () => { setMode(); void load(); startRefresh(); });
 setView(location.hash.slice(1));
-window.studioAuth.ready.then(() => { setMode(); void load(); });
+window.studioAuth.ready.then(() => { setMode(); if(window.studioAuth.authorized){void load();startRefresh();} });
 
 // Optional React island; the stable panel and authenticated API remain the source of truth.
 window.addEventListener('studio-cards-ready',()=>{if(snapshot&&window.studioAuth.authorized)window.studioCards?.update(snapshot);});

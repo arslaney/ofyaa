@@ -1,6 +1,6 @@
 # Swapy kart görünümü
 
-Mevcut Ofyaa sade HTML/JS uygulamasına, yalnız `?layout=cards` seçildiğinde açılan bir React adası eklenmiştir. Giriş, korumalı API, senaryo kararları ve yayın kayıtları mevcut uygulamada kalır. Ajan yürütücüsü bağlanmamıştır.
+Mevcut Ofyaa sade HTML/JS uygulamasına, yalnız `?layout=cards` seçildiğinde açılan bir React adası eklenmiştir. Giriş, korumalı API, senaryo kararları ve yayın kayıtları mevcut uygulamada kalır. Kartlar, mevcut özel kayıttaki Codex koordinatör bağlantısını, son/sonraki kontrolü ve talep sonuçlarını gösterir. Koordinatör 15 dakikalık kontrollerle çalışır; tarayıcı ajan yürütmez.
 
 ## Kurulum ve yapı
 

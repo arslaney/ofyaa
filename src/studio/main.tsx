@@ -3,7 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {type SwapEvent} from 'swapy';
 import {SwapyLayout,SwapySlot,SwapyItem,DragHandle} from '@/components/ui/swapy-draggable-card';
-import {CARD_IDS,ORDER_KEY,validOrder,reorder,topVideo,count,type CardId,type Snapshot} from './model';
+import {CARD_IDS,ORDER_KEY,validOrder,reorder,topVideo,count,requestStatus,workerTimes,type CardId,type Snapshot} from './model';
 
 type Target='desk'|'schedule'|'analytics'|'costs'|'activity'|'task'|'scripts';
 function navigate(target:Target,platform?:string){window.dispatchEvent(new CustomEvent('studio-card-action',{detail:{target,platform}}));}
@@ -23,18 +23,20 @@ function Board({snapshot}:{snapshot:Snapshot}){
  useLayoutEffect(()=>{if(focusId.current){document.querySelector<HTMLButtonElement>('[data-card="'+focusId.current+'"] [data-swapy-handle]')?.focus();focusId.current=null;}},[order]);
  const ready=snapshot.drafts.filter(d=>['awaiting_user_approval','editor_approved'].includes(d.status)).length;
  const revisions=snapshot.drafts.filter(d=>d.status==='revision_required').length;
+ const worker=workerTimes(snapshot.worker);
+ const latestRequest=snapshot.requests.at(-1);
  const upcoming=[...snapshot.publications].sort((a,b)=>Date.parse(a.when)-Date.parse(b.when))[0];
  function content(id:CardId){
   if(id==='welcome')return <><h2 className="welcome-title">Küçük patron.<br/>Büyük planlar.</h2><p>Minik Patron Alparslan<br/>Senaryodan son kareye, tek masa.</p><Action target="task">Yeni bir iş ver</Action></>;
   if(id==='scripts')return <><Metric>{count(ready)}</Metric><h2>Onaya hazır<br/>senaryo</h2><p>{revisions} taslak revizyon bekliyor.</p><Action target="scripts">Senaryoları gör</Action></>;
-  if(id==='team')return <><h2>Aynı hikâye.<br/>Dört ayrı göz.</h2><div className="team-list">{snapshot.agents.map(agent=><div key={agent.id}><span className="role-initial">{agent.name.slice(0,1)}</span><span>{agent.name}</span><small>{agent.status==='completed'?'Teslim edildi':'Durumu incele'}</small></div>)}</div><p className="card-note">Son görev teslimleri · canlı çalışma değil</p></>;
+  if(id==='team')return <><h2>Aynı hikâye.<br/>Dört ayrı göz.</h2><div className="team-list">{snapshot.agents.map(agent=><div key={agent.id}><span className="role-initial">{agent.name.slice(0,1)}</span><span>{agent.name}</span><small>{({completed:'Teslim edildi',running:'Çalışıyor',awaiting_user_approval:'Onay bekliyor',blocked:'Engel var'}[agent.status]||'Durumu incele')}</small></div>)}</div><p className="card-note">{snapshot.workerConnected?'Koordinatör bağlı':snapshot.worker?.enabled?'Koordinatör kontrolü bekleniyor':'Koordinatör bağlantısı kapalı'}<br/>Son kontrol · {worker.last}<br/>Sonraki kontrol · {worker.next}</p></>;
   if(id==='youtube'||id==='instagram'){
    const platform=snapshot.analytics?.platforms?.[id],top=topVideo(platform?.videos);
    return <><div className="platform-title"><h2>{names[id]}</h2><Arrow up/></div>{top?<><Metric>{count(top.views!)}</Metric><p className="video-title">{top.title}</p><p className="card-note">Ölçülen {platform?.videos?.length??0} video içinde en çok izlenen · toplam izlenme</p></>:<><Metric>—</Metric><p>Henüz ölçüm alınmadı.</p></>}<Action target="analytics" platform={id}>Analizleri aç</Action></>;
   }
   if(id==='budget')return <><h2>Önce hesap,<br/>sonra motor.</h2><Metric>{snapshot.budget.currentBalance==null?'—':count(snapshot.budget.currentBalance)}</Metric><p>{snapshot.budget.currentBalance==null?'Güncel kredi bakiyesi henüz sorgulanmadı.':'Güncel sağlayıcı kredi bakiyesi.'}</p><Action target="costs">Maliyetleri aç</Action></>;
   if(id==='schedule')return <><Metric>{snapshot.publications.length}</Metric><h2>Yayın kaydı</h2>{upcoming&&<p>İlk kayıt · {new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',timeZone:'Europe/Istanbul'}).format(new Date(upcoming.when))}<br/><span className="card-note">Plan, yayın kanıtı değildir.</span></p>}<Action target="schedule">Takvime bak</Action></>;
-  if(id==='requests')return <><h2>Fikirler uçmasın.<br/>Buraya insin.</h2><div className="request-total"><Metric>{snapshot.requests.length}</Metric><span>kayıtlı<br/>talep</span></div><p className="card-note">Talepler saklanır; ajanı henüz koordinatör başlatır.</p><Action target="activity">Talep kutusunu aç</Action></>;
+  if(id==='requests')return <><h2>Fikirler uçmasın.<br/>Buraya insin.</h2><div className="request-total"><Metric>{snapshot.requests.length}</Metric><span>kayıtlı<br/>talep</span></div><p className="card-note">{latestRequest?'Son talep · '+requestStatus(latestRequest.status):'Koordinatör talepleri 15 dakikalık kontrollerde değerlendirir.'}</p><Action target="activity">Talep kutusunu aç</Action></>;
   return <><svg className="next-symbol" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 5v22M5 16h22"/></svg><h2>Sıradaki bölümün<br/>ilk cümlesi sende.</h2><p>Bir fikir yaz. Birlikte sahneye taşıyalım.</p><Action target="task">Görev ver</Action></>;
  }
  return <div className="cards-workspace"><div className="cards-toolbar"><p>Kendi masanı kur. Kartların yerini sen belirle.</p><div><button type="button" className="cards-edit" aria-pressed={editing} onClick={()=>setEditing(v=>!v)}>{editing?'Düzenlemeyi bitir':'Kartları düzenle'}</button>{editing&&<button type="button" className="cards-reset" onClick={()=>{persist([...CARD_IDS]);setRevision(v=>v+1);setAnnouncement('Başlangıç düzeni yüklendi.');}}>Başlangıç düzeni</button>}</div></div>{editing&&<p className="cards-help">Tutamacından sürükle. Klavyede tutamaca gelip sağ / sol okları kullan veya kartın taşıma düğmelerine bas.</p>}
