@@ -1,5 +1,5 @@
 // Owner-only REST adapter. No privileged key, worker execution or platform writes.
-const REQUEST_COLUMNS='id,action,draft_id,note,snapshot_id,status,received_at,assignee,requested_start,result_summary,started_at,completed_at';
+const REQUEST_COLUMNS='id,action,draft_id,note,snapshot_id,status,received_at,assignee,requested_start,result_summary,started_at,completed_at,draft_context';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isObject=value=>value!==null && typeof value==='object' && !Array.isArray(value);
 const text=(value,max=20000)=>typeof value==='string'?value.slice(0,max):'';
@@ -30,11 +30,16 @@ function sanitizeState(state){
   }
   return out;
 }
+function draftContext(value){
+  if(!isObject(value))return null;
+  return {id:text(value.id,200),title:text(value.title,300),script:text(value.script,20000),reason:text(value.reason,8000),snapshotId:text(value.snapshotId,200)};
+}
 function requestRow(row){
   const status=['received','running','completed','cancelled','blocked','needs_approval'].includes(row.status)?row.status:'received';
   const startedAt=isoTime(row.started_at),completedAt=isoTime(row.completed_at),resultSummary=text(row.result_summary,20000)||null;
   const messages={received:'Talep kaydedildi; koordinatör kontrolünü bekliyor.',running:'Ajan görevi işliyor.',completed:'Görev tamamlandı.',cancelled:'Talep iptal edildi.',blocked:'Görev engel nedeniyle bekliyor.',needs_approval:'Devam etmek için onay gerekiyor.'};
-  return {requestId:row.id,action:row.action,draftId:row.draft_id??null,note:text(row.note),snapshotId:row.snapshot_id,status,receivedAt:row.received_at,assignee:row.assignee??null,requestedStart:row.requested_start??null,startedAt,completedAt,resultSummary,agentStarted:!!startedAt||status==='running'||!!resultSummary,message:messages[status]};
+  const feedbackMessage={like_script:'Beğenin kaydedildi. Bu, üretim onayı değildir.',dislike_script:'Beğenmeme gerekçen kaydedildi; sonraki senaryolarda dikkate alınacak.',archive_script:'Senaryo masadan kaldırıldı; gerekçesi işlem kaydında saklanır.'}[row.action];
+  return {requestId:row.id,action:row.action,draftId:row.draft_id??null,note:text(row.note),snapshotId:row.snapshot_id,status,receivedAt:row.received_at,assignee:row.assignee??null,requestedStart:row.requested_start??null,draftContext:draftContext(row.draft_context),startedAt,completedAt,resultSummary,agentStarted:!!startedAt||status==='running'||!!resultSummary,message:feedbackMessage||messages[status]};
 }
 
 export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis.console,now=()=>Date.now()}){
@@ -107,8 +112,9 @@ export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis
     const allowed=new Set(['action','draftId','note','snapshotId','requestId']);
     if(body.action==='assign_task'){allowed.add('assignee');allowed.add('requestedStart');}
     if(Object.keys(body).some(key=>!allowed.has(key)))fail(400,'unexpected_field','Talepte desteklenmeyen alan var.');
-    if(!['assign_task','request_revision','request_new_drafts','approve_script'].includes(body.action))fail(400,'invalid_action','Talep türü desteklenmiyor.');
+    if(!['assign_task','request_revision','request_new_drafts','approve_script','like_script','dislike_script','archive_script'].includes(body.action))fail(400,'invalid_action','Talep türü desteklenmiyor.');
     if(typeof body.requestId!=='string'||!UUID.test(body.requestId))fail(400,'invalid_request_id','Talep kimliği geçerli bir UUID olmalıdır.');
+    if(body.action==='like_script'&&(body.note===undefined||(typeof body.note==='string'&&!body.note.trim())))body.note='Bu senaryoyu beğendim. Üretim onayı değildir.';
     if(typeof body.note!=='string'||!body.note.trim()||body.note.length>1000)fail(400,'invalid_note','Not 1–1000 karakter olmalıdır.');
     if(typeof body.snapshotId!=='string'||!body.snapshotId||body.snapshotId.length>200)fail(400,'invalid_snapshot_id','Geçerli kayıt sürümü gerekli.');
     if(body.action==='assign_task'){
@@ -138,11 +144,25 @@ export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis
       const config=settings();
       const {token}=await auth(req,config);
       const row=await current(config,token);
-      const response=await remote(config,token,'/rest/v1/studio_requests?select='+REQUEST_COLUMNS+'&order=received_at.asc&limit=200');
-      if(!response.ok)fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
-      const rows=await response.json();
-      if(!Array.isArray(rows))fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
-      return json(200,{...sanitizeState(row.state),snapshotId:row.version,mode:'cloud',capturedAt:row.updated_at,...workerState(row.state.worker,now()),requests:rows.map(requestRow)});
+      const rows=[];
+      for(let offset=0;;offset+=200){
+        const response=await remote(config,token,'/rest/v1/studio_requests?select='+REQUEST_COLUMNS+'&order=received_at.asc,id.asc&limit=200&offset='+offset);
+        if(!response.ok)fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
+        const page=await response.json();
+        if(!Array.isArray(page))fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
+        rows.push(...page);if(page.length<200)break;
+      }
+      const state=sanitizeState(row.state),requests=rows.map(requestRow);
+      const feedbackHistory=requests.filter(request=>['like_script','dislike_script','archive_script'].includes(request.action)).map(request=>{
+        const draft=request.draftContext||state.drafts.find(draft=>draft.id===request.draftId);
+        return {requestId:request.requestId,action:request.action,draftId:request.draftId,note:request.note,snapshotId:request.snapshotId,receivedAt:request.receivedAt,title:draft?.title||request.draftId,sourceScript:draft?.script||null,editorReason:draft?.reason||null,sourceSnapshotId:request.draftContext?.snapshotId||row.version};
+      });
+      const archived=new Set(feedbackHistory.filter(entry=>entry.action==='archive_script').map(entry=>entry.draftId));
+      state.drafts=state.drafts.filter(draft=>!archived.has(draft.id)).map(draft=>{
+        const latest=feedbackHistory.filter(entry=>entry.draftId===draft.id&&entry.action!=='archive_script').at(-1);
+        return {...draft,feedback:latest?.action==='like_script'?'liked':latest?.action==='dislike_script'?'disliked':null};
+      });
+      return json(200,{...state,snapshotId:row.version,mode:'cloud',capturedAt:row.updated_at,...workerState(row.state.worker,now()),requests,feedbackHistory});
     }),
     post:guarded(async req=>{
       if(req.method!=='POST')return json(405,{error:'method_not_allowed',detail:'Yalnız POST desteklenir.'});
@@ -164,7 +184,8 @@ export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis
         const draft=snapshot.state.drafts.find(item=>item.id===body.draftId);
         if(!['awaiting_user_approval','editor_approved'].includes(draft.status))fail(409,'script_revision_required','Taslak henüz kullanıcı onayına hazır değil.');
       }
-      const response=await remote(config,token,'/rest/v1/studio_requests',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({...input,user_id:userId,status:'received'})});
+      const context=['like_script','dislike_script','archive_script'].includes(input.action)?draftContext({...snapshot.state.drafts.find(draft=>draft.id===input.draft_id),snapshotId:snapshot.version}):null;
+      const response=await remote(config,token,'/rest/v1/studio_requests',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({...input,...(context?{draft_context:context}:{}),user_id:userId,status:'received'})});
       if(response.status===409){
         const existing=await remote(config,token,'/rest/v1/studio_requests?select='+REQUEST_COLUMNS+'&id=eq.'+encodeURIComponent(input.id));
         if(!existing.ok)fail(503,'requests_unavailable','Önceki talep doğrulanamadı.');

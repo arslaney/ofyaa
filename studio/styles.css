@@ -17,3 +17,5 @@
 .pwa-status{font-size:12px;color:var(--amber);background:var(--soft-amber);padding:12px 14px;border-radius:6px;margin:0 0 18px}#pwa-install{padding:6px 10px;font-size:12px;min-height:34px}@media(max-width:700px){.topbar:has(#pwa-install:not([hidden])){height:auto;min-height:65px;padding:10px 0;flex-wrap:wrap}.topbar:has(#pwa-install:not([hidden]))>div{flex-wrap:wrap;justify-content:flex-end}.topbar:has(#pwa-install:not([hidden])) #updated{display:none}}
 
 #cards-variant-link{display:inline-block;font-size:12px;margin-top:10px;text-decoration-thickness:1px}
+/* Scenario reading and feedback use the page scroll, preserving mobile input focus. */
+.draft-detail .script{max-height:none;overflow:visible;padding-right:0}.decision textarea{font-size:16px;min-height:110px;scroll-margin-block:100px}.feedback-history{margin-top:20px}

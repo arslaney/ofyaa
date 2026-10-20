@@ -40,7 +40,7 @@ async function setup(options = {}) {
       return data({id:uid,email:options.email || env.STUDIO_OWNER_EMAIL,email_confirmed_at:options.unconfirmed ? null : '2026-10-20T00:00:00Z',user_metadata:{email:env.STUDIO_OWNER_EMAIL}});
     }
     if (u.pathname === '/rest/v1/studio_members') return data(options.noMembership ? [] : [{user_id:uid}]);
-    if (u.pathname === '/rest/v1/studio_snapshots') return data([{id:'primary',version:'v1',updated_at:'2026-10-20T00:00:00Z',state:{worker:options.worker,drafts:[{id:'numune',status:options.approvable ? 'awaiting_user_approval' : 'revision_required',title:'Numune',script:'text',reason:'reason'}],agents:[],publications:[],budget:{currentBalance:null},issues:[],writeToken:'mustnotleak',requests:[{note:'mustnotleak'}]}}]);
+    if (u.pathname === '/rest/v1/studio_snapshots') return data([{id:'primary',version:'v1',updated_at:'2026-10-20T00:00:00Z',state:{worker:options.worker,drafts:options.drafts||[{id:'numune',status:options.approvable ? 'awaiting_user_approval' : 'revision_required',title:'Numune',script:'text',reason:'reason'}],agents:[],publications:[],budget:{currentBalance:null},issues:[],writeToken:'mustnotleak',requests:[{note:'mustnotleak'}]}}]);
     if (u.pathname === '/rest/v1/studio_requests') {
       if (init.method === 'POST') {
         const body = JSON.parse(init.body);
@@ -50,7 +50,7 @@ async function setup(options = {}) {
         return data([row],201);
       }
       const id = u.searchParams.get('id');
-      return data(id ? stored.filter(x => x.id === id.slice(3)) : stored);
+      return data(id ? stored.filter(x => x.id === id.slice(3)) : stored.slice(Number(u.searchParams.get('offset')||0),Number(u.searchParams.get('offset')||0)+Number(u.searchParams.get('limit')||stored.length)));
     }
     assert.fail('Unexpected network route '+url);
   };
@@ -266,4 +266,47 @@ test('idempotent retry returns updated task result without resetting task or dup
  await send();Object.assign(stored[0],{status:'completed',result_summary:'Teslim edildi',started_at:'2026-10-20T11:00:00Z',completed_at:'2026-10-20T11:30:00Z'});
  const body=await (await send()).json();
  assert.equal(body.request.status,'completed');assert.equal(body.request.agentStarted,true);assert.equal(body.request.resultSummary,'Teslim edildi');assert.equal(stored.length,1);
+});
+
+test('feedback notes are durable owner requests and liking never approves production',async()=>{
+ const {handlers,stored}=await setup();
+ const send=body=>handlers.post(request('/api/studio/requests',{method:'POST',body}));
+ for(const action of ['dislike_script','archive_script'])assert.equal((await send(payload({action,note:'  '}))).status,400);
+ assert.equal((await send(payload({action:'like_script',note:''}))).status,202);
+ assert.equal(stored[0].action,'like_script');assert.equal(stored[0].status,'received');
+ assert.equal((await send(payload({requestId:'ca282230-f6ef-4f78-95c0-5e929617c262',action:'approve_script'}))).status,409);
+ assert.equal((await send(payload({requestId:'ca282230-f6ef-4f78-95c0-5e929617c263',action:'dislike_script',draftId:'missing'}))).status,400);
+ assert.equal((await send(payload({requestId:'ca282230-f6ef-4f78-95c0-5e929617c264',action:'dislike_script',snapshotId:'old'}))).status,409);
+});
+
+test('feedback preserves editor source and archived ideas/reasons in history beyond the first page',async()=>{
+ const rows=Array.from({length:200},(_,i)=>({id:'task'+i,action:'assign_task',status:'completed'}));
+ rows.push({id:rid,action:'dislike_script',draft_id:'numune',note:'Final tahmin ediliyor',snapshot_id:'v1',status:'received'}, {id:'archive',action:'archive_script',draft_id:'numune',note:'Aynı konuyu yeniden yazma',snapshot_id:'v1',status:'received'});
+ const {handlers,calls}=await setup({rows});
+ const body=await (await handlers.get(request())).json();
+ assert.equal(body.drafts.length,0);assert.equal(body.requests.length,202);
+ assert.equal(body.feedbackHistory.length,2);assert.equal(body.feedbackHistory[0].title,'Numune');assert.equal(body.feedbackHistory[0].sourceScript,'text');assert.equal(body.feedbackHistory[0].note,'Final tahmin ediliyor');
+ assert.equal(body.feedbackHistory[1].requestId,'archive');assert.equal(body.feedbackHistory[1].editorReason,'reason');
+ assert.ok(calls.some(call=>call.url.includes('offset=200')));
+});
+
+test('like and dislike annotate drafts without changing editor status or reason',async()=>{
+ const {handlers}=await setup({rows:[{id:rid,action:'dislike_script',draft_id:'numune',note:'Gerekçe',status:'received'}]});
+ const body=await (await handlers.get(request())).json();
+ assert.equal(body.drafts[0].status,'revision_required');assert.equal(body.drafts[0].reason,'reason');assert.equal(body.drafts[0].feedback,'disliked');
+});
+
+test('feedback captures immutable source context, rejects client context and preserves it on retry',async()=>{
+ const drafts=[{id:'numune',title:'İlk başlık',script:'İlk senaryo',reason:'İlk inceleme',status:'revision_required'}];
+ const {handlers,stored}=await setup({drafts});
+ const send=body=>handlers.post(request('/api/studio/requests',{method:'POST',body}));
+ assert.equal((await send(payload({action:'dislike_script',draft_context:{script:'Sahte'}}))).status,400);
+ const feedback=payload({action:'dislike_script',note:'Final tahmin ediliyor'});
+ assert.equal((await send(feedback)).status,202);
+ assert.deepEqual(stored[0].draft_context,{id:'numune',title:'İlk başlık',script:'İlk senaryo',reason:'İlk inceleme',snapshotId:'v1'});
+ Object.assign(drafts[0],{script:'Yeni metin',reason:'Yeni inceleme'});
+ assert.equal((await send(feedback)).status,202);assert.equal(stored[0].draft_context.script,'İlk senaryo');
+ drafts.splice(0);
+ const body=await (await handlers.get(request())).json();
+ assert.equal(body.drafts.length,0);assert.equal(body.feedbackHistory[0].sourceScript,'İlk senaryo');assert.equal(body.feedbackHistory[0].editorReason,'İlk inceleme');assert.equal(body.feedbackHistory[0].title,'İlk başlık');assert.equal(body.feedbackHistory[0].sourceSnapshotId,'v1');
 });
