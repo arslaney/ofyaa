@@ -2,6 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
 
+test('authentication works when edge runtime omits AbortSignal.timeout',async()=>{
+ const previous=AbortSignal.timeout;
+ try{
+  AbortSignal.timeout=undefined;
+  const {handlers}=await setup();
+  assert.equal((await handlers.get(request('/api/studio',{token:'invalid-test-token'}))).status,401);
+ }finally{AbortSignal.timeout=previous;}
+});
+
 test('public config never exposes privileged or malformed JWT keys',async()=>{
  for(const key of ['sb_secret_fake','header.'+btoa(JSON.stringify({role:'service_role'}))+'.sig','bad.bad.bad']){
   const {handlers,calls}=await setup({env:{...env,STUDIO_SUPABASE_ANON_KEY:key}});
