@@ -10,7 +10,7 @@ let analyticsPlatform='youtube';
 let analyticsMetric='views';
 const noteMemory = new Map();
 const pendingRequests = new Map();
-function noteKey(id) { return 'ofyaa-studio-note:' + snapshot.snapshotId + ':' + id; }
+function noteKey(id) { return 'ofyaa-studio-note:' + id; }
 function rememberNote(id,value) { const key=noteKey(id);noteMemory.set(key,value);try{sessionStorage.setItem(key,value);}catch{ /* Memory fallback for private browsing. */ } }
 function recallNote(id) { const key=noteKey(id);try{return sessionStorage.getItem(key) ?? noteMemory.get(key) ?? '';}catch{return noteMemory.get(key)||'';} }
 const views = {
@@ -27,7 +27,10 @@ function node(tag, content, className) {
  return n;
 }
 const verdicts = {numune: 'Final ikinci sahnede belli oluyor. Alparslan sonucu belirlemiyor; ikram konusu da daha önce işlendi.', terlik: 'Defne ile Alparslan aynı evde yaşıyor. Misafirlik kurulumu karakter ilişkisine aykırı; konu da tekrarlanıyor.', baskan: 'İşten kaçan başkan finali tahmin ediliyor. Toplantı konusu tekrar; koltuğa çıkma hareketi ise üretim açısından zor.'};
-function verdict(draft) { return verdicts[draft.id] || draft.reason; }
+function verdict(draft) { return draft.reason || verdicts[draft.id] || 'Editör değerlendirmesi henüz yok.'; }
+const draftStatuses={revision_required:'Revizyon gerekli',awaiting_user_approval:'Onaya hazır',editor_approved:'Editörden geçti',draft:'Taslak'};
+const draftLabel=draft=>draftStatuses[draft.status]||draft.status||'Taslak';
+const feedbackLabel=draft=>draft.feedback==='liked'?'Beğendin':draft.feedback==='disliked'?'Beğenmedin':'';
 function clean(target) { target.replaceChildren(); return target; }
 function flash(text, error = false) {
  const box = $(error ? '#error' : '#notice');
@@ -86,7 +89,7 @@ async function loadRecords() {
 }
 function render() {
  renderWorker();
- $('#brief-detail').textContent = snapshot.drafts.length + ' taslak revizyona döndü. Yeni taslaklar seçilmeden video üretimi ve kredi harcaması başlamaz.';
+ $('#brief-detail').textContent = snapshot.drafts.length + ' senaryo masada. Beğeniler ve üretim onayı ayrı kaydedilir; gerekçelerin sonraki yazımda korunur.';
  const agents = clean($('#agents'));
  for (const agent of snapshot.agents) {
   const item = node('div', null, 'agent');
@@ -94,36 +97,44 @@ function render() {
   top.append(node('span', agent.name?.slice(0,1) || 'A', 'agent-avatar'), node('h3', agent.name), node('span', agent.status==='running'?'Çalışıyor':agent.status==='completed'?'Teslim edildi':'Durumu incele', 'agent-state'));
   item.append(top, node('p', agent.summary)); agents.append(item);
  }
- $('#draft-count').textContent = snapshot.drafts.length + ' taslak · editör geri bildirimi var';
+ $('#draft-count').textContent = snapshot.drafts.length + ' senaryo · beğenini ve notunu ekle';
  const list = clean($('#draft-list'));
  for (const draft of snapshot.drafts) {
   const button = node('button', null, 'draft-item' + (draft.id === selectedDraft ? ' selected' : ''));
   button.type = 'button'; button.setAttribute('aria-pressed', String(draft.id === selectedDraft));
-  button.append(node('strong', draft.title), node('span', 'Revizyon gerekli', 'badge'), node('p', verdict(draft)));
+  button.append(node('strong', draft.title), node('span', [draftLabel(draft),feedbackLabel(draft)].filter(Boolean).join(' · '), 'badge'), node('p', verdict(draft)));
   button.addEventListener('click', () => { selectedDraft = draft.id; render(); }); list.append(button);
  }
  renderDetail(); renderSchedule(); renderCosts(); renderRequests(); renderAnalytics();
  window.studioCards?.update(snapshot);
 }
 function renderDetail() {
- const target = clean($('#draft-detail'));
+ const target = $('#draft-detail');
  const draft = snapshot.drafts.find(d => d.id === selectedDraft);
+ const focused=document.activeElement;
+ // Keep the same live textarea: replacing it dismisses mobile keyboards and selection.
+ if(draft&&focused?.id==='revision-note'&&focused.dataset.draftId===draft.id&&target.contains(focused)){rememberNote(draft.id,focused.value);return;}
+ clean(target);
  if (!draft) { target.append(node('p','Henüz taslak yok. Yeni taslak isteyerek başlayabilirsin.','empty')); return; }
- const heading = node('div',null,'detail-title'); heading.append(node('h3', draft.title),node('span','Editörden döndü','badge'));
+ const heading = node('div',null,'detail-title'); heading.append(node('h3', draft.title),node('span',[draftLabel(draft),feedbackLabel(draft)].filter(Boolean).join(' · '),'badge'));
  target.append(heading,node('p',verdict(draft),'review-note'));
- const fullReview = node('details',null,'full-review');fullReview.append(node('summary','Editörün tam incelemesini oku'),node('div',draft.reason.replace(/\*\*/g,''),'script'));target.append(fullReview);
+ const fullReview = node('details',null,'full-review');fullReview.append(node('summary','Editörün tam incelemesini oku'),node('div',(draft.reason||'Henüz editör incelemesi yok.').replace(/\*\*/g,''),'script'));target.append(fullReview);
  let script = (draft.script || '').replace(/^#{1,6}\s*/gm,'').replace(/\*\*/g,'');
  target.append(node('div',script,'script'));
  const decision = node('div',null,'decision');
- const label = node('label','Revizyon notun'); label.htmlFor='revision-note';
- const note = node('textarea'); note.id='revision-note';note.maxLength=1000;note.placeholder='Neyi değiştirelim? Örneğin: finali daha beklenmedik yap.';
- note.value=recallNote(draft.id);note.addEventListener('input',()=>rememberNote(draft.id,note.value));
+ const label = node('label','Geri bildirim / revizyon notun'); label.htmlFor='revision-note';
+ const note = node('textarea'); note.id='revision-note';note.dataset.draftId=draft.id;note.maxLength=1000;note.placeholder='Neyi değiştirelim? Örneğin: finali daha beklenmedik yap.';
+ const previousFeedback=[...(snapshot.feedbackHistory||[])].reverse().find(entry=>entry.draftId===draft.id&&entry.action==='dislike_script');
+ note.value=recallNote(draft.id)||previousFeedback?.note||'';note.addEventListener('input',()=>rememberNote(draft.id,note.value));
  const actions = node('div',null,'decision-actions');
  const revise = node('button','Revizyon iste','primary');revise.type='button';
  revise.addEventListener('click',()=>submit('request_revision',draft.id,note.value,revise));
- const approve = node('button','Üretime onay ver','secondary');approve.disabled=true;approve.title='Editör revizyonu tamamlanmadan üretim onayı verilemez.';
- actions.append(revise,approve);
- decision.append(label,note,actions,node('p','Bu metin editörden geçmedi. Revizyon talebin kaydedilir; koordinatörün işlemesi beklenir.','decision-explain'));
+ const like=node('button','Beğendim','secondary');like.type='button';like.addEventListener('click',()=>submit('like_script',draft.id,'',like));
+ const dislike=node('button','Beğenmedim','secondary');dislike.type='button';dislike.addEventListener('click',()=>submit('dislike_script',draft.id,note.value,dislike));
+ const archive=node('button','Masadan kaldır','secondary');archive.type='button';archive.disabled=draft.feedback!=='disliked';archive.title='Önce Beğenmedim ile gerekçeni kaydet.';archive.addEventListener('click',()=>submit('archive_script',draft.id,note.value,archive));
+ const approve = node('button','Üretime onay ver','secondary');approve.type='button';approve.disabled=!['awaiting_user_approval','editor_approved'].includes(draft.status);approve.title=approve.disabled?'Editör revizyonu tamamlanmadan üretim onayı verilemez.':'Bu senaryo için açık üretim onayı kaydeder.';approve.addEventListener('click',()=>submit('approve_script',draft.id,'Editörden geçen bu senaryonun üretimini onaylıyorum.',approve));
+ actions.append(like,dislike,archive,revise,approve);
+ decision.append(label,note,actions,node('p','Beğenmek üretim onayı değildir. Beğenmediğinde gerekçe yaz; kaydettikten sonra masadan kaldırabilirsin. Revizyon ve yeni görevler sonraki koordinatör kontrolünde (yaklaşık 15 dakika) değerlendirilir.','decision-explain'));
  target.append(decision);
 }
 function renderSchedule() {
@@ -165,14 +176,16 @@ function renderRequests() {
  const target=clean($('#requests'));
  if (!snapshot.requests.length) target.append(node('p','Henüz bu panelden talep kaydedilmedi.','empty'));
  for (const request of [...snapshot.requests].reverse()) {
-  const el=node('article',null,'request');const titles={request_revision:'Revizyon talebi',request_new_drafts:'Yeni taslak talebi',approve_script:'Senaryo kararı',assign_task:'Yönetici görevi'};
-  const draft=snapshot.drafts.find(d=>d.id===request.draftId);
-  if(request.action==='assign_task') el.append(node('p',({writer:'Senarist',editor:'Editör',producer:'Prodüksiyon',coordinator:'Koordinatör'}[request.assignee]||'Ajan')+' · '+(request.requestedStart==='now'?'Şimdi yap talebi':'Sıraya alınması istendi')));
+  const el=node('article',null,'request');const titles={request_revision:'Revizyon talebi',request_new_drafts:'Yeni taslak talebi',approve_script:'Senaryo kararı',assign_task:'Yönetici görevi',like_script:'Senaryo beğenisi',dislike_script:'Beğenmeme gerekçesi',archive_script:'Masadan kaldırılan senaryo'};
+  const draft=snapshot.drafts.find(d=>d.id===request.draftId)||snapshot.feedbackHistory?.find(entry=>entry.draftId===request.draftId);
+  if(request.action==='assign_task') el.append(node('p',({writer:'Senarist',editor:'Editör',producer:'Prodüksiyon',coordinator:'Koordinatör'}[request.assignee]||'Ajan')+' · '+(request.requestedStart==='now'?'Öncelikli · sonraki kontrolde':'Sıraya alınması istendi')));
   el.append(node('h3',(titles[request.action]||'Talep')+(draft?' · '+draft.title:'')),node('time',date(request.createdAt||request.receivedAt,{hour:'2-digit',minute:'2-digit'})),node('p',request.note||'Koordinatörün işlemesi bekleniyor.'),node('span',requestStatuses[request.status]||'Sırada','badge'));
   if(request.message)el.append(node('p',request.message));
   if(request.startedAt)el.append(node('p','Başladı · '+date(request.startedAt,{hour:'2-digit',minute:'2-digit'})));
   if(request.completedAt)el.append(node('p','Tamamlandı · '+date(request.completedAt,{hour:'2-digit',minute:'2-digit'})));
   if(request.resultSummary)el.append(node('p',request.resultSummary,'script'));
+  const feedback=snapshot.feedbackHistory?.find(entry=>entry.requestId===request.requestId);
+  if(feedback?.sourceScript){const source=node('details',null,'full-review');source.append(node('summary','Geri bildirimin ait olduğu senaryoyu oku'),node('div',feedback.sourceScript,'script'));el.append(source);}
   target.append(el);
  }
  $('#export').disabled=!snapshot.requests.length;
@@ -190,10 +203,11 @@ function renderAnalytics() {
 }
 async function submit(action,draftId,note,button,extra={}) {
  if (!snapshot) {flash('Önce kayıtları yenile.',true);return;}
+ if(['dislike_script','archive_script'].includes(action)&&!note.trim()){flash('Beğenmeme / kaldırma gerekçeni yaz; sonraki senaryolarda hatırlayalım.',true);$('#revision-note')?.focus();return;}
  const generation=authGeneration;
  button.disabled=true;
  try {
-  const input={action,draftId,note:note.trim() || 'Bu taslağı editörün gerekçelerine göre yeniden yaz; yeni sürümü bağımsız incelemeye gönder.',snapshotId:snapshot.snapshotId,...extra};
+  const input={action,draftId,note:note.trim() || (action==='like_script'?'Bu senaryoyu beğendim. Üretim onayı değildir.':'Bu taslağı editörün gerekçelerine göre yeniden yaz; yeni sürümü bağımsız incelemeye gönder.'),snapshotId:snapshot.snapshotId,...extra};
   const fingerprint=JSON.stringify(input);
   if(!pendingRequests.has(fingerprint)) pendingRequests.set(fingerprint,crypto.randomUUID());
   const response=await window.studioAuth.fetch('/api/studio/requests',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',...(snapshot.writeToken ? {'X-Studio-Token':snapshot.writeToken} : {})},body:JSON.stringify({...input,requestId:pendingRequests.get(fingerprint)})});

@@ -38,3 +38,24 @@ test('normal and installed app entry load colorful cards; classic is an explicit
  for(const search of ['', '?layout=cards']){const h=boot(search);assert.ok(h.document.head.children.some(el=>el.href==='/studio/cards.css'));}
  const classic=boot('?layout=classic');assert.equal(classic.document.head.children.length,0);
 });
+
+test('polling preserves focused scenario textarea identity, selection and unsent text across versions',()=>{
+ const h=boot();const input=h.find('#revision-note');input.id='revision-note';input.dataset.draftId='numune';input.value='Tam yazarken';input.selectionStart=4;input.selectionEnd=7;h.document.activeElement=input;
+ const detail=h.find('#draft-detail');detail.contains=node=>node===input;detail.children=[input];
+ vm.runInContext('snapshot='+JSON.stringify({...privateSnapshot,drafts:[{id:'numune',title:'Numune',status:'revision_required',reason:'Editör gerekçesi',script:'Metin'}]})+';selectedDraft="numune";renderDetail()',h.context);
+ assert.equal(detail.children[0],input);assert.equal(input.value,'Tam yazarken');assert.equal(input.selectionStart,4);
+ vm.runInContext('rememberNote("numune","Tam yazarken");snapshot.snapshotId="v2"',h.context);
+ assert.equal(vm.runInContext('recallNote("numune")',h.context),'Tam yazarken');
+ h.events.get('studio-signed-out')();assert.equal(vm.runInContext('noteMemory.size',h.context),0);
+});
+
+test('scenario decisions keep feedback separate from editor-gated production approval',()=>{
+ for(const [status,feedback,approveDisabled,archiveDisabled] of [['revision_required',null,true,true],['editor_approved','disliked',false,false],['awaiting_user_approval','liked',false,true]]){
+  const h=boot();vm.runInContext('snapshot='+JSON.stringify({...privateSnapshot,drafts:[{id:'draft',title:'Yeni',status,feedback,reason:'Gerçek editör gerekçesi',script:'Senaryo'}]})+';selectedDraft="draft";renderDetail()',h.context);
+  const detail=h.find('#draft-detail'),decision=detail.children.at(-1),actions=decision.children[2];
+  assert.deepEqual(actions.children.map(button=>button.textContent),['Beğendim','Beğenmedim','Masadan kaldır','Revizyon iste','Üretime onay ver']);
+  assert.equal(actions.children[4].disabled,approveDisabled);assert.equal(actions.children[2].disabled,archiveDisabled);
+  assert.match(decision.children[3].textContent,/Beğenmek üretim onayı değildir/);
+  assert.equal(detail.children[1].textContent,'Gerçek editör gerekçesi');
+ }
+});
