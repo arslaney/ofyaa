@@ -5,3 +5,12 @@ studio/PRODUCT.md
 studio/DESIGN.md
 studio/README.md
 supabase/
+src/studio/
+components/
+lib/utils.ts
+scripts/build-studio.mjs
+components.json
+tsconfig.studio.json
+docs/
+
+tsconfig.json
