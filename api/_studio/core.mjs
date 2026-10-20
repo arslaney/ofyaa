@@ -48,7 +48,12 @@ export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis
   async function remote(config,token,path,options={}){
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),10000);
-    try{return await fetchImpl(config.url+path,{...options,headers:{apikey:config.key,Authorization:token,...options.headers},signal:controller.signal,redirect:'error'});}
+    try{
+      // Manual mode never forwards credentials to a Location target. No redirect is followed.
+      const response=await fetchImpl(config.url+path,{...options,headers:{apikey:config.key,Authorization:token,...options.headers},signal:controller.signal,redirect:'manual'});
+      if((response.status>=300&&response.status<400)||response.type==='opaqueredirect'||response.redirected)throw new TypeError('Upstream redirect rejected');
+      return response;
+    }
     catch(error){
       // Never log URL, headers, token, body, message, stack or arbitrary identifiers.
       const names=new Set(['Error','TypeError','SyntaxError','AbortError','TimeoutError','NetworkError','SecurityError','NotSupportedError','InvalidStateError']);
