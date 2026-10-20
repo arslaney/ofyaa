@@ -5,10 +5,25 @@
   "description": "ofyaa — söyle, yapılsın.",
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
+    "clsx": "2.1.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "swapy": "1.0.5",
+    "tailwind-merge": "3.7.0",
     "web-push": "^3.6.7"
   },
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "build:studio": "node scripts/build-studio.mjs",
+    "typecheck:studio": "tsc --project tsconfig.studio.json"
+  },
+  "devDependencies": {
+    "@tailwindcss/node": "4.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "esbuild": "0.28.2",
+    "tailwindcss": "4.3.0",
+    "typescript": "7.0.2"
   }
 }

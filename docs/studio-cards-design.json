@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T15:00:00Z",
+  "title": "Design System: Ofyaa Stüdyo — optional cards",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 3px 7px #23201a08",
+        "purpose": "Shared ambient card separation."
+      },
+      {
+        "name": "card-drag",
+        "value": "0 14px 32px #172a2926",
+        "purpose": "Active dragged card."
+      }
+    ],
+    "motion": [
+      {
+        "name": "swap-animation",
+        "value": "dynamic; none when prefers-reduced-motion: reduce",
+        "purpose": "Swapy movement feedback."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "card-mobile-max",
+        "value": "700px"
+      },
+      {
+        "name": "calendar-single-column-max",
+        "value": "900px"
+      },
+      {
+        "name": "wide-grid-min",
+        "value": "1200px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Pastel card",
+      "kind": "card",
+      "description": "Pastel card from the optional card workspace.",
+      "html": "<article class=\"ds-card\"><h2>Onaya hazır senaryo</h2><p>Revizyon durumu</p></article>",
+      "css": ".ds-card{background:#fff29b;color:#202424;border-radius:16px;padding:25px 26px;min-height:220px;box-shadow:0 3px 7px #23201a08;font:13px/1.5 Inter,system-ui,sans-serif}.ds-card h2{font:600 27px/1.15 \"Space Grotesk\",Inter,sans-serif;letter-spacing:-.03em}",
+      "refersTo": "pastel-card"
+    },
+    {
+      "name": "Card action",
+      "kind": "button",
+      "description": "Card action from the optional card workspace.",
+      "html": "<button class=\"ds-action\">Takvime bak <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-action{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-top:1px solid currentColor;background:transparent;color:#202424;padding:10px 0 0;min-height:42px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}.ds-action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6}.ds-action:hover{text-decoration:underline;text-underline-offset:4px}.ds-action:focus-visible{outline:2px solid currentColor;outline-offset:3px}",
+      "refersTo": "card-action"
+    },
+    {
+      "name": "Edit button",
+      "kind": "button",
+      "description": "Edit button from the optional card workspace.",
+      "html": "<button class=\"ds-edit\" aria-pressed=\"false\">Kartları düzenle</button>",
+      "css": ".ds-edit{border:1px solid #dcd9d0;border-radius:8px;background:transparent;color:#23201a;padding:10px 14px;min-height:44px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}.ds-edit[aria-pressed=true]{background:#23201a;color:#faf9f6;border-color:#23201a}.ds-edit:focus-visible{outline:2px solid currentColor;outline-offset:3px}"
+    },
+    {
+      "name": "Move control",
+      "kind": "button",
+      "description": "Move control from the optional card workspace.",
+      "html": "<button class=\"ds-move\">Önceye al</button>",
+      "css": ".ds-move{min-height:28px;font:11px Inter,system-ui,sans-serif;padding:4px 8px;border:0;border-radius:5px;background:#ffffff55;color:#202424;cursor:pointer}.ds-move:disabled{opacity:.4}.ds-move:focus-visible{outline:2px solid currentColor;outline-offset:3px}@media(max-width:700px){.ds-move{min-height:32px;font-size:12px}}"
+    },
+    {
+      "name": "Calendar card",
+      "kind": "card",
+      "description": "Calendar card from the optional card workspace.",
+      "html": "<article class=\"ds-calendar\"><div>21 Ekim <strong>08:30</strong></div><h3>Yayın kaydı</h3><p>YouTube · Platformda planlandı</p><a href=\"#schedule\">YouTube bağlantısını aç</a></article>",
+      "css": ".ds-calendar{display:flex;flex-direction:column;gap:20px;min-height:260px;background:#fff29b;color:#202424;border-radius:16px;padding:26px;box-shadow:0 3px 7px #23201a08;font:13px/1.6 Inter,system-ui,sans-serif}.ds-calendar>div{display:flex;align-items:baseline;justify-content:space-between;font-size:16px;color:#343d38}.ds-calendar strong{font-size:34px;line-height:1;color:#202424}.ds-calendar h3{font:500 24px/1.2 \"Space Grotesk\",Inter,sans-serif;letter-spacing:-.025em;margin:0}.ds-calendar p{margin:0}.ds-calendar a{color:#202424;font-size:13px;font-weight:600;margin-top:auto;padding-top:18px;min-height:44px;text-underline-offset:4px}.ds-calendar a:focus-visible{outline:3px solid #2f6249;outline-offset:4px}",
+      "refersTo": "calendar-card"
+    }
+  ],
+  "narrative": {
+    "northStar": "Swapy kart masası",
+    "overview": "The user's colorful Swapy reference supplies the visual world: flat pastel surfaces, emerald and yellow contrast, large figures, and variable card widths. This record applies only to the optional `?layout=cards` workspace and its calendar. The existing `studio/DESIGN.md` continues to describe the classic interface.",
+    "keyCharacteristics": [
+      "Solid pastel cards with strong dark text.",
+      "Large readable metrics and bottom-aligned actions.",
+      "Explicit editing mode with equivalent pointer and keyboard movement."
+    ],
+    "rules": [
+      {
+        "name": "The Surface Color Rule",
+        "body": "Calendar colors repeat yellow, lilac, blue, pink by row order; they do not encode publication status. Status remains written text.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do preserve readable dark text on pastel cards and yellow text on the dark welcome/request cards.",
+      "Do retain explicit status and measurement-scope notes alongside prominent numbers.",
+      "Do retain keyboard movement, visible focus and reduced-motion behavior."
+    ],
+    "donts": [
+      "Don’t use calendar color as the sole publication-status signal.",
+      "Don’t extend this optional card world into classic screens without a new scoped decision."
+    ]
+  }
+}

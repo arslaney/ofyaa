@@ -94,6 +94,7 @@ function render() {
   button.addEventListener('click', () => { selectedDraft = draft.id; render(); }); list.append(button);
  }
  renderDetail(); renderSchedule(); renderCosts(); renderRequests(); renderAnalytics();
+ window.studioCards?.update(snapshot);
 }
 function renderDetail() {
  const target = clean($('#draft-detail'));
@@ -199,6 +200,7 @@ function setMode() {
 }
 window.addEventListener('studio-signed-out', () => {
  authGeneration++;
+ window.studioCards?.clear();
  snapshot = null; selectedDraft = null; noteMemory.clear(); pendingRequests.clear();
  try { for (const key of Object.keys(sessionStorage)) if(key.startsWith('ofyaa-studio-note:')) sessionStorage.removeItem(key); } catch {}
  for(const id of ['agents','draft-list','draft-detail','schedule-list','budget','issues','requests','analytics-ranking']) clean($('#'+id));
@@ -209,3 +211,24 @@ window.addEventListener('studio-signed-out', () => {
 window.addEventListener('studio-authenticated', () => { setMode(); void load(); });
 setView(location.hash.slice(1));
 window.studioAuth.ready.then(() => { setMode(); void load(); });
+
+// Optional React island; the stable panel and authenticated API remain the source of truth.
+window.addEventListener('studio-cards-ready',()=>{if(snapshot&&window.studioAuth.authorized)window.studioCards?.update(snapshot);});
+window.addEventListener('studio-card-action',event=>{
+ if(!snapshot||!window.studioAuth.authorized)return;
+ const {target,platform}=event.detail||{};
+ if(target==='task'){$('#open-task').click();return;}
+ if(target==='scripts'){setView('desk');$('.review-section').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+ if(['schedule','analytics','costs','activity','desk'].includes(target)){
+  if(target==='analytics'&&['youtube','instagram'].includes(platform)){analyticsPlatform=platform;$('#analytics-platform').value=platform;renderAnalytics();}
+  setView(target);
+ }
+});
+if(new URLSearchParams(location.search).get('layout')==='cards'){
+ document.body.classList.add('cards-preview');
+ $('#cards-variant-link').href='#desk';$('#cards-variant-link').addEventListener('click',event=>{event.preventDefault();const url=new URL(location.href);url.searchParams.delete('layout');url.hash='desk';location.assign(url.href);});
+ $('#cards-variant-link').textContent='Klasik görünüme dön';
+ const css=document.createElement('link');css.rel='stylesheet';css.href='/studio/cards.css';
+ css.onload=()=>{const script=document.createElement('script');script.src='/studio/cards.js';script.defer=true;script.onerror=()=>flash('Kart görünümü yüklenemedi. Klasik görünümü kullanabilir veya sayfayı yenileyebilirsin.',true);document.head.append(script);};
+ css.onerror=()=>flash('Kart görünümü yüklenemedi. Klasik görünüm kullanılabilir.',true);document.head.append(css);
+}
