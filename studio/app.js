@@ -254,9 +254,9 @@ window.addEventListener('studio-card-action',event=>{
   setView(target);
  }
 });
-if(new URLSearchParams(location.search).get('layout')==='cards'){
+if(new URLSearchParams(location.search).get('layout')!=='classic'){
  document.body.classList.add('cards-preview');
- $('#cards-variant-link').href='#desk';$('#cards-variant-link').addEventListener('click',event=>{event.preventDefault();const url=new URL(location.href);url.searchParams.delete('layout');url.hash='desk';location.assign(url.href);});
+ $('#cards-variant-link').href='#desk';$('#cards-variant-link').addEventListener('click',event=>{event.preventDefault();const url=new URL(location.href);url.searchParams.set('layout','classic');url.hash='desk';location.assign(url.href);});
  $('#cards-variant-link').textContent='Klasik görünüme dön';
  const css=document.createElement('link');css.rel='stylesheet';css.href='/studio/cards.css';
  css.onload=()=>{const script=document.createElement('script');script.src='/studio/cards.js';script.defer=true;script.onerror=()=>flash('Kart görünümü yüklenemedi. Klasik görünümü kullanabilir veya sayfayı yenileyebilirsin.',true);document.head.append(script);};

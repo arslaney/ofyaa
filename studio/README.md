@@ -12,7 +12,7 @@ Tests: node --test tests/studio-api.test.mjs studio/auth.test.cjs. Local loopbac
 
 Deployment check: anonymous private GET is 401, malformed/other-user session is denied, owner can load and record a test task, signout hides all records. Passwordless email-link login is not exposed. Password recovery returns only to the explicitly authorized https://ofyaa.com/studio/ redirect. The recovery form requires a server owner probe and stays locked across reload until the user sets a new password or cancels; the existing Site URL is unchanged.
 
-Optional colourful card workspace and calendar: `/studio/?layout=cards#desk`. React/Swapy source, build and accessibility notes: [Card view setup](../docs/studio-cards.md). Classic view remains the default. Both views display the private worker health and request lifecycle; neither view starts agents.
+Default colourful card workspace and calendar: `/studio/#desk` (legacy `?layout=cards` also supported). React/Swapy source, build and accessibility notes: [Card view setup](../docs/studio-cards.md). Classic view is available through `?layout=classic`. Both views display the private worker health and request lifecycle; neither view starts agents.
 
 ## Codex bridge
 
