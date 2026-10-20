@@ -27,13 +27,15 @@ async function setup(options = {}) {
   assert.ok(existsSync(path), 'cloud studio core must exist');
   const {createHandlers} = await import(path);
   const calls = [];
+  const logs = [];
   const stored = [];
   const fetchImpl = async (url, init = {}) => {
     calls.push({url:String(url), init});
     const u = new URL(url);
     const data = (body, status=200) => new Response(JSON.stringify(body), {status,headers:{'Content-Type':'application/json'}});
-    if (options.networkFailure) throw new Error('private backend secret');
+    if (options.networkFailure) { const error = new TypeError('private backend secret token=SHOULD_NOT_LOG', {cause:{code:options.causeCode || 'ECONNRESET',message:'private upstream URL'}});error.code=options.errorCode || 'SECRET_CODE';throw error; }
     if (u.pathname === '/auth/v1/user') {
+      if (options.invalidAuthJson) return new Response('{broken private secret', {status:200});
       if (init.headers.Authorization !== 'Bearer trusted') return data({error:'fake'},401);
       return data({id:uid,email:options.email || env.STUDIO_OWNER_EMAIL,email_confirmed_at:options.unconfirmed ? null : '2026-10-20T00:00:00Z',user_metadata:{email:env.STUDIO_OWNER_EMAIL}});
     }
@@ -52,7 +54,7 @@ async function setup(options = {}) {
     }
     assert.fail('Unexpected network route '+url);
   };
-  return {handlers:createHandlers({env:options.env || env,fetchImpl}),calls,stored};
+  return {handlers:createHandlers({env:options.env || env,fetchImpl,logger:{error:event=>logs.push(event)}}),calls,stored,logs};
 }
 function request(path='/api/studio', {method='GET',body,token='trusted',origin='https://studio.example.test',headers={}}={}) {
   return new Request('https://studio.example.test'+path,{method,headers:{...(token ? {Authorization:'Bearer '+token}:{}),...(method==='POST'?{'Content-Type':'application/json',...(origin ? {Origin:origin}:{})}:{}),...headers},...(body !== undefined ? {body:JSON.stringify(body)}:{})});
@@ -165,4 +167,38 @@ test('request UUID casing is canonicalized for database identity',async()=>{
   const response=await handlers.post(request('/api/studio/requests',{method:'POST',body:payload({requestId:rid.toUpperCase()})}));
   assert.equal(response.status,202);
   assert.equal((await response.json()).request.requestId,rid);
+});
+
+test('fetch diagnostics expose only bounded stage, path and safe error identifiers',async()=>{
+  const {handlers,logs}=await setup({networkFailure:true});
+  const response=await handlers.get(request());
+  assert.equal(response.status,503);
+  assert.equal(logs.length,2);
+  assert.deepEqual(logs[0],{event:'studio_remote_error',stage:'remote_fetch',path:'auth_user',name:'TypeError',code:null,causeCode:'ECONNRESET',category:'unknown'});
+  const output=JSON.stringify(logs);
+  for(const secret of ['private','SHOULD_NOT_LOG','SECRET_CODE',env.STUDIO_SUPABASE_URL,env.STUDIO_SUPABASE_ANON_KEY,'trusted']) assert.equal(output.includes(secret),false);
+  const hidden=await setup({networkFailure:true,errorCode:'ENOTFOUND',causeCode:'SECRET_CAUSE'});
+  await hidden.handlers.get(request());
+  assert.equal(hidden.logs[0].code,'ENOTFOUND');
+  assert.equal(hidden.logs[0].causeCode,null);
+});
+
+test('handler JSON failures log safe stage and category without response content',async()=>{
+  const {handlers,logs}=await setup({invalidAuthJson:true});
+  const response=await handlers.get(request());
+  assert.equal(response.status,503);
+  assert.ok(logs.some(event=>event.stage==='handler'&&event.name==='SyntaxError'&&event.category==='json_error'));
+  assert.equal(JSON.stringify(logs).includes('private secret'),false);
+});
+
+test('remote diagnostic category is fixed and raw messages never logged',async()=>{
+  const {createHandlers}=await import('../api/_studio/core.mjs');
+  for(const [message,category] of [['redirect forbidden SECRET','redirect_error'],['fetch failed SECRET','fetch_error'],['JSON unexpected token SECRET','json_error'],['signal aborted SECRET','signal_error'],['Illegal invocation SECRET','illegal_invocation'],['sensitive address SECRET','unknown']]){
+    const logs=[];
+    const handlers=createHandlers({env,fetchImpl:async()=>{throw new TypeError(message);},logger:{error:event=>logs.push(event)}});
+    assert.equal((await handlers.get(request())).status,503);
+    assert.equal(logs.find(event=>event.stage==='remote_fetch')?.category,category);
+    assert.equal(logs.find(event=>event.stage==='handler')?.category,category);
+    assert.equal(JSON.stringify(logs).includes('SECRET'),false);
+  }
 });
