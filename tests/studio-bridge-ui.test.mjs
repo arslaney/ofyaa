@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
 const source=await readFile(new URL('../studio/app.js',import.meta.url),'utf8');
-function boot(){
+function boot(search=''){
  const elements=new Map(),events=new Map(),docEvents=new Map(),timers=new Map();let next=0,calls=0,resolveFetch;
  const element=()=>({textContent:'',hidden:false,value:'',dataset:{},children:[],classList:{add(){},remove(){},toggle(){}},append(...nodes){this.children.push(...nodes);},replaceChildren(){this.children=[];this.textContent='';},addEventListener(){},setAttribute(){},removeAttribute(){}});
  const find=selector=>{if(!elements.has(selector))elements.set(selector,element());return elements.get(selector);};
- const document={hidden:false,querySelector:find,querySelectorAll:()=>[],createElement:element,addEventListener:(name,fn)=>docEvents.set(name,fn),body:element()};
+ const head=element();const document={head,hidden:false,querySelector:find,querySelectorAll:()=>[],createElement:element,addEventListener:(name,fn)=>docEvents.set(name,fn),body:element()};
  const window={studioAuth:{authorized:true,mode:'cloud',ready:new Promise(()=>{}),fetch:()=>{calls++;return new Promise(resolve=>{resolveFetch=resolve;});}},addEventListener:(name,fn)=>events.set(name,fn),studioCards:{clear(){this.cleared=true;}}};
- const context=vm.createContext({window,document,location:{hash:'#desk',search:''},history:{replaceState(){}},URLSearchParams,Intl,Date,Map,console,setInterval:(fn,ms)=>{assert.equal(ms,60000);timers.set(++next,fn);return next;},clearInterval:id=>timers.delete(id),sessionStorage:{},setTimeout,crypto:{randomUUID:()=> 'test'}});
+ const context=vm.createContext({window,document,location:{hash:'#desk',search},history:{replaceState(){}},URLSearchParams,Intl,Date,Map,console,setInterval:(fn,ms)=>{assert.equal(ms,60000);timers.set(++next,fn);return next;},clearInterval:id=>timers.delete(id),sessionStorage:{},setTimeout,crypto:{randomUUID:()=> 'test'}});
  vm.runInContext(source,context);
  return {context,window,document,events,docEvents,timers,elements,find,get calls(){return calls;},resolve:body=>resolveFetch({ok:true,json:async()=>body})};
 }
@@ -32,4 +32,9 @@ test('request result is literal text and signout clears it from private DOM',()=
  const row=h.find('#requests').children[0];assert.ok(row.children.some(node=>node.textContent==='<img src=x onerror=alert(1)>'));
  assert.ok(row.children.some(node=>node.textContent==='Tamamlandı'));assert.ok(row.children.every(node=>!('innerHTML' in node)));
  h.events.get('studio-signed-out')();assert.equal(h.find('#requests').children.length,0);
+});
+
+test('normal and installed app entry load colorful cards; classic is an explicit opt-out',()=>{
+ for(const search of ['', '?layout=cards']){const h=boot(search);assert.ok(h.document.head.children.some(el=>el.href==='/studio/cards.css'));}
+ const classic=boot('?layout=classic');assert.equal(classic.document.head.children.length,0);
 });
