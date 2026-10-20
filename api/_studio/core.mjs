@@ -37,8 +37,10 @@ export function createHandlers({env,fetchImpl=globalThis.fetch}){
     return {url,key,owner};
   }
   async function remote(config,token,path,options={}){
-    const response=await fetchImpl(config.url+path,{...options,headers:{apikey:config.key,Authorization:token,...options.headers},signal:AbortSignal.timeout(10000),redirect:'error'});
-    return response;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),10000);
+    try{return await fetchImpl(config.url+path,{...options,headers:{apikey:config.key,Authorization:token,...options.headers},signal:controller.signal,redirect:'error'});}
+    finally{clearTimeout(timeout);}
   }
   async function auth(req,config){
     const token=req.headers.get('Authorization');
