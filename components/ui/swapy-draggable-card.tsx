@@ -11,12 +11,13 @@ export function SwapyLayout({id,enable=true,onSwap,config,revision=0,className,c
  const callback=useRef(onSwap);callback.current=onSwap;
  const initialConfig=useRef(config);
  useEffect(()=>{
-  if(!container.current)return;
+  // Swapy installs a body touchmove preventDefault listener even when disabled.
+  // Mount it only for intentional desktop editing; touch users use move buttons.
+  if(!enable||!container.current||!matchMedia('(hover: hover) and (pointer: fine)').matches)return;
   const swapy=createSwapy(container.current,{...initialConfig.current,manualSwap:true,enabled:enable});
   swapy.onSwap(event=>callback.current?.(event));instance.current=swapy;
   return()=>{swapy.destroy();instance.current=null;};
- },[]);
- useEffect(()=>{instance.current?.enable(enable);},[enable]);
+ },[enable]);
  useEffect(()=>{if(revision){const frame=requestAnimationFrame(()=>instance.current?.update());return()=>cancelAnimationFrame(frame);}},[revision]);
  return <div id={id} ref={container} className={className}>{children}</div>;
 }

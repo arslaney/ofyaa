@@ -15,3 +15,5 @@ Kartları düzenle ile Swapy sürükleme açılır. Klavyede tutamacın ok tuşl
 Private snapshot yalnız mevcut giriş kontrolünden sonra React adasına aktarılır. Oturum kapatıldığında React ağacı kaldırılır. Yeni görsel görünüm ek API anahtarı, ayrı veri tabanı, ajan çalıştırma veya yayın yetkisi yaratmaz.
 
 Telefon ana ekranı da `/studio/` açar ve renkli görünümü kullanır. Sade görünüm için `?layout=classic` seçilebilir; eski `?layout=cards` bağlantıları çalışmaya devam eder.
+
+Dokunmatik kaydırma: normal gezinmede Swapy oluşturulmaz. Fare/hover destekli bilgisayarda yalnız düzenleme sırasında oluşturulur ve çıkışta yok edilir. Dokunmatik cihazda düzenleme Önceye al / Sonraya al düğmeleriyle yapılır; global sürükleme dinleyicisi kurulmaz.

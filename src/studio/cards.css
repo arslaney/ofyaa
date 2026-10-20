@@ -18,3 +18,5 @@
 .cards-preview .schedule-time{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:16px;color:#343d38;font-weight:500}.cards-preview .schedule-time strong{font-size:34px;line-height:1;color:#202424}
 .cards-preview .schedule-row>div:last-child{display:flex;flex-direction:column;flex:1;align-items:flex-start}.cards-preview .schedule-row h3{font-family:var(--display);font-size:24px;line-height:1.2;letter-spacing:-.025em;margin:0 0 16px;color:#202424}.cards-preview .platforms{display:grid;gap:9px;color:#343d38;font-size:13px}.cards-preview .platforms strong{color:#202424;font-weight:600}.cards-preview .schedule-row a{color:#202424;font-size:13px;font-weight:600;margin-top:auto;padding-top:18px;min-height:44px}
 @media(max-width:900px){.cards-preview #schedule-list{grid-template-columns:1fr}}@media(max-width:700px){.cards-preview .schedule-row{padding:24px;min-height:250px}.cards-preview .schedule-row h3{font-size:23px}}
+
+@media (hover:none),(pointer:coarse){.cards-workspace .drag-handle{display:none}}
