@@ -1,0 +1,7 @@
+tests/
+studio/*.test.cjs
+studio/.impeccable/
+studio/PRODUCT.md
+studio/DESIGN.md
+studio/README.md
+supabase/

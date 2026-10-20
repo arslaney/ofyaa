@@ -1,0 +1,19 @@
+/* Private shell starts hidden in HTML; JS reveals it only after the server probe. */
+#auth-screen{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 20px;background:var(--paper,#faf9f6);color:var(--ink,#23201a);font:14px/1.6 var(--sans,system-ui,sans-serif)}
+#auth-screen[hidden],#studio-shell[hidden]{display:none!important}
+#auth-screen .auth-card{width:100%;max-width:430px;padding:32px;border:1px solid var(--line,#dcd9d0);border-radius:10px;background:var(--surface,#fff)}
+#auth-screen h1{font:600 clamp(26px,6vw,34px)/1.2 var(--display,system-ui,sans-serif);letter-spacing:-.035em;margin:28px 0 12px}
+#auth-screen p{font-size:14px;color:var(--muted,#625d53);margin:12px 0 22px}
+#auth-screen .wordmark{display:inline-block;font-size:34px}
+#auth-form{display:grid;gap:12px;margin-top:24px}
+#auth-form label{display:block;font-size:14px;font-weight:500;margin:4px 0 0}
+#auth-form input{display:block;width:100%;min-height:48px;border:1px solid var(--line,#dcd9d0);border-radius:6px;background:var(--paper,#faf9f6);color:var(--ink,#23201a);padding:11px 12px;font:16px/1.5 var(--sans,system-ui,sans-serif)}
+#auth-form button,#auth-signout{min-height:44px;min-width:44px;font-size:14px;line-height:1.5;border-radius:6px;padding:11px 16px;cursor:pointer;touch-action:manipulation}
+#auth-password-login{display:block;width:100%;margin-top:8px;color:#fff;background:var(--green,#2f6249);border:1px solid var(--green,#2f6249);font-weight:600}
+#auth-password-login:hover{background:#234c38}
+#auth-magic-login,#auth-signout{background:transparent;border:1px solid var(--line,#dcd9d0);color:var(--green,#2f6249)}
+#auth-magic-login:hover,#auth-signout:hover{border-color:var(--green,#2f6249);background:var(--soft-green,#e7efe9)}
+#auth-form input:focus-visible,#auth-form button:focus-visible,#auth-signout:focus-visible{outline:3px solid var(--green,#2f6249);outline-offset:3px}
+#auth-form button:disabled{opacity:.6;cursor:wait}
+#auth-message{font-size:14px;line-height:1.6;min-height:3.2em;margin:20px 0 0!important;color:var(--muted,#625d53);overflow-wrap:anywhere}
+@media(max-width:480px){#auth-screen{padding:24px 16px}#auth-screen .auth-card{padding:24px 20px}}

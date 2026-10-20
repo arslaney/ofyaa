@@ -1,0 +1,27 @@
+{
+  "id": "/studio/",
+  "name": "Ofyaa Stüdyo",
+  "short_name": "Stüdyo",
+  "description": "Özel ajan ve içerik yapım masası.",
+  "lang": "tr",
+  "start_url": "/studio/",
+  "scope": "/studio/",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#2f6249",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/studio/icons/studio-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/studio/icons/studio-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
