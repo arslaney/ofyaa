@@ -202,3 +202,32 @@ test('remote diagnostic category is fixed and raw messages never logged',async()
     assert.equal(JSON.stringify(logs).includes('SECRET'),false);
   }
 });
+
+test('portable manual redirect mode accepts direct auth errors without following redirects',async()=>{
+  const {createHandlers}=await import('../api/_studio/core.mjs');
+  const calls=[];
+  const handlers=createHandlers({env,logger:{error(){}},fetchImpl:async(url,init)=>{
+    calls.push({url,init});
+    if(init.redirect!=='manual')throw new TypeError('redirect error mode unsupported');
+    return new Response('{"code":"bad_jwt"}',{status:403});
+  }});
+  assert.equal((await handlers.get(request())).status,401);
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].init.redirect,'manual');
+});
+
+test('all upstream redirects fail closed without a second credential-bearing request',async()=>{
+  const {createHandlers}=await import('../api/_studio/core.mjs');
+  for(const status of [300,301,302,303,304,305,307,308,399]){
+    const calls=[];
+    const handlers=createHandlers({env,logger:{error(){}},fetchImpl:async(url,init)=>{
+      calls.push({url,init});
+      return new Response(null,{status,headers:{Location:'https://untrusted.example.test/secret'}});
+    }});
+    const response=await handlers.get(request());
+    assert.equal(response.status,503);
+    assert.equal(calls.length,1);
+    assert.equal(calls[0].init.redirect,'manual');
+    assert.equal((await response.text()).includes('untrusted'),false);
+  }
+});
