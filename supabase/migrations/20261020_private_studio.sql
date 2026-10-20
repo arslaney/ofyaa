@@ -1,0 +1,14 @@
+create table public.studio_members (user_id uuid primary key references auth.users(id) on delete cascade);
+create table public.studio_snapshots (id text primary key check(id='primary'),version text not null,state jsonb not null check(jsonb_typeof(state)='object'),updated_at timestamptz not null default now());
+create table public.studio_requests (id uuid primary key,user_id uuid not null references auth.users(id),action text not null check(action in ('assign_task','request_revision','request_new_drafts','approve_script')),draft_id text,note text not null check(length(trim(note)) between 1 and 1000),snapshot_id text not null,status text not null default 'received' check(status='received'),received_at timestamptz not null default now(),assignee text check(assignee in ('coordinator','writer','editor','producer')),requested_start text check(requested_start in ('now','queued')),check((action='assign_task' and assignee is not null and requested_start is not null and draft_id is null) or (action<>'assign_task' and assignee is null and requested_start is null)));
+create index studio_requests_user_time_idx on public.studio_requests(user_id,received_at);
+alter table public.studio_members enable row level security;
+alter table public.studio_snapshots enable row level security;
+alter table public.studio_requests enable row level security;
+revoke all on public.studio_members,public.studio_snapshots,public.studio_requests from anon,authenticated;
+grant select on public.studio_members,public.studio_snapshots,public.studio_requests to authenticated;
+grant insert(id,user_id,action,draft_id,note,snapshot_id,status,assignee,requested_start) on public.studio_requests to authenticated;
+create policy studio_member_self on public.studio_members for select to authenticated using (user_id=(select auth.uid()));
+create policy studio_snapshot_owner on public.studio_snapshots for select to authenticated using (exists(select 1 from public.studio_members where user_id=(select auth.uid())));
+create policy studio_requests_owner_read on public.studio_requests for select to authenticated using (user_id=(select auth.uid()) and exists(select 1 from public.studio_members where user_id=(select auth.uid())));
+create policy studio_requests_owner_insert on public.studio_requests for insert to authenticated with check (user_id=(select auth.uid()) and status='received' and exists(select 1 from public.studio_members where user_id=(select auth.uid())));

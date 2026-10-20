@@ -1,0 +1,6 @@
+studio/.impeccable/
+studio/PRODUCT.md
+studio/DESIGN.md
+.env*
+.vercel/
+node_modules/
