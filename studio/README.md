@@ -10,4 +10,4 @@ The PWA caches only public shell assets. Private API responses are no-store and 
 
 Tests: node --test tests/studio-api.test.mjs studio/auth.test.cjs. Local loopback preview uses the project's separate dashboard-preview.py and local token checks; remote deployments always require authentication.
 
-Deployment check: anonymous private GET is 401, malformed/other-user session is denied, owner can load and record a test task, signout hides all records. Email-link login is not exposed, per owner preference; no authentication redirect or Site URL changes are required.
+Deployment check: anonymous private GET is 401, malformed/other-user session is denied, owner can load and record a test task, signout hides all records. Passwordless email-link login is not exposed. Password recovery returns only to the explicitly authorized https://ofyaa.com/studio/ redirect. The recovery form requires a server owner probe and stays locked across reload until the user sets a new password or cancels; the existing Site URL is unchanged.
