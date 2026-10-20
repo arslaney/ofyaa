@@ -1,5 +1,5 @@
 // Owner-only REST adapter. No privileged key, worker execution or platform writes.
-const REQUEST_COLUMNS='id,action,draft_id,note,snapshot_id,status,received_at,assignee,requested_start';
+const REQUEST_COLUMNS='id,action,draft_id,note,snapshot_id,status,received_at,assignee,requested_start,result_summary,started_at,completed_at';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isObject=value=>value!==null && typeof value==='object' && !Array.isArray(value);
 const text=(value,max=20000)=>typeof value==='string'?value.slice(0,max):'';
@@ -8,6 +8,14 @@ class Failure extends Error { constructor(status,error,detail){super(error);this
 const fail=(status,error,detail)=>{throw new Failure(status,error,detail);};
 function json(status,body){return new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});}
 function safeUrl(value){try{const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password&&['youtube.com','www.youtube.com','youtu.be','instagram.com','www.instagram.com'].includes(url.hostname)?url.origin+url.pathname:'';}catch{return '';}}
+function isoTime(value){return typeof value==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(value)&&Number.isFinite(Date.parse(value))?new Date(value).toISOString():null;}
+function workerState(value,now){
+  const source=isObject(value)?value:{};
+  const worker={enabled:source.enabled===true&&source.mode==='codex_heartbeat',mode:'codex_heartbeat',pollIntervalMinutes:15,lastCheckedAt:isoTime(source.lastCheckedAt),automationId:text(source.automationId,200)};
+  const age=worker.lastCheckedAt?now-Date.parse(worker.lastCheckedAt):null;
+  const workerConnected=worker.enabled&&age!==null&&age>=0&&age<=45*60*1000;
+  return {worker,workerConnected,workerStatus:!worker.enabled?'disabled':workerConnected?'active':age===null?'not_checked':'stale'};
+}
 function sanitizeState(state){
   const out={};
   for(const [key,fields] of Object.entries({agents:['id','name','role','status','summary'],drafts:['id','title','status','reason','script'],publications:['title','when','youtubeStatus','instagramStatus','youtubeUrl'],issues:['title','detail','severity']})){
@@ -22,9 +30,14 @@ function sanitizeState(state){
   }
   return out;
 }
-function requestRow(row){return {requestId:row.id,action:row.action,draftId:row.draft_id??null,note:row.note,snapshotId:row.snapshot_id,status:row.status,receivedAt:row.received_at,assignee:row.assignee??null,requestedStart:row.requested_start??null,agentStarted:false,message:'Talep kaydedildi; ajan başlatılmadı.'};}
+function requestRow(row){
+  const status=['received','running','completed','cancelled','blocked','needs_approval'].includes(row.status)?row.status:'received';
+  const startedAt=isoTime(row.started_at),completedAt=isoTime(row.completed_at),resultSummary=text(row.result_summary,20000)||null;
+  const messages={received:'Talep kaydedildi; koordinatör kontrolünü bekliyor.',running:'Ajan görevi işliyor.',completed:'Görev tamamlandı.',cancelled:'Talep iptal edildi.',blocked:'Görev engel nedeniyle bekliyor.',needs_approval:'Devam etmek için onay gerekiyor.'};
+  return {requestId:row.id,action:row.action,draftId:row.draft_id??null,note:text(row.note),snapshotId:row.snapshot_id,status,receivedAt:row.received_at,assignee:row.assignee??null,requestedStart:row.requested_start??null,startedAt,completedAt,resultSummary,agentStarted:!!startedAt||status==='running'||!!resultSummary,message:messages[status]};
+}
 
-export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis.console}){
+export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis.console,now=()=>Date.now()}){
   function category(error){
     const message=typeof error?.message==='string'?error.message:'';
     if(/redirect/i.test(message))return 'redirect_error';
@@ -129,7 +142,7 @@ export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis
       if(!response.ok)fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
       const rows=await response.json();
       if(!Array.isArray(rows))fail(503,'requests_unavailable','Talep geçmişi şu anda okunamıyor.');
-      return json(200,{...sanitizeState(row.state),snapshotId:row.version,mode:'cloud',capturedAt:row.updated_at,workerConnected:false,requests:rows.map(requestRow)});
+      return json(200,{...sanitizeState(row.state),snapshotId:row.version,mode:'cloud',capturedAt:row.updated_at,...workerState(row.state.worker,now()),requests:rows.map(requestRow)});
     }),
     post:guarded(async req=>{
       if(req.method!=='POST')return json(405,{error:'method_not_allowed',detail:'Yalnız POST desteklenir.'});

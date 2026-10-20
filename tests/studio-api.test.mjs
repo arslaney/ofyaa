@@ -28,7 +28,7 @@ async function setup(options = {}) {
   const {createHandlers} = await import(path);
   const calls = [];
   const logs = [];
-  const stored = [];
+  const stored = options.rows || [];
   const fetchImpl = async (url, init = {}) => {
     calls.push({url:String(url), init});
     const u = new URL(url);
@@ -40,7 +40,7 @@ async function setup(options = {}) {
       return data({id:uid,email:options.email || env.STUDIO_OWNER_EMAIL,email_confirmed_at:options.unconfirmed ? null : '2026-10-20T00:00:00Z',user_metadata:{email:env.STUDIO_OWNER_EMAIL}});
     }
     if (u.pathname === '/rest/v1/studio_members') return data(options.noMembership ? [] : [{user_id:uid}]);
-    if (u.pathname === '/rest/v1/studio_snapshots') return data([{id:'primary',version:'v1',updated_at:'2026-10-20T00:00:00Z',state:{drafts:[{id:'numune',status:options.approvable ? 'awaiting_user_approval' : 'revision_required',title:'Numune',script:'text',reason:'reason'}],agents:[],publications:[],budget:{currentBalance:null},issues:[],writeToken:'mustnotleak',requests:[{note:'mustnotleak'}]}}]);
+    if (u.pathname === '/rest/v1/studio_snapshots') return data([{id:'primary',version:'v1',updated_at:'2026-10-20T00:00:00Z',state:{worker:options.worker,drafts:[{id:'numune',status:options.approvable ? 'awaiting_user_approval' : 'revision_required',title:'Numune',script:'text',reason:'reason'}],agents:[],publications:[],budget:{currentBalance:null},issues:[],writeToken:'mustnotleak',requests:[{note:'mustnotleak'}]}}]);
     if (u.pathname === '/rest/v1/studio_requests') {
       if (init.method === 'POST') {
         const body = JSON.parse(init.body);
@@ -54,7 +54,7 @@ async function setup(options = {}) {
     }
     assert.fail('Unexpected network route '+url);
   };
-  return {handlers:createHandlers({env:options.env || env,fetchImpl,logger:{error:event=>logs.push(event)}}),calls,stored,logs};
+  return {handlers:createHandlers({env:options.env || env,fetchImpl,logger:{error:event=>logs.push(event)},now:()=>Date.parse('2026-10-20T12:00:00Z')}),calls,stored,logs};
 }
 function request(path='/api/studio', {method='GET',body,token='trusted',origin='https://studio.example.test',headers={}}={}) {
   return new Request('https://studio.example.test'+path,{method,headers:{...(token ? {Authorization:'Bearer '+token}:{}),...(method==='POST'?{'Content-Type':'application/json',...(origin ? {Origin:origin}:{})}:{}),...headers},...(body !== undefined ? {body:JSON.stringify(body)}:{})});
@@ -195,7 +195,7 @@ test('remote diagnostic category is fixed and raw messages never logged',async()
   const {createHandlers}=await import('../api/_studio/core.mjs');
   for(const [message,category] of [['redirect forbidden SECRET','redirect_error'],['fetch failed SECRET','fetch_error'],['JSON unexpected token SECRET','json_error'],['signal aborted SECRET','signal_error'],['Illegal invocation SECRET','illegal_invocation'],['sensitive address SECRET','unknown']]){
     const logs=[];
-    const handlers=createHandlers({env,fetchImpl:async()=>{throw new TypeError(message);},logger:{error:event=>logs.push(event)}});
+    const handlers=createHandlers({env,fetchImpl:async()=>{throw new TypeError(message);},logger:{error:event=>logs.push(event)},now:()=>Date.parse('2026-10-20T12:00:00Z')});
     assert.equal((await handlers.get(request())).status,503);
     assert.equal(logs.find(event=>event.stage==='remote_fetch')?.category,category);
     assert.equal(logs.find(event=>event.stage==='handler')?.category,category);
@@ -230,4 +230,40 @@ test('all upstream redirects fail closed without a second credential-bearing req
     assert.equal(calls[0].init.redirect,'manual');
     assert.equal((await response.text()).includes('untrusted'),false);
   }
+});
+
+
+test('worker health requires an enabled Codex heartbeat with a recent real check',async()=>{
+ const base={enabled:true,mode:'codex_heartbeat',pollIntervalMinutes:1,lastCheckedAt:'2026-10-20T11:45:00Z',automationId:'worker-id',secret:'mustnotleak'};
+ for(const [change,connected,status] of [[{},true,'active'],[{lastCheckedAt:'2026-10-20T11:15:00Z'},true,'active'],[{lastCheckedAt:'2026-10-20T11:14:59Z'},false,'stale'],[{lastCheckedAt:'2026-10-20T12:00:01Z'},false,'stale'],[{lastCheckedAt:'invalid'},false,'not_checked'],[{enabled:false},false,'disabled'],[{enabled:'true'},false,'disabled'],[{mode:'other'},false,'disabled']]){
+  const {handlers}=await setup({worker:{...base,...change}});
+  const response=await handlers.get(request()),body=await response.json();
+  assert.equal(body.workerConnected,connected);assert.equal(body.workerStatus,status);
+  assert.equal(body.worker.pollIntervalMinutes,15);assert.equal(body.worker.mode,'codex_heartbeat');
+  assert.equal('secret' in body.worker,false);assert.equal(response.headers.get('Cache-Control'),'no-store');
+ }
+ const {handlers}=await setup({worker:base});
+ assert.equal((await (await handlers.config(request())).json()).workerConnected,false);
+ assert.equal((await handlers.get(request('/api/studio',{token:null}))).status,401);
+});
+
+test('requests expose bounded results, lifecycle times and evidence of agent work',async()=>{
+ const statuses=['received','running','completed','cancelled','blocked','needs_approval','unknown'];
+ const rows=statuses.map((status,index)=>({id:String(index),status,note:'note',result_summary:index===2?'<script>alert(1)</script>':null,started_at:index===4?'2026-10-20T11:00:00Z':'invalid',completed_at:index===2?'2026-10-20T11:30:00Z':null,secret:'mustnotleak'}));
+ const {handlers,calls}=await setup({rows});
+ const body=await (await handlers.get(request())).json();
+ assert.deepEqual(body.requests.map(row=>row.status),[...statuses.slice(0,-1),'received']);
+ assert.deepEqual(body.requests.map(row=>row.agentStarted),[false,true,true,false,true,false,false]);
+ assert.equal(body.requests[2].resultSummary,'<script>alert(1)</script>');
+ assert.equal(body.requests[2].completedAt,'2026-10-20T11:30:00.000Z');
+ assert.equal(body.requests[0].startedAt,null);assert.equal(JSON.stringify(body).includes('mustnotleak'),false);
+ assert.match(calls.at(-1).url,/result_summary,started_at,completed_at/);
+});
+
+test('idempotent retry returns updated task result without resetting task or duplicating it',async()=>{
+ const {handlers,stored}=await setup();
+ const send=()=>handlers.post(request('/api/studio/requests',{method:'POST',body:payload()}));
+ await send();Object.assign(stored[0],{status:'completed',result_summary:'Teslim edildi',started_at:'2026-10-20T11:00:00Z',completed_at:'2026-10-20T11:30:00Z'});
+ const body=await (await send()).json();
+ assert.equal(body.request.status,'completed');assert.equal(body.request.agentStarted,true);assert.equal(body.request.resultSummary,'Teslim edildi');assert.equal(stored.length,1);
 });
