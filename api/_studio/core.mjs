@@ -24,7 +24,16 @@ function sanitizeState(state){
 }
 function requestRow(row){return {requestId:row.id,action:row.action,draftId:row.draft_id??null,note:row.note,snapshotId:row.snapshot_id,status:row.status,receivedAt:row.received_at,assignee:row.assignee??null,requestedStart:row.requested_start??null,agentStarted:false,message:'Talep kaydedildi; ajan başlatılmadı.'};}
 
-export function createHandlers({env,fetchImpl=globalThis.fetch}){
+export function createHandlers({env,fetchImpl=globalThis.fetch,logger=globalThis.console}){
+  function category(error){
+    const message=typeof error?.message==='string'?error.message:'';
+    if(/redirect/i.test(message))return 'redirect_error';
+    if(/fetch/i.test(message))return 'fetch_error';
+    if(/json|unexpected token/i.test(message))return 'json_error';
+    if(/signal/i.test(message))return 'signal_error';
+    if(/illegal invocation/i.test(message))return 'illegal_invocation';
+    return 'unknown';
+  }
   function settings(){
     const url=text(env?.STUDIO_SUPABASE_URL).replace(/\/$/,'');
     const key=text(env?.STUDIO_SUPABASE_ANON_KEY);
@@ -40,6 +49,16 @@ export function createHandlers({env,fetchImpl=globalThis.fetch}){
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),10000);
     try{return await fetchImpl(config.url+path,{...options,headers:{apikey:config.key,Authorization:token,...options.headers},signal:controller.signal,redirect:'error'});}
+    catch(error){
+      // Never log URL, headers, token, body, message, stack or arbitrary identifiers.
+      const names=new Set(['Error','TypeError','SyntaxError','AbortError','TimeoutError','NetworkError','SecurityError','NotSupportedError','InvalidStateError']);
+      const codes=new Set(['ENOTFOUND','EAI_AGAIN','ECONNRESET','ECONNREFUSED','ETIMEDOUT','ENETUNREACH','EHOSTUNREACH','ERR_TLS_CERT_ALTNAME_INVALID','CERT_HAS_EXPIRED','UNABLE_TO_VERIFY_LEAF_SIGNATURE','UND_ERR_CONNECT_TIMEOUT','UND_ERR_HEADERS_TIMEOUT','UND_ERR_SOCKET']);
+      const pathname=path.split('?')[0];
+      const paths={'/auth/v1/user':'auth_user','/rest/v1/studio_members':'studio_members','/rest/v1/studio_snapshots':'studio_snapshot','/rest/v1/studio_requests':'studio_requests'};
+      const event={event:'studio_remote_error',stage:'remote_fetch',path:paths[pathname]||'unknown',name:names.has(error?.name)?error.name:'UnknownError',code:codes.has(error?.code)?error.code:null,causeCode:codes.has(error?.cause?.code)?error.cause.code:null,category:category(error)};
+      try{logger?.error?.(event);}catch{ /* Diagnostics must never change request behavior. */ }
+      throw error;
+    }
     finally{clearTimeout(timeout);}
   }
   async function auth(req,config){
@@ -83,7 +102,12 @@ export function createHandlers({env,fetchImpl=globalThis.fetch}){
     return {id:body.requestId.toLowerCase(),action:body.action,draft_id:body.draftId??null,note:body.note,snapshot_id:body.snapshotId,assignee:body.assignee??null,requested_start:body.requestedStart??null};
   }
   const guarded=handler=>async req=>{
-    try{return await handler(req);}catch(error){return error instanceof Failure?json(error.status,{error:error.error,detail:error.detail}):json(503,{error:'service_unavailable',detail:'Stüdyo hizmetine şu anda ulaşılamıyor. Lütfen yeniden deneyin.'});}
+    try{return await handler(req);}catch(error){
+      if(error instanceof Failure)return json(error.status,{error:error.error,detail:error.detail});
+      const names=new Set(['Error','TypeError','SyntaxError','AbortError','TimeoutError','NetworkError','SecurityError','NotSupportedError','InvalidStateError']);
+      try{logger?.error?.({event:'studio_handler_error',stage:'handler',name:names.has(error?.name)?error.name:'UnknownError',category:category(error)});}catch{ /* Never change public behavior for diagnostics. */ }
+      return json(503,{error:'service_unavailable',detail:'Stüdyo hizmetine şu anda ulaşılamıyor. Lütfen yeniden deneyin.'});
+    }
   };
   return {
     config:guarded(async req=>{
